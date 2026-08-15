@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0A0A0A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>NETLUXE — Le Cinéma, Sans Limites</title>
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTkVUTFVYRSIsInNob3J0X25hbWUiOiJORVRMVVhFIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMEEwQTBBIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwQTBBMEEifQ==">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0A0A0A;
+      color: #F5F5F0;
+      overflow-x: hidden;
+    }
+    
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 0; height: 0; }
+    
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, #0A0A0A 60%, transparent);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: #E50914;
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      padding: 6px;
+    }
+    .logo-icon div {
+      background: white;
+      border-radius: 3px;
+    }
+    .logo-icon div:last-child { background: rgba(255,255,255,0.3); }
+    .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      font-family: Georgia, serif;
+    }
+    .logo-text .net { color: #F5F5F0; }
+    .logo-text .luxe { color: #E50914; }
+    
+    .nav-icons {
+      display: flex;
+      gap: 16px;
+    }
+    .nav-icons button {
+      background: none;
+      border: none;
+      color: #F5F5F0;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    
+    /* Hero */
+    .hero {
+      position: relative;
+      height: 70vh;
+      min-height: 450px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 16px 100px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #1a1a2e 0%, #0A0A0A 50%, #16213e 100%);
+      overflow: hidden;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 20%, rgba(229,9,20,0.15), transparent 50%);
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800') center/cover;
+      opacity: 0.3;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(212,175,55,0.2);
+      border: 1px solid #D4AF37;
+      border-radius: 20px;
+      font-size: 11px;
+      color: #D4AF37;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+    }
+    .hero-title {
+      font-family: Georgia, serif;
+      font-size: 42px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .hero-title .highlight {
+      color: #D4AF37;
+      font-style: italic;
+    }
+    .hero-subtitle {
+      font-size: 14px;
+      color: #B0B0B0;
+      margin-bottom: 24px;
+      max-width: 320px;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #B0B0B0;
+    }
+    .hero-meta .rating {
+      color: #D4AF37;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-primary {
+      flex: 1;
+      background: #E50914;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-secondary {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Sections */
+    .section {
+      padding: 24px 16px;
+    }
+    .section-title {
+      font-family: Georgia, serif;
+      font-size: 22px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title .icon {
+      color: #E50914;
+    }
+    
+    /* Content Grid */
+    .content-grid {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .content-card {
+      flex: 0 0 140px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .content-card:active { transform: scale(0.95); }
+    .card-image {
+      width: 140px;
+      height: 200px;
+      border-radius: 12px;
+      background: #1A1A1A;
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-tag {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: #E50914;
+      color: white;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-meta {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    /* Featured Cards (wider) */
+    .featured-grid {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .featured-card {
+      flex: 0 0 260px;
+      cursor: pointer;
+    }
+    .featured-card:active { transform: scale(0.95); }
+    .featured-image {
+      width: 260px;
+      height: 150px;
+      border-radius: 12px;
+      background: #1A1A1A;
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .featured-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    /* Tags */
+    .tags {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tag {
+      padding: 8px 16px;
+      background: #1A1A1A;
+      border-radius: 20px;
+      font-size: 13px;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .tag.active {
+      background: rgba(229,9,20,0.15);
+      border-color: #E50914;
+      color: #E50914;
+    }
+    
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1A1A1A;
+      padding: 8px 0;
+      display: flex;
+      justify-content: space-around;
+      z-index: 100;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .nav-item.active { color: #E50914; }
+    .nav-item svg { width: 22px; height: 22px; }
+    
+    /* Bottom padding */
+    .bottom-spacer { height: 80px; }
+    
+    /* Search Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 200;
+      flex-direction: column;
+    }
+    .modal.active { display: flex; }
+    .modal-header {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .modal-header input {
+      flex: 1;
+      background: #1A1A1A;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+    }
+    .modal-header button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .modal-content { padding: 16px; overflow-y: auto; }
+    .search-result {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+    }
+    .search-result img {
+      width: 80px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    
+    /* Login Screen */
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+    }
+    .login-hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .login-title {
+      font-family: Georgia, serif;
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    .login-subtitle {
+      color: #999;
+      font-size: 15px;
+      max-width: 280px;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+    .login-form input {
+      background: #1A1A1A;
+      border: none;
+      padding: 16px;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+    }
+    .login-form .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #999;
+      font-size: 14px;
+    }
+    .login-form .checkbox input { width: 20px; height: 20px; }
+    .login-btn {
+      background: #E50914;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Profile Select */
+    .profile-select {
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 250;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-select.active { display: flex; }
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 32px 0;
+    }
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+    }
+    .profile-name { font-size: 14px; color: #999; }
+    .add-profile {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      border: 2px dashed #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #555;
+      cursor: pointer;
+    }
+    .manage-btn {
+      padding: 12px 32px;
+      background: transparent;
+      border: 1px solid #D4AF37;
+      color: #D4AF37;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    /* Video Player */
+    .video-player {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: black;
+      z-index: 400;
+      flex-direction: column;
+    }
+    .video-player.active { display: flex; }
+    .player-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 10;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    }
+    .player-header button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .player-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+    .player-placeholder {
+      text-align: center;
+      color: white;
+    }
+    .player-controls {
+      padding: 16px;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    }
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      width: 30%;
+      height: 100%;
+      background: #E50914;
+      border-radius: 2px;
+    }
+    .player-buttons {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .player-buttons button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Splash -->
+  <div id="splash" style="position:fixed;inset:0;background:#0A0A0A;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s;">
+    <div class="logo" style="margin-bottom:24px;">
+      <div class="logo-icon" style="width:80px;height:80px;">
+        <div></div><div></div>
+        <div></div><div></div>
+      </div>
+    </div>
+    <div class="logo-text"><span class="net">NET</span><span class="luxe">LUXE</span></div>
+    <div style="color:#D4AF37;font-size:12px;letter-spacing:3px;margin-top:16px;">LE CINÉMA, SANS LIMITES</div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" style="display:none;">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
+        <span class="logo-text"><span class="net">NET</span><span class="luxe">LUXE</span></span>
+      </div>
+      <div class="nav-icons">
+        <button onclick="openSearch()">🔍</button>
+        <button onclick="showProfileSelect()">👤</button>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <span class="badge">NETLUXE ORIGINALS</span>
+        <h1 class="hero-title">Votre prochain<br><span class="highlight">grand frisson</span><br>commence ici.</h1>
+        <p class="hero-subtitle">Des histoires haïtiennes, caribéennes, africaines et internationales — choisies pour les soirs qui comptent.</p>
+        <div class="hero-meta">
+          <span class="rating">★ 4.8</span>
+          <span>2024</span>
+          <span>2h 18m</span>
+          <span>Thriller</span>
+        </div>
+        <div class="hero-buttons">
+          <button class="btn-primary" onclick="openPlayer()">▶ Regarder</button>
+          <button class="btn-secondary" onclick="showDetails(0)">+ Plus d'infos</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trending -->
+    <section class="section">
+      <h2 class="section-title"><span class="icon">🔥</span> Tendances</h2>
+      <div class="content-grid" id="trending"></div>
+    </section>
+
+    <!-- New Releases -->
+    <section class="section">
+      <h2 class="section-title"><span class="icon">✨</span> Nouveautés</h2>
+      <div class="content-grid" id="newReleases"></div>
+    </section>
+
+    <!-- Caribbean -->
+    <section class="section">
+      <h2 class="section-title"><span class="icon">🌴</span> Productions Caribéennes</h2>
+      <div class="featured-grid" id="caribbean"></div>
+    </section>
+
+    <!-- Series -->
+    <section class="section">
+      <h2 class="section-title"><span class="icon">📺</span> Séries Populaires</h2>
+      <div class="content-grid" id="series"></div>
+    </section>
+
+    <!-- Cartoons -->
+    <section class="section">
+      <h2 class="section-title"><span class="icon">⭐</span> Dessins Animés</h2>
+      <div class="content-grid" id="cartoons"></div>
+    </section>
+
+    <div class="bottom-spacer"></div>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="goHome()">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        Accueil
+      </button>
+      <button class="nav-item" onclick="goFilms()">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+        Films
+      </button>
+      <button class="nav-item" onclick="goSeries()">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+        Séries
+      </button>
+      <button class="nav-item" onclick="openSearch()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Recherche
+      </button>
+      <button class="nav-item" onclick="showProfileSelect()">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Profil
+      </button>
+    </nav>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="modal" id="searchModal">
+    <div class="modal-header">
+      <input type="text" placeholder="Rechercher films, séries, acteurs..." id="searchInput" oninput="doSearch()">
+      <button onclick="closeSearch()">✕</button>
+    </div>
+    <div class="modal-content" id="searchResults"></div>
+  </div>
+
+  <!-- Profile Select -->
+  <div class="profile-select" id="profileSelect">
+    <h2 style="font-family:Georgia,serif;font-size:28px;margin-bottom:8px;">Qui regarde ?</h2>
+    <p style="color:#D4AF37;font-size:12px;letter-spacing:2px;">VOTRE ESPACE</p>
+    <p style="color:#999;font-size:14px;margin:24px 0;">Choisissez un profil pour une expérience qui vous ressemble.</p>
+    <div class="profiles-grid">
+      <div class="profile-card" onclick="selectProfile('Maya')">
+        <div class="profile-avatar" style="background:#E91E63;">M</div>
+        <span class="profile-name">Maya</span>
+      </div>
+      <div class="profile-card" onclick="selectProfile('Junior')">
+        <div class="profile-avatar" style="background:#FFC107;color:#000;">J</div>
+        <span class="profile-name">Junior</span>
+      </div>
+      <div class="profile-card" onclick="selectProfile('Enfants')">
+        <div class="profile-avatar" style="background:#009688;">⭐</div>
+        <span class="profile-name">Enfants</span>
+      </div>
+      <div class="profile-card">
+        <div class="add-profile">+</div>
+        <span class="profile-name">Ajouter</span>
+      </div>
+    </div>
+    <button class="manage-btn">GÉRER LES PROFILS</button>
+  </div>
+
+  <!-- Video Player -->
+  <div class="video-player" id="videoPlayer">
+    <div class="player-header">
+      <button onclick="closePlayer()">←</button>
+      <button>⋮</button>
+    </div>
+    <div class="player-content">
+      <div class="player-placeholder">
+        <div style="font-size:60px;margin-bottom:16px;">▶</div>
+        <div style="font-size:20px;margin-bottom:8px;">Lumière Noire</div>
+        <div style="color:#999;">Cliquez pour lancer la lecture</div>
+      </div>
+    </div>
+    <div class="player-controls">
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+      <div class="player-buttons">
+        <button>⏮</button>
+        <button style="font-size:32px;">▶</button>
+        <button>⏭</button>
+        <button>CC</button>
+        <button>⚙️</button>
+        <button>⛶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal" id="detailModal">
+    <div class="modal-header">
+      <button onclick="closeDetail()">←</button>
+      <span id="detailTitle" style="font-size:18px;font-weight:bold;"></span>
+      <button>♡</button>
+    </div>
+    <div class="modal-content" id="detailContent"></div>
+  </div>
+
+  <script>
+    const content = [
+      {id:1,title:'Lumière Noire',type:'FILM',year:2024,duration:'2h 18m',rating:4.8,genre:'Thriller',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',desc:'Un détective hanté par son passé traque un tueur en série à travers les ruelles sombres de Port-au-Prince.'},
+      {id:2,title:'Rasin — Racines',type:'FILM',year:2023,duration:'1h 52m',rating:4.7,genre:'Drame',img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400',desc:'L\'histoire d\'une famille haïtienne à travers trois générations.'},
+      {id:3,title:'Caribbean Heat',type:'FILM',year:2024,duration:'2h 05m',rating:4.5,genre:'Action',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',desc:'Un thriller politique dans les caraïbes.'},
+      {id:4,title:'Titad la',type:'FILM',year:2024,duration:'2h 10m',rating:4.9,genre:'Drame',img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',desc:'L\'ascension d\'une jeune femme dans le milieu politique haïtien.'},
+      {id:5,title:'Rue des Jasmins',type:'SÉRIE',year:2024,duration:'3 saisons',rating:4.7,genre:'Policier',img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',desc:'Série policière dans le Port-au-Prince contemporain.'},
+      {id:6,title:'Madan Nou',type:'SÉRIE',year:2023,duration:'2 saisons',rating:4.8,genre:'Comédie',img:'https://images.unsplash.com/photo-1524813686514-a57563d77965?w=400',desc: 'Comédie dramatique suivant une famille haïtienne à Miami.'},
+      {id:7,title:'Ti Zwa',type:'DESSIN ANIMÉ',year:2024,duration:'26 ép.',rating:4.4,genre:'Animation',img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400',desc:'Un petit zèbre courageux explore la forêt tropicale.'},
+      {id:8,title:'Konpè Bètje',type:'DESSIN ANIMÉ',year:2023,duration:'52 ép.',rating:4.5,genre:'Jeunesse',img:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400',desc:'Les aventures drôles d\'un petit haïtien curieux.'},
+    ];
+
+    function renderCards(containerId, items, featured) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = items.map(c => `
+        <div class="${featured ? 'featured-card' : 'content-card'}" onclick="showDetails(${c.id-1})">
+          <div class="${featured ? 'featured-image' : 'card-image'}">
+            <img src="${c.img}" alt="${c.title}">
+            <span class="card-tag">${c.type}</span>
+          </div>
+          <div class="card-title">${c.title}</div>
+          <div class="card-meta">${c.year} · ${c.duration} ★ ${c.rating}</div>
+        </div>
+      `).join('');
+    }
+
+    function init() {
+      const films = content.filter(c => c.type === 'FILM');
+      const series = content.filter(c => c.type === 'SÉRIE');
+      const cartoons = content.filter(c => c.type === 'DESSIN ANIMÉ');
+      
+      renderCards('trending', content.slice(0, 5));
+      renderCards('newReleases', content.slice(2, 7));
+      renderCards('caribbean', films, true);
+      renderCards('series', series);
+      renderCards('cartoons', cartoons);
+    }
+
+    function openSearch() {
+      document.getElementById('searchModal').classList.add('active');
+      document.getElementById('searchInput').focus();
+    }
+
+    function closeSearch() {
+      document.getElementById('searchModal').classList.remove('active');
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchResults').innerHTML = '';
+    }
+
+    function doSearch() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const results = content.filter(c => c.title.toLowerCase().includes(q));
+      document.getElementById('searchResults').innerHTML = results.map(c => `
+        <div class="search-result" onclick="showDetails(${c.id-1})">
+          <img src="${c.img}">
+          <div>
+            <div style="font-weight:600;">${c.title}</div>
+            <div style="color:#999;font-size:13px;">${c.type} · ${c.year} · ★ ${c.rating}</div>
+          </div>
+        </div>
+      `).join('') || '<div style="color:#999;text-align:center;margin-top:40px;">Aucun résultat</div>';
+    }
+
+    function showProfileSelect() {
+      document.getElementById('profileSelect').classList.add('active');
+    }
+
+    function selectProfile(name) {
+      document.getElementById('profileSelect').classList.remove('active');
+      localStorage.setItem('profile', name);
+      alert('Bienvenue ' + name + ' !');
+    }
+
+    function openPlayer() {
+      document.getElementById('videoPlayer').classList.add('active');
+    }
+
+    function closePlayer() {
+      document.getElementById('videoPlayer').classList.remove('active');
+    }
+
+    function showDetails(idx) {
+      const c = content[idx];
+      document.getElementById('detailTitle').textContent = c.title;
+      document.getElementById('detailContent').innerHTML = `
+        <img src="${c.img}" style="width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:16px;">
+        <div style="display:flex;gap:12px;margin-bottom:16px;color:#999;font-size:14px;">
+          <span style="color:#D4AF37;">★ ${c.rating}</span>
+          <span>${c.year}</span>
+          <span>${c.duration}</span>
+          <span>${c.genre}</span>
+        </div>
+        <p style="color:#CCC;line-height:1.6;margin-bottom:24px;">${c.desc}</p>
+        <button class="btn-primary" onclick="openPlayer()" style="margin-bottom:12px;">▶ Regarder</button>
+        <button class="btn-secondary" style="background:transparent;border:1px solid #555;">+ Ma Liste</button>
+      `;
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    function closeDetail() {
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    function goHome() { closeSearch(); closeDetail(); }
+    function goFilms() { document.getElementById('searchInput').value = 'FILM'; doSearch(); openSearch(); }
+    function goSeries() { document.getElementById('searchInput').value = 'SÉRIE'; doSearch(); openSearch(); }
+
+    // Splash
+    setTimeout(() => {
+      document.getElementById('splash').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('splash').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+      }, 500);
+    }, 2500);
+
+    init();
+  </script>
+</body>
+</html>
