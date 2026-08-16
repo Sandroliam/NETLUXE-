@@ -1,771 +1,1247 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0A0A0A">
-  <title>NETLUXE — Le Cinéma, Sans Limites</title>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.0/dist/hls.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#0A0A0A;--s1:#141414;--s2:#1A1A1A;--s3:#222;--red:#E50914;--gold:#D4AF37;--txt:#F5F5F0;--t2:#B0B0B0;--t3:#666;--r:12px;--rs:8px}
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
-    h1,h2,h3,.srf{font-family:'Playfair Display',Georgia,serif}
-    ::-webkit-scrollbar{width:0;height:0}
-    
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:.3s}
-    .btn:active{transform:scale(.96)}
-    .btn-p{background:var(--red);color:#fff}
-    .btn-g{background:var(--gold);color:#000}
-    .btn-o{background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.15)}
-    .btn-k{background:transparent;color:var(--t2)}
-    .btn-lg{padding:16px 32px;font-size:16px}
-    .btn-blk{width:100%}
-    
-    /* Auth Screen */
-    .auth-screen{position:fixed;inset:0;background:var(--bg);z-index:600;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
-    .auth-screen.hidden{display:none}
-    .auth-box{max-width:440px;width:100%}
-    .auth-hdr{text-align:center;margin-bottom:32px}
-    .logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:24px}
-    .logo-ic{width:48px;height:48px;background:var(--red);border-radius:12px;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:9px;box-shadow:0 0 30px rgba(229,9,20,.3)}
-    .logo-ic div{background:#fff;border-radius:4px}
-    .logo-ic div:last-child{background:rgba(255,255,255,.3)}
-    .logo-txt{font-size:28px;font-weight:900}
-    .logo-txt .net{color:var(--txt)}
-    .logo-txt .luxe{color:var(--red)}
-    .auth-hdr h1{font-size:32px;margin-bottom:8px}
-    .auth-hdr p{color:var(--t2)}
-    .auth-form{display:flex;flex-direction:column;gap:16px}
-    .auth-form input{background:var(--s2);border:1px solid rgba(255,255,255,.1);padding:16px;border-radius:var(--rs);color:#fff;font-size:15px;outline:none}
-    .auth-form input:focus{border-color:var(--red)}
-    .auth-div{display:flex;align-items:center;gap:16px;margin:20px 0;color:var(--t3);font-size:13px}
-    .auth-div::before,.auth-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1)}
-    .oauth-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-    .oauth-grid .btn{padding:14px}
-    .oauth-grid .btn svg{width:20px;height:20px}
-    
-    /* Create Profile */
-    .create-screen{position:fixed;inset:0;background:var(--bg);z-index:550;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
-    .create-screen.active{display:flex}
-    .create-box{max-width:480px;width:100%;text-align:center}
-    .avatar-upload{position:relative;width:140px;height:140px;margin:0 auto 24px}
-    .avatar-preview{width:140px;height:140px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:bold;color:#fff;overflow:hidden;border:3px solid var(--red);cursor:pointer;position:relative}
-    .avatar-preview img{width:100%;height:100%;object-fit:cover}
-    .avatar-placeholder{display:flex;flex-direction:column;align-items:center;gap:4px}
-    .avatar-placeholder span{font-size:12px;color:var(--t3)}
-    .avatar-edit{position:absolute;bottom:0;right:0;width:40px;height:40px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;border:3px solid var(--bg)}
-    .color-grid{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:24px 0}
-    .color-dot{width:44px;height:44px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s}
-    .color-dot:hover{transform:scale(1.1)}
-    .color-dot.selected{border-color:#fff}
-    
-    /* Header */
-    .hdr{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 48px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(10,10,10,.95) 60%,transparent);transition:.3s}
-    .hdr.sc{background:rgba(10,10,10,.98);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}
-    .hdr-l{display:flex;align-items:center;gap:48px}
-    .hdr-r{display:flex;align-items:center;gap:16px}
-    .nav{display:flex;gap:32px}
-    .nav a{color:var(--t2);font-size:14px;font-weight:500;cursor:pointer;position:relative}
-    .nav a:hover,.nav a.act{color:#fff}
-    .nav a.act::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--red)}
-    .srch-trig{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:8px 16px;border-radius:24px;cursor:pointer}
-    .srch-trig span{color:var(--t3);font-size:13px}
-    .prof-btn{width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;color:#fff;border:none;overflow:hidden}
-    .prof-btn img{width:100%;height:100%;object-fit:cover}
-    
-    /* Hero */
-    .hero{position:relative;height:100vh;min-height:700px;display:flex;flex-direction:column;justify-content:center;padding:0 48px;overflow:hidden}
-    .hero-bg{position:absolute;inset:0}
-    .hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center}
-    .hero-bg-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,#0A0A0A 100%)}
-    .hero-ct{position:relative;z-index:2;max-width:600px}
-    .hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:rgba(212,175,55,.15);border:1px solid var(--gold);border-radius:20px;font-size:11px;color:var(--gold);letter-spacing:2px;font-weight:600;margin-bottom:24px}
-    .hero-title{font-size:64px;font-weight:900;line-height:1.05;margin-bottom:16px}
-    .hero-title .hl{color:var(--gold);font-style:italic}
-    .hero-desc{font-size:16px;color:var(--t2);line-height:1.6;margin-bottom:32px;max-width:480px}
-    .hero-meta{display:flex;align-items:center;gap:16px;margin-bottom:32px;font-size:14px;color:var(--t2);flex-wrap:wrap}
-    .hero-meta .rat{color:var(--gold);font-weight:600}
-    .hero-meta .qlt{background:rgba(255,255,255,.1);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
-    .hero-btns{display:flex;gap:12px}
-    .hero-grad{position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top,#0A0A0A,transparent);z-index:3}
-    
-    /* Sections */
-    .sec{padding:48px}
-    .sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-    .sec-title{font-size:28px;font-weight:700}
-    .row{display:flex;gap:16px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;scroll-snap-type:x mandatory}
-    .row::-webkit-scrollbar{display:none}
-    .card{flex:0 0 200px;cursor:pointer;transition:.3s;scroll-snap-align:start}
-    .card:hover{transform:scale(1.05);z-index:10}
-    .card-img{width:200px;height:280px;border-radius:var(--r);background:var(--s1);margin-bottom:10px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-    .card-img img{width:100%;height:100%;object-fit:cover}
-    .card-tag{position:absolute;top:8px;left:8px;background:var(--red);color:#fff;font-size:10px;padding:3px 10px;border-radius:4px;font-weight:600;z-index:2}
-    .card-tag.org{background:var(--gold);color:#000}
-    .card-txt{font-size:14px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .card-info{font-size:12px;color:var(--t3);display:flex;gap:8px}
-    .card-rat{color:var(--gold)}
-    .wide-row{display:flex;gap:16px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none}
-    .wide-card{flex:0 0 320px;cursor:pointer}
-    .wide-img{width:320px;height:180px;border-radius:var(--r);background:var(--s1);margin-bottom:8px;position:relative;overflow:hidden}
-    .wide-img img{width:100%;height:100%;object-fit:cover}
-    
-    /* Page */
-    .page{padding:100px 48px 48px;max-width:1400px;margin:0 auto}
-    .page-title{font-size:36px;margin-bottom:32px}
-    .page-row{display:flex;flex-wrap:wrap;gap:16px}
-    .page-row .card{flex:0 0 180px}
-    .page-row .card-img{width:180px;height:250px}
-    
-    /* Bottom Nav */
-    .btm-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--s1);padding:8px 0;justify-content:space-around;z-index:100;border-top:1px solid rgba(255,255,255,.05)}
-    .btm-nav .ni{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--t3);font-size:11px;cursor:pointer}
-    .btm-nav .ni.act{color:var(--red)}
-    .btm-nav .ni svg{width:22px;height:22px}
-    
-    /* Modal */
-    .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:350;align-items:center;justify-content:center;padding:24px}
-    .modal-ov.active{display:flex}
-    .modal{background:var(--s1);border-radius:16px;width:100%;max-width:700px;max-height:80vh;overflow-y:auto}
-    .modal-hdr{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center}
-    .modal-tlt{font-size:18px;font-weight:600}
-    .modal-cls{background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer}
-    .modal-bdy{padding:24px}
-    
-    /* Player */
-    .player{display:none;position:fixed;inset:0;background:#000;z-index:500;flex-direction:column}
-    .player.active{display:flex}
-    .player video{width:100%;height:100%}
-    .player-top{position:absolute;top:0;left:0;right:0;padding:24px;display:flex;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);z-index:10}
-    .player-top button{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;width:40px;height:40px;border-radius:50%}
-    .player-top button:hover{background:rgba(255,255,255,.1)}
-    .player-ctr{position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);z-index:10}
-    .player-prog{width:100%;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin-bottom:12px;cursor:pointer}
-    .player-prog-fill{width:0%;height:100%;background:var(--red);border-radius:2px}
-    .player-btns{display:flex;justify-content:space-between;align-items:center}
-    .player-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:8px}
-    .player-btn.play{font-size:32px}
-    .player-time{font-size:12px;color:var(--t2)}
-    .brightness-overlay{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:4}
-    .vol-hint,.bri-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);padding:16px 24px;border-radius:var(--r);opacity:0;transition:.3s;z-index:20;text-align:center}
-    .vol-hint.show,.bri-hint.show{opacity:1}
-    .vol-hint .val,.bri-hint .val{font-size:24px;font-weight:700}
-    
-    /* Search */
-    .srch-overlay{display:none;position:fixed;inset:0;background:rgba(10,10,10,.98);z-index:300;flex-direction:column;padding:100px 48px 48px}
-    .srch-overlay.active{display:flex}
-    .srch-ctr{max-width:700px;width:100%;margin:0 auto}
-    .srch-inp{display:flex;align-items:center;gap:16px;background:var(--s2);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:16px 24px;margin-bottom:32px}
-    .srch-inp input{flex:1;background:none;border:none;color:#fff;font-size:18px;outline:none}
-    .srch-cls{background:none;border:none;color:var(--t2);cursor:pointer}
-    .srch-res{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;max-height:60vh;overflow-y:auto}
-    .srch-card{cursor:pointer}
-    .srch-card:hover{transform:scale(1.05)}
-    .srch-card img{width:100%;height:250px;object-fit:cover;border-radius:8px;margin-bottom:8px}
-    
-    /* Toast */
-    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--s2);border:1px solid rgba(255,255,255,.1);padding:12px 24px;border-radius:var(--rs);font-size:14px;z-index:700;opacity:0;transition:.3s}
-    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-    
-    /* Responsive */
-    @media(max-width:768px){
-      .hdr{padding:12px 16px}
-      .nav{display:none}
-      .hero{padding:0 16px;min-height:500px}
-      .hero-title{font-size:36px}
-      .sec{padding:32px 16px}
-      .card{flex:0 0 150px}
-      .card-img{width:150px;height:210px}
-      .btm-nav{display:flex}
-      .page{padding:80px 16px 16px}
-      body{padding-bottom:70px}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0A0A0A">
+<title>NETLUXE</title>
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTkVUTFVYRSIsInNob3J0X25hbWUiOiJORVRMVVhFIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMEEwQTBBIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwQTBBMEEifQ==">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.0/dist/hls.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0A0A0A;--s1:#141414;--s2:#1A1A1A;--s3:#222;--s4:#2a2a2a;
+  --red:#E50914;--red-h:#ff1a2b;--gold:#D4AF37;--gold-h:#e5c048;
+  --tur:#00CED1;--pur:#8B5CF6;--grn:#10B981;--org:#F59E0B;
+  --txt:#F5F5F0;--t2:#B0B0B0;--t3:#666;--t4:#444;
+  --r:14px;--rs:10px;--rl:20px;
+}
+html{scroll-behavior:smooth;height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--txt);overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  min-height:100%;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+h1,h2,h3,.srf{font-family:Georgia,'Times New Roman',serif}
+::-webkit-scrollbar{width:0;height:0}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit}
+a{text-decoration:none;color:inherit}
+img{display:block;max-width:100%}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 28px;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;border:none;transition:all .25s;white-space:nowrap;-webkit-user-select:none;user-select:none}
+.btn:active{transform:scale(.95)}
+.btn-p{background:var(--red);color:#fff}
+.btn-p:hover{background:var(--red-h)}
+.btn-g{background:var(--gold);color:#000}
+.btn-g:hover{background:var(--gold-h)}
+.btn-o{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.12)}
+.btn-o:hover{background:rgba(255,255,255,.1)}
+.btn-k{background:transparent;color:var(--t2)}
+.btn-k:hover{color:#fff}
+.btn-lg{padding:18px 36px;font-size:17px}
+.btn-sm{padding:10px 20px;font-size:13px}
+.btn-blk{width:100%}
+.btn-r{width:44px;height:44px;padding:0;border-radius:50%}
+
+/* AUTH */
+.auth-scr{position:fixed;inset:0;background:var(--bg);z-index:900;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.auth-scr.hidden{display:none}
+.auth-box{max-width:460px;width:100%}
+.auth-hdr{text-align:center;margin-bottom:36px}
+.auth-hdr h1{font-size:34px;margin-bottom:8px}
+.auth-hdr p{color:var(--t2);font-size:15px}
+.auth-form{display:flex;flex-direction:column;gap:16px}
+.auth-form input{
+  background:var(--s2);border:1px solid rgba(255,255,255,.08);
+  padding:18px;border-radius:var(--rs);color:#fff;font-size:16px;
+  outline:none;transition:.2s;width:100%
+}
+.auth-form input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(229,9,20,.1)}
+.auth-div{display:flex;align-items:center;gap:16px;margin:24px 0;color:var(--t3);font-size:13px}
+.auth-div::before,.auth-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}
+.oauth-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.oauth-grid .btn{padding:16px}
+
+/* AVATAR UPLOAD */
+.avatar-up{position:relative;width:160px;height:160px;margin:0 auto 28px;cursor:pointer}
+.avatar-prv{
+  width:160px;height:160px;border-radius:50%;background:var(--s3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:52px;font-weight:bold;color:#fff;overflow:hidden;
+  border:4px solid var(--red);position:relative;
+  box-shadow:0 8px 32px rgba(229,9,20,.2);
+}
+.avatar-prv img{width:100%;height:100%;object-fit:cover}
+.avatar-ph{display:flex;flex-direction:column;align-items:center;gap:6px;opacity:.6}
+.avatar-ph span{font-size:12px}
+.avatar-ed{
+  position:absolute;bottom:4px;right:4px;width:44px;height:44px;
+  background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:18px;border:4px solid var(--bg)
+}
+#avatarInput{display:none}
+
+/* COLOR PICKER */
+.color-grid{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:28px 0}
+.color-dot{width:48px;height:48px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.2s;position:relative}
+.color-dot:hover{transform:scale(1.15)}
+.color-dot.sel{border-color:#fff;box-shadow:0 0 16px rgba(255,255,255,.3)}
+
+/* LOGO */
+.logo{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:28px}
+.logo-ic{
+  width:52px;height:52px;background:var(--red);border-radius:14px;
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:10px;
+  box-shadow:0 0 30px rgba(229,9,20,.25)
+}
+.logo-ic div{background:#fff;border-radius:4px}
+.logo-ic div:last-child{background:rgba(255,255,255,.3)}
+.logo-txt{font-size:30px;font-weight:900;letter-spacing:-.5px}
+.logo-txt .net{color:var(--txt)}
+.logo-txt .luxe{color:var(--red)}
+
+/* HEADER */
+.hdr{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:14px 48px;display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(to bottom,rgba(10,10,10,.95) 70%,transparent);
+  transition:.3s;
+}
+.hdr.sc{background:rgba(10,10,10,.98);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.04)}
+.hdr-l{display:flex;align-items:center;gap:48px}
+.hdr-r{display:flex;align-items:center;gap:14px}
+.nav{display:flex;gap:28px}
+.nav a{color:var(--t2);font-size:14px;font-weight:500;cursor:pointer;position:relative;padding:4px 0}
+.nav a:hover,.nav a.act{color:#fff}
+.nav a.act::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--red);border-radius:2px}
+.srch-btn{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  padding:10px 18px;border-radius:24px;cursor:pointer;transition:.2s
+}
+.srch-btn:hover{background:rgba(255,255,255,.08)}
+.srch-btn span{color:var(--t3);font-size:13px}
+.prof-btn{
+  width:40px;height:40px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:bold;font-size:15px;color:#fff;border:none;overflow:hidden;
+  background:var(--s3)
+}
+.prof-btn img{width:100%;height:100%;object-fit:cover}
+
+/* HERO */
+.hero{
+  position:relative;height:100vh;min-height:700px;
+  display:flex;flex-direction:column;justify-content:center;padding:0 48px;overflow:hidden
+}
+.hero-bg{position:absolute;inset:0}
+.hero-bg-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:background-image .8s}
+.hero-bg-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 20%,#0A0A0A 100%)}
+.hero-ct{position:relative;z-index:2;max-width:620px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+  background:rgba(212,175,55,.12);border:1px solid var(--gold);border-radius:20px;
+  font-size:11px;color:var(--gold);letter-spacing:2px;font-weight:600;margin-bottom:24px
+}
+.hero-title{font-size:clamp(36px,6vw,68px);font-weight:900;line-height:1.05;margin-bottom:16px;letter-spacing:-1px}
+.hero-title .hl{color:var(--gold);font-style:italic}
+.hero-desc{font-size:16px;color:var(--t2);line-height:1.6;margin-bottom:32px;max-width:500px}
+.hero-meta{display:flex;align-items:center;gap:16px;margin-bottom:32px;font-size:14px;color:var(--t2);flex-wrap:wrap}
+.hero-meta .rat{color:var(--gold);font-weight:600}
+.hero-meta .qlt{background:rgba(255,255,255,.08);padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+.hero-meta .sep{width:1px;height:16px;background:rgba(255,255,255,.15)}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.hero-grad{position:absolute;bottom:0;left:0;right:0;height:240px;background:linear-gradient(to top,#0A0A0A,transparent);z-index:3}
+
+/* SECTIONS */
+.sec{padding:48px}
+.sec-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.sec-title{font-size:26px;font-weight:700}
+.row{display:flex;gap:16px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;scroll-snap-type:x mandatory}
+.row::-webkit-scrollbar{display:none}
+.card{
+  flex:0 0 200px;cursor:pointer;transition:.3s cubic-bezier(.4,0,.2,1);
+  scroll-snap-align:start;position:relative
+}
+.card:hover{transform:scale(1.06);z-index:10}
+.card:hover .card-img img{filter:brightness(1.15)}
+.card-img{
+  width:200px;height:300px;border-radius:var(--r);background:var(--s1);
+  margin-bottom:12px;position:relative;overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.5)
+}
+.card-img img{width:100%;height:100%;object-fit:cover;transition:filter .3s}
+.card-ov{
+  position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,transparent 60%);
+  opacity:0;transition:.3s;display:flex;flex-direction:column;justify-content:flex-end;padding:14px
+}
+.card:hover .card-ov{opacity:1}
+.card-play{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);
+  width:52px;height:52px;background:var(--red);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  transition:.3s;box-shadow:0 4px 20px rgba(229,9,20,.4)
+}
+.card:hover .card-play{transform:translate(-50%,-50%) scale(1)}
+.card-tag{
+  position:absolute;top:8px;left:8px;background:var(--red);color:#fff;
+  font-size:10px;padding:4px 10px;border-radius:4px;font-weight:600;z-index:2
+}
+.card-tag.org{background:var(--gold);color:#000}
+.card-txt{font-size:14px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-info{font-size:12px;color:var(--t3);display:flex;gap:8px;align-items:center}
+.card-rat{color:var(--gold)}
+.card-prog{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.15)}
+.card-prog-fill{height:100%;background:var(--red);border-radius:2px}
+
+/* WIDE ROWS */
+.wide-row{display:flex;gap:16px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none}
+.wide-card{flex:0 0 320px;cursor:pointer;transition:.3s}
+.wide-card:hover{transform:scale(1.04)}
+.wide-img{
+  width:320px;height:180px;border-radius:var(--r);background:var(--s1);
+  margin-bottom:10px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.4)
+}
+.wide-img img{width:100%;height:100%;object-fit:cover}
+
+/* PAGES */
+.page{padding:100px 48px 48px;max-width:1400px;margin:0 auto}
+.page-title{font-size:36px;margin-bottom:32px}
+.page-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px}
+.page-row .card{flex:none;width:100%}
+.page-row .card-img{width:100%;height:260px}
+.empty-state{text-align:center;padding:80px 20px;color:var(--t3)}
+.empty-state .icon{font-size:48px;margin-bottom:16px}
+
+/* BOTTOM NAV */
+.btm-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--s1);padding:8px 0;justify-content:space-around;
+  z-index:100;border-top:1px solid rgba(255,255,255,.04);
+  padding-bottom:calc(8px + env(safe-area-inset-bottom))
+}
+.btm-nav .ni{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--t3);font-size:11px;cursor:pointer;padding:8px 16px}
+.btm-nav .ni.act{color:var(--red)}
+.btm-nav .ni svg{width:22px;height:22px}
+
+/* SEARCH OVERLAY */
+.srch-overlay{
+  display:none;position:fixed;inset:0;background:rgba(10,10,10,.98);
+  z-index:300;flex-direction:column;padding:100px 48px 48px
+}
+.srch-overlay.active{display:flex}
+.srch-ctr{max-width:700px;width:100%;margin:0 auto}
+.srch-inp{
+  display:flex;align-items:center;gap:16px;background:var(--s2);
+  border:1px solid rgba(255,255,255,.08);border-radius:var(--r);
+  padding:18px 24px;margin-bottom:32px
+}
+.srch-inp input{flex:1;background:none;border:none;color:#fff;font-size:18px;outline:none}
+.srch-inp input::placeholder{color:var(--t3)}
+.srch-cls{color:var(--t2);font-size:18px;cursor:pointer;padding:4px 8px}
+.srch-res{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;max-height:60vh;overflow-y:auto}
+.srch-card{cursor:pointer;transition:.2s}
+.srch-card:hover{transform:scale(1.05)}
+.srch-card img{width:100%;height:220px;object-fit:cover;border-radius:8px;margin-bottom:8px}
+
+/* VIDEO PLAYER */
+.player{
+  display:none;position:fixed;inset:0;background:#000;z-index:500;
+  flex-direction:column;overflow:hidden
+}
+.player.active{display:flex}
+.player video{width:100%;height:100%;object-fit:contain}
+.player.hint{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:rgba(0,0,0,.7);padding:16px 28px;border-radius:var(--r);
+  font-size:14px;opacity:0;transition:opacity .3s;z-index:20;text-align:center;
+  pointer-events:none
+}
+.player-hint.show{opacity:1}
+.player-hint .val{font-size:28px;font-weight:700;margin-bottom:4px}
+
+/* Player gestures */
+.player-gestures{position:absolute;inset:0;z-index:5;display:flex}
+.gesture-side{flex:1;height:100%}
+.gesture-center{flex:1.5;height:100%}
+
+/* Player controls */
+.player-ctr{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:24px;background:linear-gradient(to top,rgba(0,0,0,.95),transparent);
+  z-index:10;transition:opacity .3s
+}
+.player-ctr.hidden{opacity:0;pointer-events:none}
+.player-top{
+  position:absolute;top:0;left:0;right:0;padding:20px;
+  display:flex;justify-content:space-between;align-items:center;
+  background:linear-gradient(to bottom,rgba(0,0,0,.7),transparent);z-index:10;
+  transition:opacity .3s
+}
+.player-top.hidden{opacity:0;pointer-events:none}
+.player-top button,.player-ctr button{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;transition:.2s
+}
+.player-top button:hover,.player-ctr button:hover{background:rgba(255,255,255,.1);transform:scale(1.15)}
+.player-title{font-size:16px;font-weight:600;flex:1;margin:0 16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-prog{width:100%;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin-bottom:14px;cursor:pointer;transition:height .2s;position:relative}
+.player-prog:hover{height:6px}
+.player-prog-fill{height:100%;background:var(--red);border-radius:2px;transition:width .1s linear;position:relative}
+.player-prog-fill::after{
+  content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);
+  width:12px;height:12px;background:#fff;border-radius:50%;opacity:0;transition:.2s
+}
+.player-prog:hover .player-prog-fill::after{opacity:1}
+.player-btns{display:flex;justify-content:space-between;align-items:center}
+.player-btns-left,.player-btns-right{display:flex;align-items:center;gap:8px}
+.player-btn{font-size:22px;padding:10px}
+.player-btn.play{font-size:34px}
+.player-time{font-size:13px;color:var(--t2);min-width:100px;text-align:center}
+
+/* Settings panel in player */
+.player-settings{
+  position:absolute;bottom:80px;right:20px;background:rgba(0,0,0,.9);
+  border-radius:var(--r);padding:16px;z-index:15;min-width:220px;
+  display:none;border:1px solid rgba(255,255,255,.1)
+}
+.player-settings.show{display:block}
+.player-settings h4{font-size:14px;margin-bottom:12px;font-weight:600}
+.player-settings-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:13px;cursor:pointer
+}
+.player-settings-item:last-child{border:none}
+.player-settings-item:hover{color:var(--gold)}
+.player-settings-item .val{color:var(--t3);font-size:12px}
+
+/* Brightness overlay */
+.brightness-ov{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;z-index:4}
+
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:350;align-items:center;justify-content:center;padding:24px}
+.modal-ov.active{display:flex}
+.modal{background:var(--s1);border-radius:var(--rl);width:100%;max-width:700px;max-height:85vh;overflow-y:auto;border:1px solid rgba(255,255,255,.05)}
+.modal-hdr{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--s1);z-index:1}
+.modal-tlt{font-size:18px;font-weight:600}
+.modal-cls{color:var(--t2);font-size:22px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.modal-cls:hover{background:rgba(255,255,255,.05)}
+.modal-bdy{padding:24px}
+
+/* PROFILE PAGE */
+.profile-hdr{text-align:center;padding:40px 20px}
+.profile-avatar{
+  width:120px;height:120px;border-radius:50%;margin:0 auto 20px;
+  overflow:hidden;border:4px solid var(--red);display:flex;align-items:center;justify-content:center;
+  font-size:48px;font-weight:bold;color:#fff;background:var(--s3)
+}
+.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-stats{display:flex;justify-content:center;gap:40px;margin-top:24px}
+.profile-stat{text-align:center}
+.profile-stat .val{font-size:24px;font-weight:700}
+.profile-stat .lbl{font-size:12px;color:var(--t3);margin-top:4px}
+
+/* SETTINGS PAGE */
+.settings-sec{background:var(--s1);border-radius:var(--rl);padding:24px;margin-bottom:20px;border:1px solid rgba(255,255,255,.03)}
+.settings-sec h3{font-size:16px;margin-bottom:16px;font-weight:600}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.setting-row:last-child{border:none}
+.setting-lbl{font-size:14px}
+.setting-val{color:var(--t3);font-size:13px}
+.toggle{width:48px;height:26px;background:var(--s3);border-radius:13px;cursor:pointer;transition:.3s;position:relative;flex-shrink:0}
+.toggle.on{background:var(--red)}
+.toggle::after{content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.3s}
+.toggle.on::after{left:24px}
+.sel{background:var(--s2);border:1px solid rgba(255,255,255,.1);padding:10px 14px;border-radius:var(--rs);color:#fff;font-size:13px;outline:none;min-width:140px}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--s2);border:1px solid rgba(255,255,255,.08);
+  padding:14px 28px;border-radius:var(--rs);font-size:14px;z-index:700;
+  opacity:0;transition:.3s;pointer-events:none;max-width:85%;text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.4)
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hdr{padding:12px 16px}
+  .hdr-l{gap:16px}
+  .nav{display:none}
+  .srch-btn span{display:none}
+  .hero{padding:0 16px;min-height:500px}
+  .hero-title{font-size:38px}
+  .sec{padding:32px 16px}
+  .card{flex:0 0 150px}
+  .card-img{width:150px;height:210px}
+  .wide-card{flex:0 0 260px}
+  .wide-img{width:260px;height:150px}
+  .btm-nav{display:flex}
+  .page{padding:80px 16px 16px}
+  .page-row{grid-template-columns:repeat(2,1fr);gap:12px}
+  .page-row .card-img{height:240px}
+  .auth-box{padding:20px}
+  .modal{margin:12px;border-radius:var(--r)}
+  .player-ctr{padding:16px}
+  .player-top{padding:14px}
+  body{padding-bottom:70px}
+}
+
+@media(max-width:480px){
+  .hero-title{font-size:32px}
+  .card{flex:0 0 130px}
+  .card-img{width:130px;height:180px}
+  .page-row{grid-template-columns:repeat(2,1fr);gap:10px}
+  .page-row .card-img{height:200px}
+  .btn{padding:12px 20px;font-size:14px}
+  .btn-lg{padding:16px 28px;font-size:15px}
+}
+
+/* LANDSCAPE */
+@media(orientation:landscape) and (max-height:500px){
+  .hero{min-height:auto;padding-top:80px;padding-bottom:40px}
+  .hero-title{font-size:28px}
+  .hero-desc{font-size:14px;margin-bottom:20px}
+  .hero-meta{margin-bottom:20px}
+  .btm-nav{display:none}
+}
+
+/* DARK MODE FIX */
+@supports(padding:env(safe-area-inset-top)){
+  .hdr{padding-top:calc(14px + env(safe-area-inset-top))}
+  .btm-nav{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+  .player{top:env(safe-area-inset-top);bottom:env(safe-area-inset-bottom)}
+}
+</style>
 </head>
 <body>
 
-  <!-- Splash -->
-  <div id="splash" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center">
-    <div class="logo-ic" style="width:80px;height:80px;margin-bottom:20px"><div></div><div></div><div></div><div></div></div>
-    <div class="logo-txt" style="font-size:28px"><span class="net">NET</span><span class="luxe">LUXE</span></div>
-    <div style="color:var(--gold);font-size:12px;letter-spacing:3px;margin-top:12px">LE CINÉMA, SANS LIMITES</div>
+<!-- SPLASH -->
+<div id="splash" style="position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s">
+  <div class="logo-ic" style="width:80px;height:80px;margin-bottom:20px"><div></div><div></div><div></div><div></div></div>
+  <div class="logo-txt" style="font-size:28px"><span class="net">NET</span><span class="luxe">LUXE</span></div>
+  <div style="color:var(--gold);font-size:12px;letter-spacing:3px;margin-top:12px">LE CINÉMA, SANS LIMITES</div>
+</div>
+
+<!-- AUTH -->
+<div class="auth-scr" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-hdr">
+      <div class="logo"><div class="logo-ic"><div></div><div></div><div></div><div></div></div><span class="logo-txt"><span class="net">NET</span><span class="luxe">LUXE</span></span></div>
+      <h1>Bon retour</h1>
+      <p>Choisissez votre mode d'accès</p>
+    </div>
+    <button class="btn btn-p btn-blk btn-lg" onclick="quickAccess()" style="margin-bottom:20px">🎬 Regarder maintenant</button>
+    <div class="auth-div">ou connectez-vous</div>
+    <form class="auth-form" onsubmit="handleEmail(event)">
+      <input type="email" id="loginEmail" placeholder="Adresse e-mail">
+      <button type="submit" class="btn btn-o btn-blk">Continuer avec l'email</button>
+    </form>
+    <div class="auth-div">ou continuez avec</div>
+    <div class="oauth-grid">
+      <button class="btn btn-o" onclick="oauthLogin('google')"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
+      <button class="btn btn-o" onclick="oauthLogin('facebook')"><svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></button>
+      <button class="btn btn-o" onclick="oauthLogin('apple')"><svg viewBox="0 0 24 24" fill="#fff"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg></button>
+    </div>
+    <button class="btn btn-g btn-blk" onclick="showCodeAccess()" style="margin-top:14px">Code d'accès rapide</button>
+    <div class="auth-div">ou</div>
+    <button class="btn btn-k btn-blk" onclick="goToAdmin()" style="color:var(--t3);font-size:13px">🛡️ Accès Administrateur</button>
+    <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--t3)">Cliquez sur "Regarder maintenant" pour un accès instantané.</div>
+  </div>
+</div>
+
+<!-- CODE ACCESS -->
+<div class="auth-scr" id="codeAccess" style="display:none">
+  <div class="auth-box">
+    <div class="auth-hdr">
+      <div class="logo"><div class="logo-ic"><div></div><div></div><div></div><div></div></div><span class="logo-txt"><span class="net">NET</span><span class="luxe">LUXE</span></span></div>
+      <h1>Code d'accès rapide</h1>
+      <p>Entrez votre code personnel</p>
+    </div>
+    <form class="auth-form" onsubmit="handleCode(event)">
+      <input type="text" id="accessCode" placeholder="SANDROLIAM509" style="text-align:center;font-size:22px;letter-spacing:3px;font-weight:700" oninput="this.value=this.value.toUpperCase()">
+      <button type="submit" class="btn btn-g btn-blk btn-lg">Se connecter</button>
+    </form>
+    <div style="text-align:center;margin-top:16px"><button class="btn btn-k" onclick="hideCodeAccess()">Retour</button></div>
+  </div>
+</div>
+
+<!-- CREATE PROFILE -->
+<div class="auth-scr" id="createProfile" style="display:none">
+  <div class="auth-box" style="max-width:500px">
+    <div class="auth-hdr">
+      <h1>Créez votre profil</h1>
+      <p style="color:var(--gold);font-size:12px;letter-spacing:3px">PERSONNALISEZ VOTRE EXPÉRIENCE</p>
+    </div>
+    <div class="avatar-up" onclick="document.getElementById('avatarInput').click()">
+      <div class="avatar-prv" id="avatarPreview">
+        <div class="avatar-ph"><span>📷</span><span>Ajouter photo</span></div>
+      </div>
+      <div class="avatar-ed">✏️</div>
+      <input type="file" id="avatarInput" accept="image/*" onchange="handleAvatar(event)">
+    </div>
+    <input type="text" id="profileName" placeholder="Nom du profil" style="width:100%;padding:18px;background:var(--s2);border:1px solid rgba(255,255,255,.08);border-radius:var(--rs);color:#fff;font-size:16px;outline:none;text-align:center;margin-bottom:24px">
+    <p style="color:var(--t2);font-size:13px;margin-bottom:16px;text-align:center">Choisissez une couleur</p>
+    <div class="color-grid" id="colorGrid"></div>
+    <button class="btn btn-p btn-blk btn-lg" onclick="finishProfile()" style="margin-top:32px">Créer mon profil</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <header class="hdr" id="header">
+    <div class="hdr-l">
+      <div class="logo" onclick="goHome()" style="gap:10px"><div class="logo-ic" style="width:34px;height:34px;padding:7px"><div></div><div></div><div></div><div></div></div><span class="logo-txt" style="font-size:20px"><span class="net">NET</span><span class="luxe">LUXE</span></span></div>
+      <nav class="nav">
+        <a class="act" onclick="goHome()">Accueil</a>
+        <a onclick="goPage('films')">Films</a>
+        <a onclick="goPage('series')">Séries</a>
+        <a onclick="goPage('cartoons')">Animés</a>
+        <a onclick="goPage('mylist')">Ma Liste</a>
+      </nav>
+    </div>
+    <div class="hdr-r">
+      <div class="srch-btn" onclick="openSearch()"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>Rechercher</span></div>
+      <div class="prof-btn" id="hdrProf" onclick="goPage('profile')"></div>
+    </div>
+  </header>
+
+  <section class="hero" id="hero">
+    <div class="hero-bg"><div class="hero-bg-img" id="heroBg"></div></div>
+    <div class="hero-ct">
+      <span class="hero-badge">NETLUXE ORIGINAL</span>
+      <h1 class="hero-title" id="heroTitle"></h1>
+      <p class="hero-desc" id="heroDesc"></p>
+      <div class="hero-meta" id="heroMeta"></div>
+      <div class="hero-btns">
+        <button class="btn btn-p btn-lg" onclick="playHero()">▶ Regarder</button>
+        <button class="btn btn-o btn-lg" onclick="showHeroDetails()">+ Plus d'infos</button>
+      </div>
+    </div>
+    <div class="hero-grad"></div>
+  </section>
+
+  <div id="homeSections">
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🔥 Tendances</h2></div><div class="row" id="trendingRow"></div></section>
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">✨ Nouveautés</h2></div><div class="row" id="newRow"></div></section>
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🌴 Productions Caribéennes</h2></div><div class="wide-row" id="caribbeanRow"></div></section>
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">📺 Séries Populaires</h2></div><div class="row" id="seriesRow"></div></section>
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">⭐ Dessins Animés</h2></div><div class="row" id="cartoonsRow"></div></section>
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🎯 Recommandé pour vous</h2></div><div class="row" id="recommendRow"></div></section>
+    <section class="sec" id="continueSection" style="display:none"><div class="sec-hdr"><h2 class="sec-title">⏯️ Continuer à regarder</h2></div><div class="row" id="continueRow"></div></section>
   </div>
 
-  <!-- Auth Screen -->
-  <div class="auth-screen" id="authScreen">
-    <div class="auth-box">
-      <div class="auth-hdr">
-        <div class="logo"><div class="logo-ic"><div></div><div></div><div></div><div></div></div><span class="logo-txt"><span class="net">NET</span><span class="luxe">LUXE</span></span></div>
-        <h1>Bon retour</h1>
-        <p>Entrez votre email pour commencer</p>
-      </div>
-      <form class="auth-form" onsubmit="handleEmail(event)">
-        <input type="email" id="loginEmail" placeholder="Adresse e-mail" required>
-        <button type="submit" class="btn btn-p btn-blk btn-lg">Continuer</button>
-      </form>
-      <div class="auth-div">ou continuez avec</div>
-      <div class="oauth-grid">
-        <button class="btn btn-o" onclick="oauthLogin('google')"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></button>
-        <button class="btn btn-o" onclick="oauthLogin('facebook')"><svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></button>
-        <button class="btn btn-o" onclick="oauthLogin('apple')"><svg viewBox="0 0 24 24" fill="#fff"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg></button>
-      </div>
-      <div class="auth-div">ou</div>
-      <button class="btn btn-g btn-blk" onclick="showCodeAccess()">Code d'accès rapide</button>
-      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--t3)">Pas encore de compte ? Il sera créé automatiquement</div>
+  <!-- Pages -->
+  <div class="page" id="filmsPage" style="display:none"><h1 class="page-title">🎬 Films</h1><div class="page-row" id="filmsRow"></div></div>
+  <div class="page" id="seriesPage" style="display:none"><h1 class="page-title">📺 Séries</h1><div class="page-row" id="seriesRow"></div></div>
+  <div class="page" id="cartoonsPage" style="display:none"><h1 class="page-title">⭐ Dessins Animés</h1><div class="page-row" id="cartoonsRow"></div></div>
+  <div class="page" id="mylistPage" style="display:none"><h1 class="page-title">❤️ Ma Liste</h1><div class="page-row" id="mylistRow"></div></div>
+  <div class="page" id="profilePage" style="display:none"><h1 class="page-title">👤 Mon Profil</h1><div id="profileContent"></div></div>
+  <div class="page" id="settingsPage" style="display:none"><h1 class="page-title">⚙️ Paramètres</h1><div id="settingsContent"></div></div>
+
+  <nav class="btm-nav">
+    <button class="ni act" onclick="goHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Accueil</button>
+    <button class="ni" onclick="goPage('films')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>Films</button>
+    <button class="ni" onclick="goPage('series')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>Séries</button>
+    <button class="ni" onclick="openSearch()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Recherche</button>
+    <button class="ni" onclick="goPage('profile')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profil</button>
+  </nav>
+</div>
+
+<!-- SEARCH -->
+<div class="srch-overlay" id="srchOverlay">
+  <div class="srch-ctr">
+    <div class="srch-inp">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Rechercher films, séries, acteurs..." id="srchInput" oninput="doSearch()">
+      <button class="srch-cls" onclick="closeSearch()">✕</button>
     </div>
+    <div class="srch-res" id="srchRes"></div>
   </div>
+</div>
 
-  <!-- Code Access -->
-  <div class="auth-screen" id="codeAccess" style="display:none">
-    <div class="auth-box">
-      <div class="auth-hdr">
-        <div class="logo"><div class="logo-ic"><div></div><div></div><div></div><div></div></div><span class="logo-txt"><span class="net">NET</span><span class="luxe">LUXE</span></span></div>
-        <h1>Code d'accès rapide</h1>
-        <p>Entrez votre code personnel</p>
-      </div>
-      <form class="auth-form" onsubmit="handleCode(event)">
-        <input type="text" id="accessCode" placeholder="SANDROLIAM509" style="text-align:center;font-size:20px;letter-spacing:3px;font-weight:700" oninput="this.value=this.value.toUpperCase()">
-        <button type="submit" class="btn btn-g btn-blk btn-lg">Se connecter</button>
-      </form>
-      <div style="text-align:center;margin-top:16px"><a onclick="hideCodeAccess()" style="color:var(--t2);cursor:pointer">Retour</a></div>
-    </div>
+<!-- PLAYER -->
+<div class="player" id="player">
+  <video id="videoEl" playsinline webkit-playsinline></video>
+  <div class="brightness-ov" id="brightnessOv"></div>
+  
+  <!-- Gestures -->
+  <div class="player-gestures" id="playerGestures">
+    <div class="gesture-side" id="gestureLeft"></div>
+    <div class="gesture-center" id="gestureCenter"></div>
+    <div class="gesture-side" id="gestureRight"></div>
   </div>
-
-  <!-- Create Profile -->
-  <div class="create-screen" id="createProfile">
-    <div class="create-box">
-      <h1 style="font-size:36px;margin-bottom:8px">Créez votre profil</h1>
-      <p style="color:var(--gold);font-size:12px;letter-spacing:3px;margin-bottom:32px">PERSONNALISEZ VOTRE EXPÉRIENCE</p>
-      
-      <div class="avatar-upload">
-        <div class="avatar-preview" id="avatarPreview" onclick="document.getElementById('avatarInput').click()">
-          <div class="avatar-placeholder">
-            <span>📷</span>
-            <span>Ajouter photo</span>
-          </div>
-        </div>
-        <div class="avatar-edit" onclick="document.getElementById('avatarInput').click()">✏️</div>
-        <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatar(event)">
-      </div>
-      
-      <input type="text" id="profileName" placeholder="Nom du profil" style="width:100%;padding:16px;background:var(--s2);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);color:#fff;font-size:16px;outline:none;text-align:center;margin-bottom:24px">
-      
-      <p style="color:var(--t2);font-size:13px;margin-bottom:16px">Choisissez une couleur</p>
-      <div class="color-grid" id="colorGrid"></div>
-      
-      <button class="btn btn-p btn-blk btn-lg" onclick="finishProfile()" style="margin-top:32px">Créer mon profil</button>
-    </div>
+  
+  <!-- Hints -->
+  <div class="player-hint" id="volHint"><div class="val">🔊</div><div>Volume</div></div>
+  <div class="player-hint" id="briHint"><div class="val">☀️</div><div>Luminosité</div></div>
+  
+  <!-- Top bar -->
+  <div class="player-top" id="playerTop">
+    <button onclick="closePlayer()">←</button>
+    <span class="player-title" id="playerTitle"></span>
+    <button onclick="toggleSettings()">⚙️</button>
   </div>
-
-  <!-- Main App -->
-  <div id="app" style="display:none">
-    <header class="hdr" id="header">
-      <div class="hdr-l">
-        <div class="logo" onclick="goHome()"><div class="logo-ic" style="width:32px;height:32px"><div></div><div></div><div></div><div></div></div><span class="logo-txt" style="font-size:20px"><span class="net">NET</span><span class="luxe">LUXE</span></span></div>
-        <nav class="nav">
-          <a class="act" onclick="goHome()">Accueil</a>
-          <a onclick="goPage('films')">Films</a>
-          <a onclick="goPage('series')">Séries</a>
-          <a onclick="goPage('cartoons')">Dessins animés</a>
-          <a onclick="goPage('mylist')">Ma Liste</a>
-        </nav>
-      </div>
-      <div class="hdr-r">
-        <div class="srch-trig" onclick="openSearch()"><svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><span>Rechercher</span></div>
-        <div class="prof-btn" id="hdrProf" onclick="goPage('profile')"></div>
-      </div>
-    </header>
-
-    <!-- Hero -->
-    <section class="hero" id="hero">
-      <div class="hero-bg"><div class="hero-bg-img" id="heroBg"></div></div>
-      <div class="hero-ct">
-        <span class="hero-badge">NETLUXE ORIGINAL</span>
-        <h1 class="hero-title" id="heroTitle"></h1>
-        <p class="hero-desc" id="heroDesc"></p>
-        <div class="hero-meta" id="heroMeta"></div>
-        <div class="hero-btns">
-          <button class="btn btn-p btn-lg" onclick="playHero()">▶ Regarder</button>
-          <button class="btn btn-o btn-lg" onclick="showHeroDetails()">+ Plus d'infos</button>
-        </div>
-      </div>
-      <div class="hero-grad"></div>
-    </section>
-
-    <!-- Home Sections -->
-    <div id="homeSections">
-      <section class="sec">
-        <div class="sec-hdr"><h2 class="sec-title">🔥 Tendances</h2></div>
-        <div class="row" id="trendingRow"></div>
-      </section>
-      <section class="sec">
-        <div class="sec-hdr"><h2 class="sec-title">✨ Nouveautés</h2></div>
-        <div class="row" id="newRow"></div>
-      </section>
-      <section class="sec">
-        <div class="sec-hdr"><h2 class="sec-title">🌴 Productions Caribéennes</h2></div>
-        <div class="wide-row" id="caribbeanRow"></div>
-      </section>
-      <section class="sec">
-        <div class="sec-hdr"><h2 class="sec-title">📺 Séries Populaires</h2></div>
-        <div class="row" id="seriesRow"></div>
-      </section>
-      <section class="sec">
-        <div class="sec-hdr"><h2 class="sec-title">⭐ Dessins Animés</h2></div>
-        <div class="row" id="cartoonsRow"></div>
-      </section>
-      <section class="sec">
-        <div class="sec-hdr"><h2 class="sec-title">🎯 Recommandé pour vous</h2></div>
-        <div class="row" id="recommendRow"></div>
-      </section>
-    </div>
-
-    <!-- Pages -->
-    <div class="page" id="filmsPage" style="display:none">
-      <h1 class="page-title">🎬 Films</h1>
-      <div class="page-row" id="filmsRow"></div>
-    </div>
-    <div class="page" id="seriesPage" style="display:none">
-      <h1 class="page-title">📺 Séries</h1>
-      <div class="page-row" id="seriesRow"></div>
-    </div>
-    <div class="page" id="cartoonsPage" style="display:none">
-      <h1 class="page-title">⭐ Dessins Animés</h1>
-      <div class="page-row" id="cartoonsRow"></div>
-    </div>
-    <div class="page" id="mylistPage" style="display:none">
-      <h1 class="page-title">❤️ Ma Liste</h1>
-      <div class="page-row" id="mylistRow"></div>
-    </div>
-    <div class="page" id="profilePage" style="display:none">
-      <h1 class="page-title">👤 Mon Profil</h1>
-      <div id="profileContent"></div>
-    </div>
-
-    <!-- Bottom Nav -->
-    <nav class="btm-nav">
-      <button class="ni act" onclick="goHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Accueil</button>
-      <button class="ni" onclick="goPage('films')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>Films</button>
-      <button class="ni" onclick="goPage('series')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>Séries</button>
-      <button class="ni" onclick="openSearch()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Recherche</button>
-      <button class="ni" onclick="goPage('profile')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profil</button>
-    </nav>
-  </div>
-
-  <!-- Search Overlay -->
-  <div class="srch-overlay" id="srchOverlay">
-    <div class="srch-ctr">
-      <div class="srch-inp">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" placeholder="Rechercher..." id="srchInput" oninput="doSearch()">
-        <button class="srch-cls" onclick="closeSearch()">✕</button>
-      </div>
-      <div class="srch-res" id="srchRes"></div>
-    </div>
-  </div>
-
-  <!-- Player -->
-  <div class="player" id="player">
-    <div class="player-top"><button onclick="closePlayer()">←</button><button>⋮</button></div>
-    <div class="brightness-overlay" id="brightnessOv"></div>
-    <video id="videoEl"></video>
-    <div class="vol-hint" id="volHint"><div class="val">🔊</div><div>Volume</div></div>
-    <div class="bri-hint" id="briHint"><div class="val">☀️</div><div>Luminosité</div></div>
-    <div class="player-ctr">
-      <div class="player-prog" onclick="seekPlayer(event)"><div class="player-prog-fill" id="progFill"></div></div>
-      <div class="player-btns">
-        <button class="player-btn" onclick="skip(-5)">⏪</button>
+  
+  <!-- Controls -->
+  <div class="player-ctr" id="playerCtr">
+    <div class="player-prog" id="progBar"><div class="player-prog-fill" id="progFill"></div></div>
+    <div class="player-btns">
+      <div class="player-btns-left">
+        <button class="player-btn" onclick="skip(-10)">⏪</button>
         <button class="player-btn play" id="playBtn" onclick="togglePlay()">▶</button>
-        <button class="player-btn" onclick="skip(5)">⏩</button>
-        <span class="player-time" id="playTime">00:00</span>
-        <button class="player-btn" onclick="adjustVolume(-10)">🔉</button>
-        <button class="player-btn" onclick="adjustVolume(10)">🔊</button>
-        <button class="player-btn" onclick="adjustBrightness(-10)">🌑</button>
-        <button class="player-btn" onclick="adjustBrightness(10)">☀️</button>
+        <button class="player-btn" onclick="skip(10)">⏩</button>
+        <span class="player-time" id="playTime">00:00 / 00:00</span>
+      </div>
+      <div class="player-btns-right">
+        <button class="player-btn" onclick="prevEp()" id="prevEpBtn" style="display:none">⏮</button>
+        <button class="player-btn" onclick="nextEp()" id="nextEpBtn" style="display:none">⏭</button>
+        <button class="player-btn" onclick="toggleSubs()" id="subsBtn">CC</button>
+        <button class="player-btn" onclick="toggleSettings()">⚙️</button>
         <button class="player-btn" onclick="toggleFullscreen()">⛶</button>
       </div>
     </div>
   </div>
-
-  <!-- Detail Modal -->
-  <div class="modal-ov" id="detailModal">
-    <div class="modal">
-      <div class="modal-hdr"><h3 class="modal-tlt" id="detTitle"></h3><button class="modal-cls" onclick="closeDetail()">✕</button></div>
-      <div class="modal-bdy" id="detBody"></div>
-    </div>
+  
+  <!-- Settings panel -->
+  <div class="player-settings" id="playerSettings">
+    <h4>Paramètres</h4>
+    <div class="player-settings-item" onclick="cycleAudio()"><span>Audio</span><span class="val" id="audioVal">Français</span></div>
+    <div class="player-settings-item" onclick="cycleSubs()"><span>Sous-titres</span><span class="val" id="subsVal">FR</span></div>
+    <div class="player-settings-item" onclick="cycleSpeed()"><span>Vitesse</span>< <span class="val" id="speedVal">1x</span></div>
   </div>
+</div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+<!-- DETAIL MODAL -->
+<div class="modal-ov" id="detailModal">
+  <div class="modal">
+    <div class="modal-hdr"><h3 class="modal-tlt" id="detTitle"></h3><button class="modal-cls" onclick="closeDetail()">✕</button></div>
+    <div class="modal-bdy" id="detBody"></div>
+  </div>
+</div>
 
-  <script>
-    // VIDEOS
-    const VID = ['https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8','https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8','https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8','https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8','https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8','https://res.cloudinary.com/dannykeane/video/upload/sp_full_hd/q_80:qmax_90,ac_none/v1/dk-memoji-dark.m3u8','https://d1gnaphp93fop2.cloudfront.net/videos/multiresolution/rendition_new10.m3u8','https://diceyk6a7voy4.cloudfront.net/e78752a1-2e83-43fa-85ae-3d508be29366/hls/fitfest-sample-1_Ott_Hls_Ts_Avc_Aac_16x9_1280x720p_30Hz_6.0Mbps_qvbr.m3u8'];
-    
-    // CATALOG
-    const CAT = [
-      {id:1,title:'Lumière Noire',type:'film',year:2024,genre:'Thriller',rat:4.8,dur:'2h18m',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',org:true,cast:['Jean D\'Arc','Marie Chadeau'],dir:'Claude L. François',desc:'Un détective hanté traque un tueur en série à travers les rues sombres de Port-au-Prince.'},
-      {id:2,title:'Rasin — Racines',type:'film',year:2023,genre:'Drame',rat:4.7,dur:'1h52m',img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400',org:true,cast:['Sophie Désir'],dir:'Nadia C. Juste',desc:'L\'histoire d\'une famille haïtienne à travers trois générations.'},
-      {id:3,title:'Caribbean Heat',type:'film',year:2024,genre:'Action',rat:4.5,dur:'2h05m',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',cast:['Carlos M.'],dir:'Marco A. Díaz',desc:'Un thriller politique dans les caraïbes, entre corruption et révolution.'},
-      {id:4,title:'Titad la',type:'film',year:2024,genre:'Drame',rat:4.9,dur:'2h10m',img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',org:true,cast:['Manise J.'],dir:'Roseline M. Augustin',desc:'L\'ascension d\'une jeune femme dans le milieu politique haïtien.'},
-      {id:5,title:'Nèg Mawon',type:'film',year:2019,genre:'Historique',rat:4.8,dur:'2h20m',img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400',org:true,cast:['Jean R. Moïse'],dir:'L. C. Antoine',desc:'L\'histoire d\'un esclave devenu héros de l\'indépendance.'},
-      {id:6,title:'Code Noir',type:'film',year:2024,genre:'Historique',rat:4.7,dur:'2h30m',img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400',org:true,cast:['Jean R.'],dir:'Henri L. François',desc:'L\'histoire méconnue des Caraïbes coloniales.'},
-      {id:7,title:'Lagon Bleu',type:'film',year:2023,genre:'Romance',rat:4.3,dur:'1h45m',img:'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400',org:true,cast:['Marie L.'],dir:'Cassandre D.',desc:'Deux âmes se rencontrent sur une île paradisiaque.'},
-      {id:8,title:'Midnight Express',type:'film',year:2024,genre:'Thriller',rat:4.4,dur:'1h58m',img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400',cast:['Jean P.'],dir:'Antoine L. Juste',desc:'Un train de nuit, un secret mortel.'},
-      {id:9,title:'Gladiator',type:'film',year:2000,genre:'Action',rat:4.7,dur:'2h35m',img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400',cast:['Russell Crowe'],dir:'Ridley Scott',desc:'Un général romain devient gladiateur.'},
-      {id:10,title:'Amélie',type:'film',year:2001,genre:'Comédie',rat:4.8,dur:'2h02m',img:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400',cast:['Audrey Tautou'],dir:'Jean-Pierre Jeunet',desc:'Une jeune femme rend service aux autres.'},
-      {id:11,title:'No Country for Old Men',type:'film',year:2007,genre:'Thriller',rat:4.8,dur:'2h02m',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',cast:['Javier Bardem'],dir:'Coen Brothers',desc:'Un chasseur trouve un deal qui tourne mal.'},
-      {id:12,title:'Slumdog Millionaire',type:'film',year:2008,genre:'Drame',rat:4.7,dur:'2h00m',img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400',cast:['Dev Patel'],dir:'Danny Boyle',desc:'Un jeune des bidons de Mumbai gagne le jeu.'},
-      {id:13,title:'Eternal Sunshine',type:'film',year:2004,genre:'Romance',rat:4.7,dur:'1h48m',img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400',cast:['Jim Carrey'],dir:'Michel Gondry',desc:'Un couple efface ses souvenirs.'},
-      {id:14,title:'The Debt',type:'film',year:2010,genre:'Thriller',rat:4.5,dur:'1h53m',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',cast:['Helen Miren'],dir:'John Madden',desc:'Des agents hantés par leur passé.'},
-      {id:15,title:'Mulholland Drive',type:'film',year:2001,genre:'Thriller',rat:4.6,dur:'2h27m',img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400',cast:['Naomi Watts'],dir:'David Lynch',desc:'Un mystère sur les collines d\'Hollywood.'},
-      {id:100,title:'Rue des Jasmins',type:'series',year:2024,genre:'Thriller',rat:4.7,dur:'3 saisons',img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',org:true,cast:['Jean R.'],dir:'Fabien L. Célestin',desc:'Série policière à Port-au-Prince.'},
-      {id:101,title:'Madan Nou',type:'series',year:2023,genre:'Comédie',rat:4.8,dur:'2 saisons',img:'https://images.unsplash.com/photo-1524813686514-a57563d77965?w=400',org:true,cast:['Natacha L.'],dir:'Cassandre L.',desc:'Une famille haïtienne à Miami.'},
-      {id:102,title:'Breaking Bad',type:'series',year:2008,genre:'Thriller',rat:4.9,dur:'5 saisons',img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400',cast:['Bryan Cranston'],dir:'Vince Gilligan',desc:'Un prof de chimie devient baron de la drogue.'},
-      {id:103,title:'Dark',type:'series',year:2017,genre:'Science-Fiction',rat:4.8,dur:'3 saisons',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',cast:['Louis Hofmann'],dir:'Baran bo Odar',desc:'Disparitions et voyages dans le temps.'},
-      {id:104,title:'Peaky Blinders',type:'series',year:2013,genre:'Thriller',rat:4.7,dur:'6 saisons',img:'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400',cast:['Cillian Murphy'],dir:'Steven Knight',desc:'Un gangster à Birmingham dans les années 20.'},
-      {id:105,title:'Lupin',type:'series',year:2021,genre:'Policier',rat:4.6,dur:'3 saisons',img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400',cast:['Omar Sy'],dir:'George Kay',desc:'Un gentleman cambrioleur à Paris.'},
-      {id:106,title:'Arcane',type:'series',year:2021,genre:'Animation',rat:4.9,dur:'1 saison',img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400',cast:['Hailee Steinfeld'],dir:'Alex Lin',desc:'Deux sœurs ennemies dans une ville steampunk.'},
-      {id:200,title:'Ti Zwa',type:'cartoon',year:2024,genre:'Animation',rat:4.4,dur:'2 saisons',img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400',org:true,cast:[],dir:'Studio Créole',desc:'Un petit zèbre courageux explore la forêt tropicale.'},
-      {id:201,title:'Konpè Bètje',type:'cartoon',year:2023,genre:'Jeunesse',rat:4.5,dur:'4 saisons',img:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400',org:true,cast:[],dir:'Atelier Lakay',desc:'Les aventures d\'un petit haïtien curieux.'},
-      {id:202,title:'One Piece',type:'cartoon',year:1999,genre:'Aventure',rat:4.9,dur:'20+ saisons',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',cast:[],dir:'Eiichiro Oda',desc:'Luffy veut devenir le roi des pirates.'},
-      {id:203,title:'Dragons',type:'cartoon',year:2012,genre:'Aventure',rat:4.7,dur:'3 saisons',img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400',cast:[],dir:'Dean DeBlois',desc:'Un viking élève un dragon.'},
-      {id:204,title:'Miraculous',type:'cartoon',year:2015,genre:'Action',rat:4.6,dur:'5 saisons',img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',cast:[],dir:'Thomas Astruc',desc:'Deux adolescents super-héros à Paris.'},
-      {id:205,title:'Oggy et les Cafards',type:'cartoon',year:1998,genre:'Comédie',rat:4.2,dur:'7 saisons',img:'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400',cast:[],dir:'Jean-Yves Raimbaud',desc:'Un chat poursuivi par des cafards.'},
-      {id:206,title:'Masha et Michka',type:'cartoon',year:2009,genre:'Animation',rat:4.3,dur:'5 saisons',img:'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400',cast:[],dir:'Oleg Kuzovkov',desc:'Une petite fille et son ami lours.'}
-    ];
-    
-    CAT.forEach(function(c,i){ if(!c.video) c.video = VID[i % VID.length]; });
-    
-    // STATE
-    var user = null, prof = null, cur = null, hls = null, selectedColor = '#E50914', avatarData = null;
-    
-    // INIT
-    function init() {
-      var s = localStorage.getItem('netluxe_user');
-      var p = localStorage.getItem('netluxe_profile');
-      if(s && p) {
-        user = JSON.parse(s);
-        prof = JSON.parse(p);
-        document.getElementById('splash').style.display = 'none';
-        showApp();
-      }
-      setTimeout(function(){ document.getElementById('splash').style.display = 'none'; }, 2500);
-    }
-    
-    // EMAIL LOGIN
-    function handleEmail(e) {
-      e.preventDefault();
-      var em = document.getElementById('loginEmail').value.trim();
-      if(!em) return showToast('Entrez votre email');
-      var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
-      if(!users[em]) {
-        users[em] = { email:em, name:em.split('@')[0], profiles:[], createdAt:new Date().toISOString() };
-        localStorage.setItem('netluxe_users', JSON.stringify(users));
-      }
-      user = users[em];
-      localStorage.setItem('netluxe_user', JSON.stringify(user));
-      showCreateProfile();
-    }
-    
-    // OAUTH
-    function oauthLogin(provider) {
-      showToast('Connexion ' + provider + '...');
-      var em = 'user@' + provider + '.com';
-      var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
-      if(!users[em]) {
-        users[em] = { email:em, name:provider+' User', profiles:[], createdAt:new Date().toISOString() };
-        localStorage.setItem('netluxe_users', JSON.stringify(users));
-      }
-      user = users[em];
-      localStorage.setItem('netluxe_user', JSON.stringify(user));
-      setTimeout(function(){ showCreateProfile(); }, 800);
-    }
-    
-    // CODE ACCESS
-    var VALID_CODES = ['SANDROLIAM509','NETLUXE2026','ADMIN509'];
-    function showCodeAccess() {
-      document.getElementById('authScreen').classList.add('hidden');
-      document.getElementById('codeAccess').style.display = 'flex';
-    }
-    function hideCodeAccess() {
-      document.getElementById('codeAccess').style.display = 'none';
-      document.getElementById('authScreen').classList.remove('hidden');
-    }
-    function handleCode(e) {
-      e.preventDefault();
-      var code = document.getElementById('accessCode').value.trim().toUpperCase();
-      if(VALID_CODES.includes(code)) {
-        var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
-        var em = 'admin@netluxe.com';
-        if(!users[em]) {
-          users[em] = { email:em, name:'SANDRO LIAM', profiles:[], createdAt:new Date().toISOString(), isAdmin:true };
-          localStorage.setItem('netluxe_users', JSON.stringify(users));
-        }
-        user = users[em];
-        localStorage.setItem('netluxe_user', JSON.stringify(user));
-        hideCodeAccess();
-        showCreateProfile();
-      } else {
-        showToast('Code invalide');
-      }
-    }
-    
-    // CREATE PROFILE
-    function showCreateProfile() {
-      document.getElementById('authScreen').classList.add('hidden');
-      document.getElementById('codeAccess').style.display = 'none';
-      document.getElementById('createProfile').classList.add('active');
-      // Render colors
-      var colors = ['#E50914','#E91E63','#9C27B0','#8B5CF6','#3F51B5','#2196F3','#00BCD4','#009688','#4CAF50','#8BC34A','#FFC107','#FF9800','#FF5722','#795548','#607D8B'];
-      var grid = document.getElementById('colorGrid');
-      grid.innerHTML = colors.map(function(c,i){
-        return '<div class="color-dot '+(i===0?'selected':'"')+'" style="background:'+c+'" onclick="selectColor('+i+')"></div>';
-      }).join('');
-      selectedColor = colors[0];
-    }
-    
-    function selectColor(idx) {
-      var colors = ['#E50914','#E91E63','#9C27B0','#8B5CF6','#3F51B5','#2196F3','#00BCD4','#009688','#4CAF50','#8BC34A','#FFC107','#FF9800','#FF5722','#795548','#607D8B'];
-      selectedColor = colors[idx];
-      var dots = document.querySelectorAll('.color-dot');
-      for(var i=0;i<dots.length;i++) dots[i].classList.toggle('selected',i===idx);
-    }
-    
-    function handleAvatar(e) {
-      var file = e.target.files[0];
-      if(!file) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        avatarData = ev.target.result;
-        var preview = document.getElementById('avatarPreview');
-        preview.innerHTML = '<img src="'+avatarData+'">';
-      };
-      reader.readAsDataURL(file);
-    }
-    
-    function finishProfile() {
-      var name = document.getElementById('profileName').value.trim();
-      if(!name) return showToast('Entrez un nom');
-      
-      var profile = {
-        id: Date.now().toString(),
-        name: name,
-        color: selectedColor,
-        avatar: avatarData,
-        history: [],
-        myList: []
-      };
-      
-      if(!user.profiles) user.profiles = [];
-      user.profiles.push(profile);
-      var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
-      users[user.email] = user;
-      localStorage.setItem('netluxe_users', JSON.stringify(users));
-      localStorage.setItem('netluxe_user', JSON.stringify(user));
-      
-      prof = profile;
-      localStorage.setItem('netluxe_profile', JSON.stringify(prof));
-      
-      document.getElementById('createProfile').classList.remove('active');
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// VIDEOS
+const VID = [
+  'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+  'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+  'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8',
+  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8',
+  'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+  'https://res.cloudinary.com/dannykeane/video/upload/sp_full_hd/q_80:qmax_90,ac_none/v1/dk-memoji-dark.m3u8',
+  'https://d1gnaphp93fop2.cloudfront.net/videos/multiresolution/rendition_new10.m3u8',
+  'https://diceyk6a7voy4.cloudfront.net/e78752a1-2e83-43fa-85ae-3d508be29366/hls/fitfest-sample-1_Ott_Hls_Ts_Avc_Aac_16x9_1280x720p_30Hz_6.0Mbps_qvbr.m3u8'
+];
+
+// CATALOG with multilingual support
+const CAT = [
+  {id:1,title:'Lumière Noire',type:'film',year:2024,genre:'Thriller',rat:4.8,dur:'2h18m',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',org:true,cast:['Jean D\'Arc','Marie Chadeau'],dir:'Claude L. François',views:24589,likes:1823,audio:['FR','EN'],subs:['FR','EN','ES'],desc:'Un détective hanté traque un tueur à travers les rues sombres de Port-au-Prince.'},
+  {id:2,title:'Rasin — Racines',type:'film',year:2023,genre:'Drame',rat:4.7,dur:'1h52m',img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400',org:true,cast:['Sophie Désir'],dir:'Nadia C. Juste',views:18234,likes:1456,audio:['CR','FR'],subs:['FR','CR','EN'],desc:'L\'histoire d\'une famille haïtienne à travers trois générations.'},
+  {id:3,title:'Caribbean Heat',type:'film',year:2024,genre:'Action',rat:4.5,dur:'2h05m',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',cast:['Carlos M.'],dir:'Marco A. Díaz',views:15892,likes:1204,audio:['ES','EN'],subs:['FR','EN','ES'],desc:'Thriller politique dans les caraïbes.'},
+  {id:4,title:'Titad la',type:'film',year:2024,genre:'Drame',rat:4.9,dur:'2h10m',img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',org:true,cast:['Manise J.'],dir:'Roseline M. Augustin',views:32100,likes:2890,audio:['CR','FR'],subs:['FR','CR'],desc:'L\'ascension d\'une femme en politique.'},
+  {id:5,title:'Nèg Mawon',type:'film',year:2019,genre:'Historique',rat:4.8,dur:'2h20m',img:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400',org:true,cast:['Jean R. Moïse'],dir:'L. C. Antoine',views:28900,likes:2345,audio:['CR'],subs:['FR','CR','EN'],desc:'L\'histoire d\'un esclave devenu héros.'},
+  {id:6,title:'Code Noir',type:'film',year:2024,genre:'Historique',rat:4.7,dur:'2h30m',img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400',org:true,cast:['Jean R.'],dir:'Henri L. François',views:22400,likes:1890,audio:['FR'],subs:['FR','EN'],desc:'L\'histoire méconnue des Caraïbes coloniales.'},
+  {id:7,title:'Gladiator',type:'film',year:2000,genre:'Action',rat:4.7,dur:'2h35m',img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400',cast:['Russell Crowe'],dir:'Ridley Scott',views:45000,likes:4123,audio:['EN','FR'],subs:['FR','EN','ES'],desc:'Un général romain devient gladiateur.'},
+  {id:8,title:'Amélie',type:'film',year:2001,genre:'Comédie',rat:4.8,dur:'2h02m',img:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400',cast:['Audrey Tautou'],dir:'Jean-Pierre Jeunet',views:38000,likes:3567,audio:['FR','EN'],subs:['FR','EN','ES'],desc:'Une jeune femme rend service aux autres.'},
+  {id:9,title:'No Country for Old Men',type:'film',year:2007,genre:'Thriller',rat:4.8,dur:'2h02m',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',cast:['Javier Bardem'],dir:'Coen Brothers',views:29000,likes:2678,audio:['EN'],subs:['FR','EN','ES'],desc:'Un chasseur trouve un deal qui tourne mal.'},
+  {id:10,title:'Eternal Sunshine',type:'film',year:2004,genre:'Romance',rat:4.7,dur:'1h48m',img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400',cast:['Jim Carrey'],dir:'Michel Gondry',views:25000,likes:2234,audio:['EN','FR'],subs:['FR','EN'],desc:'Un couple efface ses souvenirs.'},
+  {id:100,title:'Rue des Jasmins',type:'series',year:2024,genre:'Thriller',rat:4.7,dur:'3 saisons',img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',org:true,cast:['Jean R.'],dir:'Fabien L. Célestin',views:18234,likes:1456,audio:['FR','CR'],subs:['FR','CR','EN'],desc:'Série policière à Port-au-Prince.'},
+  {id:101,title:'Madan Nou',type:'series',year:2023,genre:'Comédie',rat:4.8,dur:'2 saisons',img:'https://images.unsplash.com/photo-1524813686514-a57563d77965?w=400',org:true,cast:['Natacha L.'],dir:'Cassandre L.',views:15000,likes:1234,audio:['CR','EN'],subs:['FR','CR','EN'],desc:'Une famille haïtienne à Miami.'},
+  {id:102,title:'Breaking Bad',type:'series',year:2008,genre:'Thriller',rat:4.9,dur:'5 saisons',img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400',cast:['Bryan Cranston'],dir:'Vince Gilligan',views:52000,likes:5234,audio:['EN','FR'],subs:['FR','EN','ES'],desc:'Un prof de chimie devient baron de la drogue.'},
+  {id:103,title:'Dark',type:'series',year:2017,genre:'Science-Fiction',rat:4.8,dur:'3 saisons',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',cast:['Louis Hofmann'],dir:'Baran bo Odar',views:34000,likes:3123,audio:['EN','FR'],subs:['FR','EN'],desc:'Disparitions et voyages dans le temps.'},
+  {id:200,title:'Ti Zwa',type:'cartoon',year:2024,genre:'Animation',rat:4.4,dur:'2 saisons',img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400',org:true,cast:[],dir:'Studio Créole',views:12000,likes:987,audio:['FR','CR'],subs:['FR','CR','EN'],desc:'Un petit zèbre courageux explore la forêt.'},
+  {id:201,title:'One Piece',type:'cartoon',year:1999,genre:'Aventure',rat:4.9,dur:'20+ saisons',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',cast:[],dir:'Eiichiro Oda',views:67000,likes:7890,audio:['EN','FR'],subs:['FR','EN','ES'],desc:'Luffy veut devenir le roi des pirates.'},
+  {id:202,title:'Dragons',type:'cartoon',year:2012,genre:'Aventure',rat:4.7,dur:'3 saisons',img:'https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400',cast:[],dir:'Dean DeBlois',views:28000,likes:2567,audio:['EN','FR'],subs:['FR','EN'],desc:'Un viking élève un dragon.'},
+  {id:203,title:'Miraculous',type:'cartoon',year:2015,genre:'Action',rat:4.6,dur:'5 saisons',img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',cast:[],dir:'Thomas Astruc',views:31000,likes:2890,audio:['FR','EN'],subs:['FR','EN','ES'],desc:'Deux adolescents super-héros à Paris.'}
+];
+
+CAT.forEach(function(c,i){ if(!c.video) c.video = VID[i % VID.length]; });
+
+// STATE
+var user = null, prof = null, cur = null, hls = null, selectedColor = '#E50914', avatarData = null;
+var curAudio = 0, curSub = 0, curSpeed = 1, curEp = 0, curSeries = null;
+var vol = 100, bri = 100;
+
+// INIT
+function init() {
+  var s = localStorage.getItem('netluxe_user');
+  var p = localStorage.getItem('netluxe_profile');
+  if(s && p) {
+    try {
+      user = JSON.parse(s);
+      prof = JSON.parse(p);
+      document.getElementById('splash').style.display = 'none';
       showApp();
-    }
-    
-    // APP
-    function showApp() {
-      document.getElementById('app').style.display = 'block';
-      var btn = document.getElementById('hdrProf');
-      if(prof.avatar) {
-        btn.innerHTML = '<img src="'+prof.avatar+'">';
-      } else {
-        btn.textContent = prof.name[0].toUpperCase();
-        btn.style.background = prof.color;
-      }
-      goHome();
-    }
-    
-    // NAVIGATION
-    function hideAll() {
-      document.getElementById('hero').style.display = 'none';
-      document.getElementById('homeSections').style.display = 'none';
-      var pages = ['filmsPage','seriesPage','cartoonsPage','mylistPage','profilePage'];
-      pages.forEach(function(p){ document.getElementById(p).style.display = 'none'; });
-    }
-    
-    function goHome() {
-      hideAll();
-      document.getElementById('hero').style.display = 'flex';
-      document.getElementById('homeSections').style.display = 'block';
-      document.getElementById('header').style.display = 'flex';
-      document.querySelector('.btm-nav').style.display = '';
-      
-      var films = CAT.filter(function(c){return c.type==='film';});
-      setHero(films.find(function(c){return c.org;}) || films[0]);
-      fillRow('trendingRow', CAT.slice(0,8));
-      fillRow('newRow', CAT.filter(function(c){return c.year>=2023;}).slice(0,8));
-      fillRow('caribbeanRow', CAT.filter(function(c){return c.org;}));
-      fillRow('seriesRow', CAT.filter(function(c){return c.type==='series';}).slice(0,8));
-      fillRow('cartoonsRow', CAT.filter(function(c){return c.type==='cartoon';}).slice(0,8));
-      fillRow('recommendRow', CAT.filter(function(c){return c.rat>=4.5;}).slice(0,8));
-      window.scrollTo(0,0);
-    }
-    
-    function goPage(page) {
-      hideAll();
-      document.getElementById(page+'Page').style.display = 'block';
-      document.getElementById('header').style.display = 'flex';
-      document.querySelector('.btm-nav').style.display = '';
-      window.scrollTo(0,0);
-      
-      if(page==='films') fillRow('filmsRow', CAT.filter(function(c){return c.type==='film';}));
-      else if(page==='series') fillRow('seriesRow', CAT.filter(function(c){return c.type==='series';}));
-      else if(page==='cartoons') fillRow('cartoonsRow', CAT.filter(function(c){return c.type==='cartoon';}));
-      else if(page==='mylist') {
-        var items = CAT.filter(function(c){ return prof && prof.myList && prof.myList.includes(c.id); });
-        fillRow('mylistRow', items.length ? items : []);
-        if(!items.length) document.getElementById('mylistRow').innerHTML = '<div style="padding:48px;color:var(--t3);text-align:center">Votre liste est vide</div>';
-      }
-      else if(page==='profile') renderProfile();
-    }
-    
-    function renderProfile() {
-      var content = document.getElementById('profileContent');
-      var html = '<div style="text-align:center;margin-bottom:32px">';
-      if(prof.avatar) html += '<div style="width:100px;height:100px;border-radius:50%;margin:0 auto 16px;overflow:hidden;border:3px solid var(--red)"><img src="'+prof.avatar+'" style="width:100%;height:100%;object-fit:cover"></div>';
-      else html += '<div style="width:100px;height:100px;border-radius:50%;background:'+prof.color+';margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:bold">'+prof.name[0].toUpperCase()+'</div>';
-      html += '<h2 style="font-size:24px">'+prof.name+'</h2>';
-      html += '<p style="color:var(--t2)">'+(user?user.email:'')+'</p>';
-      html += '<p style="color:var(--t3);font-size:13px;margin-top:8px">'+(prof.history?prof.history.length:0)+' films vus · '+(prof.myList?prof.myList.length:0)+' dans ma liste</p>';
-      html += '</div>';
-      html += '<button class="btn btn-o btn-blk" onclick="logout()" style="color:var(--red)">Déconnexion</button>';
-      content.innerHTML = html;
-    }
-    
-    function logout() {
-      localStorage.removeItem('netluxe_user');
-      localStorage.removeItem('netluxe_profile');
-      user = null; prof = null;
-      document.getElementById('app').style.display = 'none';
-      document.getElementById('authScreen').classList.remove('hidden');
-    }
-    
-    // CONTENT
-    function setHero(c) {
-      cur = c;
-      document.getElementById('heroBg').style.backgroundImage = 'url('+c.img+')';
-      document.getElementById('heroTitle').textContent = c.title;
-      document.getElementById('heroDesc').textContent = c.desc;
-      document.getElementById('heroMeta').innerHTML = '<span class="rat">★ '+c.rat+'</span><span>'+c.year+'</span><span>'+c.dur+'</span><span>'+c.genre+'</span><span class="qlt">4K</span>'+(c.org?'<span style="color:var(--gold)">ORIGINAL</span>':'');
-    }
-    
-    function fillRow(id, items) {
-      var row = document.getElementById(id);
-      if(!row) return;
-      row.innerHTML = items.length ? items.map(function(c){
-        return '<div class="card" onclick="showDetail('+c.id+')">'+
-          '<div class="card-img"><img src="'+c.img+'" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 280%22><rect fill=%22%23222%22 width=%22200%22 height=%22280%22/></svg>\'">'+
-          '<span class="card-tag '+(c.org?'org':'')+'">'+(c.org?'ORIGINAL':(c.type==='film'?'FILM':c.type==='series'?'SÉRIE':'ANIMÉ'))+'</span></div>'+
-          '<div class="card-txt">'+c.title+'</div>'+
-          '<div class="card-info"><span>'+c.year+'</span><span class="card-rat">★ '+c.rat+'</span></div></div>';
-      }).join('') : '<div style="padding:48px;color:var(--t3);text-align:center">Aucun contenu</div>';
-    }
-    
-    // DETAIL
-    function showDetail(id) {
-      cur = CAT.find(function(c){return c.id===id;});
-      if(!cur) return;
-      closeSearch();
-      document.getElementById('detTitle').textContent = cur.title;
-      document.getElementById('detBody').innerHTML = 
-        '<img src="'+cur.img+'" style="width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:16px">'+
-        '<div style="display:flex;gap:12px;margin-bottom:16px;color:var(--t2);font-size:14px;flex-wrap:wrap">'+
-        '<span style="color:var(--gold);font-weight:600">★ '+cur.rat+'</span><span>'+cur.year+'</span><span>'+cur.dur+'</span><span>'+cur.genre+'</span>'+
-        (cur.org?'<span style="color:var(--gold)">★ NETLUXE ORIGINAL</span>':'')+'</div>'+
-        '<p style="color:var(--t2);line-height:1.7;margin-bottom:24px">'+cur.desc+'</p>'+
-        '<div style="margin-bottom:24px"><h4 style="margin-bottom:8px">Casting</h4><p style="color:var(--t2)">'+(cur.cast?cur.cast.join(', '):'N/A')+'</p></div>'+
-        '<div style="display:flex;gap:12px">'+
-        '<button class="btn btn-p" style="flex:1" onclick="playCurrent()">▶ Regarder</button>'+
-        '<button class="btn btn-o" onclick="toggleMyList('+cur.id+')">'+(prof&&prof.myList&&prof.myList.includes(cur.id)?'✓ Ma Liste':'+ Liste')+'</button></div>';
-      document.getElementById('detailModal').classList.add('active');
-    }
-    function closeDetail() { document.getElementById('detailModal').classList.remove('active'); }
-    function playCurrent() { if(cur) playVideo(cur.id); closeDetail(); }
-    function playHero() { if(cur) playVideo(cur.id); }
-    function showHeroDetails() { if(cur) showDetail(cur.id); }
-    function toggleMyList(id) {
-      if(!prof) return;
-      if(!prof.myList) prof.myList = [];
-      var idx = prof.myList.indexOf(id);
-      if(idx>=0) prof.myList.splice(idx,1);
-      else prof.myList.push(id);
-      var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
-      users[user.email] = user;
+    } catch(e) { console.error('Parse error:', e); }
+  }
+  setTimeout(function(){ document.getElementById('splash').style.display = 'none'; }, 2500);
+}
+
+// EMAIL LOGIN
+function handleEmail(e) {
+  e.preventDefault();
+  var em = document.getElementById('loginEmail').value.trim();
+  if(!em) return showToast('Entrez votre email');
+  var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+  if(!users[em]) {
+    users[em] = { email:em, name:em.split('@')[0], profiles:[], createdAt:new Date().toISOString(), lang:'FR' };
+    localStorage.setItem('netluxe_users', JSON.stringify(users));
+  }
+  user = users[em];
+  localStorage.setItem('netluxe_user', JSON.stringify(user));
+  showCreateProfile();
+}
+
+// OAUTH
+function oauthLogin(provider) {
+  showToast('Connexion ' + provider + '...');
+  var em = 'user@' + provider + '.com';
+  var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+  if(!users[em]) {
+    users[em] = { email:em, name:provider+' User', profiles:[], createdAt:new Date().toISOString(), lang:'EN' };
+    localStorage.setItem('netluxe_users', JSON.stringify(users));
+  }
+  user = users[em];
+  localStorage.setItem('netluxe_user', JSON.stringify(user));
+  setTimeout(function(){ showCreateProfile(); }, 800);
+}
+
+// CODE ACCESS
+var VALID_CODES = ['SANDROLIAM509','NETLUXE2026','ADMIN509'];
+function showCodeAccess() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('codeAccess').style.display = 'flex';
+}
+function hideCodeAccess() {
+  document.getElementById('codeAccess').style.display = 'none';
+  document.getElementById('authScreen').classList.remove('hidden');
+}
+function handleCode(e) {
+  e.preventDefault();
+  var code = document.getElementById('accessCode').value.trim().toUpperCase();
+  if(VALID_CODES.includes(code)) {
+    var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+    var em = 'admin@netluxe.com';
+    if(!users[em]) {
+      users[em] = { email:em, name:'SANDRO LIAM', profiles:[], createdAt:new Date().toISOString(), isAdmin:true, lang:'FR' };
       localStorage.setItem('netluxe_users', JSON.stringify(users));
-      localStorage.setItem('netluxe_profile', JSON.stringify(prof));
-      showToast(idx>=0?'Retiré':'Ajouté à Ma Liste');
     }
-    
-    // SEARCH
-    function openSearch() { document.getElementById('srchOverlay').classList.add('active'); document.getElementById('srchInput').focus(); }
-    function closeSearch() { document.getElementById('srchOverlay').classList.remove('active'); }
-    function doSearch() {
-      var q = document.getElementById('srchInput').value.toLowerCase().trim();
-      var res = q ? CAT.filter(function(c){
-        return c.title.toLowerCase().includes(q)||c.genre.toLowerCase().includes(q)||(c.cast&&c.cast.some(function(a){return a.toLowerCase().includes(q);}))||c.year.toString().includes(q);
-      }) : [];
-      document.getElementById('srchRes').innerHTML = res.length ? res.map(function(c){
-        return '<div class="srch-card" onclick="showDetail('+c.id+')"><img src="'+c.img+'"><div style="font-weight:600;font-size:13px">'+c.title+'</div><div style="color:var(--t3);font-size:11px">'+(c.type==='film'?'Film':c.type==='series'?'Série':'Animé')+' · '+c.year+'</div></div>';
-      }).join('') : '<div style="color:var(--t3);text-align:center;padding:40px">Aucun résultat</div>';
+    user = users[em];
+    localStorage.setItem('netluxe_user', JSON.stringify(user));
+    hideCodeAccess();
+    showCreateProfile();
+  } else {
+    showToast('Code invalide');
+  }
+}
+
+// QUICK ACCESS
+function quickAccess() {
+  var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+  var em = 'viewer@netluxe.com';
+  if(!users[em]) {
+    users[em] = { email:em, name:'Spectateur', profiles:[{id:'default',name:'Mon Profil',color:'#E50914',history:[],myList:[]}], createdAt:new Date().toISOString(), lang:'FR' };
+    localStorage.setItem('netluxe_users', JSON.stringify(users));
+  }
+  user = users[em];
+  prof = user.profiles[0];
+  localStorage.setItem('netluxe_user', JSON.stringify(user));
+  localStorage.setItem('netluxe_profile', JSON.stringify(prof));
+  document.getElementById('authScreen').classList.add('hidden');
+  showApp();
+}
+
+// ADMIN
+function goToAdmin() {
+  window.location.href = 'admin.html';
+}
+
+// CREATE PROFILE
+function showCreateProfile() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('codeAccess').style.display = 'none';
+  document.getElementById('createProfile').style.display = 'flex';
+  
+  var colors = ['#E50914','#E91E63','#9C27B0','#8B5CF6','#3F51B5','#2196F3','#00BCD4','#009688','#4CAF50','#8BC34A','#FFC107','#FF9800','#FF5722','#795548','#607D8B'];
+  var grid = document.getElementById('colorGrid');
+  grid.innerHTML = colors.map(function(c,i){
+    return '<div class="color-dot '+(i===0?'sel':'')+'" style="background:'+c+'" onclick="selectColor('+i+')"></div>';
+  }).join('');
+  selectedColor = colors[0];
+}
+
+function selectColor(idx) {
+  var colors = ['#E50914','#E91E63','#9C27B0','#8B5CF6','#3F51B5','#2196F3','#00BCD4','#009688','#4CAF50','#8BC34A','#FFC107','#FF9800','#FF5722','#795548','#607D8B'];
+  selectedColor = colors[idx];
+  var dots = document.querySelectorAll('.color-dot');
+  for(var i=0;i<dots.length;i++) dots[i].classList.toggle('sel',i===idx);
+}
+
+function handleAvatar(e) {
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    avatarData = ev.target.result;
+    var preview = document.getElementById('avatarPreview');
+    preview.innerHTML = '<img src="'+avatarData+'">';
+  };
+  reader.readAsDataURL(file);
+}
+
+function finishProfile() {
+  var name = document.getElementById('profileName').value.trim();
+  if(!name) return showToast('Entrez un nom');
+  
+  var profile = {
+    id: Date.now().toString(),
+    name: name,
+    color: selectedColor,
+    avatar: avatarData,
+    history: [],
+    myList: [],
+    progress: {},
+    prefs: { lang:'FR', audio:'FR', subs:'FR', speed:1 }
+  };
+  
+  if(!user.profiles) user.profiles = [];
+  user.profiles.push(profile);
+  var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+  users[user.email] = user;
+  localStorage.setItem('netluxe_users', JSON.stringify(users));
+  localStorage.setItem('netluxe_user', JSON.stringify(user));
+  
+  prof = profile;
+  localStorage.setItem('netluxe_profile', JSON.stringify(prof));
+  
+  document.getElementById('createProfile').style.display = 'none';
+  showApp();
+}
+
+// APP
+function showApp() {
+  document.getElementById('app').style.display = 'block';
+  var btn = document.getElementById('hdrProf');
+  if(prof && prof.avatar) {
+    btn.innerHTML = '<img src="'+prof.avatar+'">';
+  } else if(prof) {
+    btn.textContent = prof.name[0].toUpperCase();
+    btn.style.background = prof.color;
+  }
+  goHome();
+}
+
+// NAVIGATION
+function hideAll() {
+  document.getElementById('hero').style.display = 'none';
+  document.getElementById('homeSections').style.display = 'none';
+  var pages = ['filmsPage','seriesPage','cartoonsPage','mylistPage','profilePage','settingsPage'];
+  pages.forEach(function(p){ 
+    var el = document.getElementById(p);
+    if(el) el.style.display = 'none'; 
+  });
+}
+
+function goHome() {
+  hideAll();
+  document.getElementById('hero').style.display = 'flex';
+  document.getElementById('homeSections').style.display = 'block';
+  document.getElementById('header').style.display = 'flex';
+  document.querySelector('.btm-nav').style.display = '';
+  
+  var films = CAT.filter(function(c){return c.type==='film';});
+  setHero(films.find(function(c){return c.org;}) || films[0]);
+  fillRow('trendingRow', CAT.slice(0,8));
+  fillRow('newRow', CAT.filter(function(c){return c.year>=2023;}).slice(0,8));
+  fillRow('caribbeanRow', CAT.filter(function(c){return c.org;}));
+  fillRow('seriesRow', CAT.filter(function(c){return c.type==='series';}).slice(0,8));
+  fillRow('cartoonsRow', CAT.filter(function(c){return c.type==='cartoon';}).slice(0,8));
+  fillRow('recommendRow', CAT.filter(function(c){return c.rat>=4.5;}).slice(0,8));
+  
+  // Continue watching
+  if(prof && prof.history && prof.history.length > 0) {
+    var continueItems = prof.history.slice(0,8).map(function(h){ 
+      return CAT.find(function(c){return c.id===h.id;}); 
+    }).filter(Boolean);
+    if(continueItems.length > 0) {
+      document.getElementById('continueSection').style.display = 'block';
+      fillRow('continueRow', continueItems);
     }
+  }
+  window.scrollTo(0,0);
+}
+
+function goPage(page) {
+  hideAll();
+  var el = document.getElementById(page+'Page');
+  if(el) el.style.display = 'block';
+  document.getElementById('header').style.display = 'flex';
+  document.querySelector('.btm-nav').style.display = '';
+  window.scrollTo(0,0);
+  
+  if(page==='films') fillRow('filmsRow', CAT.filter(function(c){return c.type==='film';}));
+  else if(page==='series') fillRow('seriesRow2', CAT.filter(function(c){return c.type==='series';}));
+  else if(page==='cartoons') fillRow('cartoonsRow2', CAT.filter(function(c){return c.type==='cartoon';}));
+  else if(page==='mylist') {
+    var items = CAT.filter(function(c){ return prof && prof.myList && prof.myList.includes(c.id); });
+    fillRow('mylistRow', items);
+    if(!items.length) document.getElementById('mylistRow').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Votre liste est vide</p></div>';
+  }
+  else if(page==='profile') renderProfile();
+  else if(page==='settings') renderSettings();
+}
+
+function renderProfile() {
+  var content = document.getElementById('profileContent');
+  var h = '<div class="profile-hdr">';
+  if(prof && prof.avatar) h += '<div class="profile-avatar"><img src="'+prof.avatar+'"></div>';
+  else if(prof) h += '<div class="profile-avatar" style="background:'+prof.color+'">'+prof.name[0].toUpperCase()+'</div>';
+  h += '<h2 style="font-size:28px;margin-top:16px">'+(prof?prof.name:'')+'</h2>';
+  h += '<p style="color:var(--t2)">'+(user?user.email:'')+'</p>';
+  h += '<div class="profile-stats">';
+  h += '<div class="profile-stat"><div class="val">'+(prof&&prof.history?prof.history.length:0)+'</div><div class="lbl">Films vus</div></div>';
+  h += '<div class="profile-stat"><div class="val">'+(prof&&prof.myList?prof.myList.length:0)+'</div><div class="lbl">Ma Liste</div></div>';
+  h += '</div></div>';
+  h += '<button class="btn btn-o" onclick="goPage(\'settings\')" style="margin-bottom:16px">⚙️ Paramètres</button>';
+  h += '<button class="btn btn-o" style="color:var(--red)" onclick="logout()">Déconnexion</button>';
+  content.innerHTML = h;
+}
+
+function renderSettings() {
+  var content = document.getElementById('settingsContent');
+  var lang = (prof&&prof.prefs)?prof.prefs.lang:'FR';
+  var audio = (prof&&prof.prefs)?prof.prefs.audio:'FR';
+  var subs = (prof&&prof.prefs)?prof.prefs.subs:'FR';
+  
+  var h = '';
+  h += '<div class="settings-sec"><h3>Lecture</h3>';
+  h += '<div class="setting-row"><span class="setting-lbl">Lecture automatique</span><div class="toggle on" onclick="this.classList.toggle(\'on\')"></div></div>';
+  h += '<div class="setting-row"><span class="setting-lbl">Qualité vidéo</span><select class="sel" onchange="prof.prefs.quality=this.value;saveProfile()"><option>Auto</option><option>4K</option><option>1080p</option><option>720p</option></select></div>';
+  h += '<div class="setting-row"><span class="setting-lbl">Vitesse</span><select class="sel" onchange="prof.prefs.speed=parseFloat(this.value);saveProfile()"><option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="1.5">1.5x</option><option value="2">2x</option></select></div>';
+  h += '</div>';
+  
+  h += '<div class="settings-sec"><h3>Langue</h3>';
+  h += '<div class="setting-row"><span class="setting-lbl">Langue de l\'interface</span><select class="sel" onchange="prof.prefs.lang=this.value;saveProfile()"><option value="FR"'+(lang==='FR'?'selected':'')+'>Français</option><option value="EN"'+(lang==='EN'?'selected':'')+'>English</option><option value="ES"'+(lang==='ES'?'selected':'')+'>Español</option><option value="CR"'+(lang==='CR'?'selected':'')+'>Kreyòl</option></select></div>';
+  h += '<div class="setting-row"><span class="setting-lbl">Audio par défaut</span><select class="sel" onchange="prof.prefs.audio=this.value;saveProfile()"><option value="FR"'+(audio==='FR'?'selected':'')+'>Français</option><option value="EN"'+(audio==='EN'?'selected':'')+'>English</option><option value="ES"'+(audio==='ES'?'selected':'')+'>Español</option><option value="CR"'+(audio==='CR'?'selected':'')+'>Kreyòl</option></select></div>';
+  h += '<div class="setting-row"><span class="setting-lbl">Sous-titres</span><select class="sel" onchange="prof.prefs.subs=this.value;saveProfile()"><option value="FR"'+(subs==='FR'?'selected':'')+'>Français</option><option value="EN"'+(subs==='EN'?'selected':'')+'>English</option><option value="ES"'+(subs==='ES'?'selected':'')+'>Español</option><option value="CR"'+(subs==='CR'?'selected':'')+'>Kreyòl</option><option value="off">Désactivé</option></select></div>';
+  h += '</div>';
+  
+  h += '<div class="settings-sec"><h3>Profil</h3>';
+  h += '<div class="setting-row"><span class="setting-lbl">Nom</span><span class="setting-val">'+(prof?prof.name:'')+'</span></div>';
+  h += '<div class="setting-row"><span class="setting-lbl">Email</span><span class="setting-val">'+(user?user.email:'')+'</span></div>';
+  h += '<div class="setting-row"><span class="setting-lbl">Membre depuis</span><span class="setting-val">'+(user&&user.createdAt?new Date(user.createdAt).toLocaleDateString():'')+'</span></div>';
+  h += '</div>';
+  
+  content.innerHTML = h;
+}
+
+function saveProfile() {
+  if(!prof || !user) return;
+  var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+  var u = users[user.email];
+  if(u) {
+    var idx = u.profiles.findIndex(function(p){return p.id===prof.id;});
+    if(idx>=0) u.profiles[idx] = prof;
+    users[user.email] = u;
+    localStorage.setItem('netluxe_users', JSON.stringify(users));
+    localStorage.setItem('netluxe_profile', JSON.stringify(prof));
+  }
+}
+
+function logout() {
+  localStorage.removeItem('netluxe_user');
+  localStorage.removeItem('netluxe_profile');
+  user = null; prof = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('authScreen').classList.remove('hidden');
+}
+
+// CONTENT
+function setHero(c) {
+  cur = c;
+  if(!c) return;
+  document.getElementById('heroBg').style.backgroundImage = 'url('+c.img+')';
+  document.getElementById('heroTitle').textContent = c.title;
+  document.getElementById('heroDesc').textContent = c.desc;
+  document.getElementById('heroMeta').innerHTML = '<span class="rat">★ '+c.rat+'</span><span class="sep"></span><span>'+c.year+'</span><span class="sep"></span><span>'+c.dur+'</span><span class="sep"></span><span>'+c.genre+'</span><span class="qlt">4K</span>'+(c.org?'<span style="color:var(--gold);margin-left:8px">ORIGINAL</span>':'');
+}
+
+function fillRow(id, items) {
+  var row = document.getElementById(id);
+  if(!row) return;
+  row.innerHTML = items.length ? items.map(function(c){
+    var prog = prof&&prof.progress&&prof.progress[c.id]?prof.progress[c.id]:0;
+    return '<div class="card" onclick="showDetail('+c.id+')">'+
+      '<div class="card-img"><img src="'+c.img+'" loading="lazy" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 200 280%22><rect fill=%22%23222%22 width=%22200%22 height=%22280%22/></svg>\'">'+
+      '<span class="card-tag '+(c.org?'org':'')+'">'+(c.org?'ORIGINAL':(c.type==='film'?'FILM':c.type==='series'?'SÉRIE':'ANIMÉ'))+'</span>'+
+      (prog>0?'<div class="card-prog"><div class="card-prog-fill" style="width:'+prog+'%"></div></div>':'')+
+      '<div class="card-ov"><div class="card-play">▶</div></div></div>'+
+      '<div class="card-txt">'+c.title+'</div>'+
+      '<div class="card-info"><span>'+c.year+'</span><span class="card-rat">★ '+c.rat+'</span></div></div>';
+  }).join('') : '<div class="empty-state"><div class="icon">📭</div><p>Aucun contenu</p></div>';
+}
+
+// DETAIL
+function showDetail(id) {
+  cur = CAT.find(function(c){return c.id===id;});
+  if(!cur) return;
+  closeSearch();
+  document.getElementById('detTitle').textContent = cur.title;
+  
+  var h = '<img src="'+cur.img+'" style="width:100%;height:220px;object-fit:cover;border-radius:12px;margin-bottom:16px">';
+  h += '<div style="display:flex;gap:12px;margin-bottom:16px;color:var(--t2);font-size:14px;flex-wrap:wrap">';
+  h += '<span style="color:var(--gold);font-weight:600">★ '+cur.rat+'</span><span>'+cur.year+'</span><span>'+cur.dur+'</span><span>'+cur.genre+'</span>';
+  h += '<span>👁 '+cur.views.toLocaleString()+'</span><span>❤️ '+cur.likes.toLocaleString()+'</span>';
+  if(cur.org) h += '<span style="color:var(--gold)">★ NETLUXE ORIGINAL</span>';
+  h += '</div>';
+  h += '<p style="color:var(--t2);line-height:1.7;margin-bottom:20px">'+cur.desc+'</p>';
+  h += '<div style="margin-bottom:20px"><h4 style="margin-bottom:8px">Casting</h4><p style="color:var(--t2)">'+(cur.cast?cur.cast.join(', '):'N/A')+'</p></div>';
+  h += '<div style="margin-bottom:20px"><h4 style="margin-bottom:8px">Audio</h4><p style="color:var(--t2)">'+(cur.audio?cur.audio.join(' / '):'N/A')+'</p></div>';
+  h += '<div style="display:flex;gap:12px">';
+  h += '<button class="btn btn-p" style="flex:1" onclick="playCurrent()">▶ Regarder</button>';
+  h += '<button class="btn btn-o" onclick="toggleMyList('+cur.id+')">'+(prof&&prof.myList&&prof.myList.includes(cur.id)?'✓ Ma Liste':'+ Liste')+'</button></div>';
+  document.getElementById('detBody').innerHTML = h;
+  document.getElementById('detailModal').classList.add('active');
+}
+
+function closeDetail() { document.getElementById('detailModal').classList.remove('active'); }
+function playCurrent() { if(cur) playVideo(cur.id); closeDetail(); }
+function playHero() { if(cur) playVideo(cur.id); }
+function showHeroDetails() { if(cur) showDetail(cur.id); }
+function toggleMyList(id) {
+  if(!prof) return;
+  if(!prof.myList) prof.myList = [];
+  var idx = prof.myList.indexOf(id);
+  if(idx>=0) prof.myList.splice(idx,1);
+  else prof.myList.push(id);
+  saveProfile();
+  showToast(idx>=0?'Retiré de Ma Liste':'Ajouté à Ma Liste');
+}
+
+// SEARCH
+function openSearch() { document.getElementById('srchOverlay').classList.add('active'); document.getElementById('srchInput').focus(); }
+function closeSearch() { document.getElementById('srchOverlay').classList.remove('active'); }
+function doSearch() {
+  var q = document.getElementById('srchInput').value.toLowerCase().trim();
+  var res = q ? CAT.filter(function(c){
+    return c.title.toLowerCase().includes(q)||c.genre.toLowerCase().includes(q)||(c.cast&&c.cast.some(function(a){return a.toLowerCase().includes(q);}))||c.year.toString().includes(q);
+  }) : [];
+  document.getElementById('srchRes').innerHTML = res.length ? res.map(function(c){
+    return '<div class="srch-card" onclick="showDetail('+c.id+')"><img src="'+c.img+'"><div style="font-weight:600;font-size:13px;margin-top:4px">'+c.title+'</div><div style="color:var(--t3);font-size:11px">'+(c.type==='film'?'Film':c.type==='series'?'Série':'Animé')+' · '+c.year+'</div></div>';
+  }).join('') : '<div style="color:var(--t3);text-align:center;padding:40px">Aucun résultat</div>';
+}
+
+// PLAYER with gestures
+function playVideo(id, epIdx) {
+  cur = CAT.find(function(c){return c.id===id;}) || cur;
+  if(!cur||!cur.video) return;
+  
+  curEp = epIdx || 0;
+  curSeries = cur.type === 'series' ? cur : null;
+  
+  var player = document.getElementById('player');
+  var video = document.getElementById('videoEl');
+  player.classList.add('active');
+  
+  if(hls) { hls.destroy(); hls = null; }
+  
+  if(Hls.isSupported()) {
+    hls = new Hls();
+    hls.loadSource(cur.video);
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, function(){ video.play(); });
+  } else if(video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = cur.video;
+    video.addEventListener('loadedmetadata', function(){ video.play(); });
+  }
+  
+  // Update UI
+  document.getElementById('playerTitle').textContent = cur.title;
+  document.getElementById('playBtn').textContent = '⏸';
+  
+  // Show/hide episode buttons
+  document.getElementById('prevEpBtn').style.display = curSeries ? 'flex' : 'none';
+  document.getElementById('nextEpBtn').style.display = curSeries ? 'flex' : 'none';
+  
+  video.ontimeupdate = function(){
+    var pct = (video.currentTime/video.duration)*100;
+    document.getElementById('progFill').style.width = pct+'%';
+    document.getElementById('playTime').textContent = fmt(video.currentTime)+' / '+fmt(video.duration);
+  };
+  
+  // Save progress
+  if(prof) {
+    if(!prof.history) prof.history = [];
+    var existing = prof.history.findIndex(function(h){return h.id===cur.id;});
+    if(existing>=0) prof.history.splice(existing,1);
+    prof.history.unshift({id:cur.id,title:cur.title,date:new Date().toISOString()});
+    prof.history = prof.history.slice(0,50);
     
-    // PLAYER
-    function playVideo(id) {
-      cur = CAT.find(function(c){return c.id===id;}) || cur;
-      if(!cur||!cur.video) return;
-      var player = document.getElementById('player');
-      var video = document.getElementById('videoEl');
-      player.classList.add('active');
-      if(hls) { hls.destroy(); hls = null; }
-      if(Hls.isSupported()) {
-        hls = new Hls();
-        hls.loadSource(cur.video);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function(){ video.play(); });
-      } else if(video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = cur.video;
-        video.addEventListener('loadedmetadata', function(){ video.play(); });
-      }
-      video.ontimeupdate = function(){
-        var pct = (video.currentTime/video.duration)*100;
-        document.getElementById('progFill').style.width = pct+'%';
-        document.getElementById('playTime').textContent = fmt(video.currentTime)+' / '+fmt(video.duration);
-      };
-      if(prof) {
-        if(!prof.history) prof.history = [];
-        prof.history.unshift({id:cur.id,title:cur.title,date:new Date().toISOString()});
-        prof.history = prof.history.slice(0,50);
-        var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
-        users[user.email] = user;
-        localStorage.setItem('netluxe_users', JSON.stringify(users));
-        localStorage.setItem('netluxe_profile', JSON.stringify(prof));
-      }
+    if(!prof.progress) prof.progress = {};
+    prof.progress[cur.id] = 0;
+    saveProfile();
+  }
+  
+  // Setup gestures
+  setupGestures();
+  
+  // Auto-hide controls
+  autoHideControls();
+}
+
+function fmt(s) { if(!s||isNaN(s)) return '00:00'; var m=Math.floor(s/60),sec=Math.floor(s%60); return m.toString().padStart(2,'0')+':'+sec.toString().padStart(2,'0'); }
+function closePlayer() { 
+  var v=document.getElementById('videoEl'); 
+  v.pause(); 
+  if(hls){hls.destroy();hls=null;} 
+  document.getElementById('player').classList.remove('active'); 
+  document.getElementById('playerSettings').classList.remove('show');
+}
+function togglePlay() { var v=document.getElementById('videoEl'); if(v.paused){v.play();document.getElementById('playBtn').textContent='⏸';}else{v.pause();document.getElementById('playBtn').textContent='▶';} }
+function skip(s) { document.getElementById('videoEl').currentTime += s; }
+function seekPlayer(e) { var v=document.getElementById('videoEl'),r=e.target.getBoundingClientRect(); v.currentTime=((e.clientX-r.left)/r.width)*v.duration; }
+function prevEp() { if(curEp>0) curEp--; showToast('Épisode '+(curEp+1)); }
+function nextEp() { curEp++; showToast('Épisode '+(curEp+1)); }
+
+// Volume & Brightness gestures
+function adjustVolume(d) {
+  vol = Math.max(0,Math.min(100,vol+d));
+  var v = document.getElementById('videoEl');
+  v.volume = vol/100;
+  var hint = document.getElementById('volHint');
+  hint.querySelector('.val').textContent = '🔊 '+vol+'%';
+  hint.classList.add('show');
+  setTimeout(function(){hint.classList.remove('show');},1500);
+}
+
+function adjustBrightness(d) {
+  bri = Math.max(10,Math.min(100,bri+d));
+  var ov = document.getElementById('brightnessOv');
+  ov.style.opacity = (100-bri)/100;
+  var hint = document.getElementById('briHint');
+  hint.querySelector('.val').textContent = '☀️ '+bri+'%';
+  hint.classList.add('show');
+  setTimeout(function(){hint.classList.remove('show');},1500);
+}
+
+// Gestures
+function setupGestures() {
+  var startY = 0, startX = 0;
+  var left = document.getElementById('gestureLeft');
+  var right = document.getElementById('gestureRight');
+  var center = document.getElementById('gestureCenter');
+  
+  // Center tap to toggle controls
+  center.onclick = function() {
+    var ctr = document.getElementById('playerCtr');
+    var top = document.getElementById('playerTop');
+    ctr.classList.toggle('hidden');
+    top.classList.toggle('hidden');
+  };
+  
+  // Left side - brightness
+  left.ontouchstart = function(e) { startY = e.touches[0].clientY; };
+  left.ontouchmove = function(e) {
+    e.preventDefault();
+    var dy = startY - e.touches[0].clientY;
+    if(Math.abs(dy) > 20) {
+      adjustBrightness(dy>0?5:-5);
+      startY = e.touches[0].clientY;
     }
-    function fmt(s) { if(!s||isNaN(s)) return '00:00'; var m=Math.floor(s/60),sec=Math.floor(s%60); return m.toString().padStart(2,'0')+':'+sec.toString().padStart(2,'0'); }
-    function closePlayer() { document.getElementById('videoEl').pause(); if(hls){hls.destroy();hls=null;} document.getElementById('player').classList.remove('active'); }
-    function togglePlay() { var v=document.getElementById('videoEl'); if(v.paused){v.play();document.getElementById('playBtn').textContent='⏸';}else{v.pause();document.getElementById('playBtn').textContent='▶';} }
-    function skip(s) { document.getElementById('videoEl').currentTime += s; }
-    function seekPlayer(e) { var v=document.getElementById('videoEl'),r=e.target.getBoundingClientRect(); v.currentTime=((e.clientX-r.left)/r.width)*v.duration; }
-    function adjustVolume(d) { var v=document.getElementById('videoEl'); v.volume=Math.max(0,Math.min(1,v.volume+d/100)); showToast('🔊 '+Math.round(v.volume*100)+'%'); }
-    function adjustBrightness(d) { var ov=document.getElementById('brightnessOv'); var o=parseFloat(ov.style.opacity||0); o=Math.max(0,Math.min(0.8,o+d/100)); ov.style.opacity=o; showToast('☀️ '+Math.round((1-o)*100)+'%'); }
-    function toggleFullscreen() { var v=document.getElementById('videoEl'); if(v.requestFullscreen) v.requestFullscreen(); }
-    
-    // TOAST
-    function showToast(msg) { var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
-    
-    window.addEventListener('scroll', function(){ var h=document.getElementById('header'); if(window.scrollY>50) h.classList.add('sc'); else h.classList.remove('sc'); });
-    
-    init();
-  </script>
+  };
+  
+  // Right side - volume
+  right.ontouchstart = function(e) { startY = e.touches[0].clientY; };
+  right.ontouchmove = function(e) {
+    e.preventDefault();
+    var dy = startY - e.touches[0].clientY;
+    if(Math.abs(dy) > 20) {
+      adjustVolume(dy>0?5:-5);
+      startY = e.touches[0].clientY;
+    }
+  };
+}
+
+function autoHideControls() {
+  var ctr = document.getElementById('playerCtr');
+  var top = document.getElementById('playerTop');
+  ctr.classList.remove('hidden');
+  top.classList.remove('hidden');
+  clearTimeout(window._hideTimer);
+  window._hideTimer = setTimeout(function() {
+    if(!document.getElementById('paused')) {
+      ctr.classList.add('hidden');
+      top.classList.add('hidden');
+    }
+  }, 3000);
+}
+
+function toggleFullscreen() {
+  var p = document.getElementById('player');
+  if(p.requestFullscreen) p.requestFullscreen();
+  else if(p.webkitRequestFullscreen) p.webkitRequestFullscreen();
+}
+
+// Player settings
+function toggleSettings() {
+  document.getElementById('playerSettings').classList.toggle('show');
+  updateSettingsUI();
+}
+
+function updateSettingsUI() {
+  document.getElementById('audioVal').textContent = cur && cur.audio ? cur.audio[curAudio] || 'N/A' : 'N/A';
+  document.getElementById('subsVal').textContent = cur && cur.subs ? cur.subs[curSub] || 'N/A' : 'N/A';
+  document.getElementById('speedVal').textContent = curSpeed + 'x';
+}
+
+function cycleAudio() {
+  if(!cur||!cur.audio) return;
+  curAudio = (curAudio+1)%cur.audio.length;
+  updateSettingsUI();
+  showToast('Audio: '+cur.audio[curAudio]);
+}
+
+function cycleSubs() {
+  if(!cur||!cur.subs) return;
+  curSub = (curSub+1)%cur.subs.length;
+  updateSettingsUI();
+  showToast('Sous-titres: '+cur.subs[curSub]);
+}
+
+function cycleSpeed() {
+  var speeds = [0.5,1,1.25,1.5,2];
+  var idx = speeds.indexOf(curSpeed);
+  curSpeed = speeds[(idx+1)%speeds.length];
+  document.getElementById('videoEl').playbackRate = curSpeed;
+  updateSettingsUI();
+  showToast('Vitesse: '+curSpeed+'x');
+}
+
+function toggleSubs() {
+  cycleSubs();
+}
+
+// TOAST
+function showToast(msg) { var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2500); }
+
+// SCROLL
+window.addEventListener('scroll', function(){ var h=document.getElementById('header'); if(window.scrollY>50) h.classList.add('sc'); else h.classList.remove('sc'); });
+
+// INIT
+init();
+</script>
 </body>
 </html>
