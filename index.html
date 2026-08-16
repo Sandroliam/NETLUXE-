@@ -291,6 +291,24 @@
       <div class="auth-div">ou</div>
       <button class="btn btn-o btn-blk" onclick="showToast('Bientôt disponible')">Continuer avec Google</button>
       <div class="auth-ftr"><span id="authSwitchTxt">Pas encore de compte ?</span> <a id="authSwitch" onclick="toggleAuth()">S'inscrire</a></div>
+      <div class="auth-div">ou</div>
+      <button class="btn btn-o btn-blk" onclick="showCodeAccess()">Code d'accès rapide</button>
+    </div>
+  </div>
+
+  <!-- Code Access Modal -->
+  <div class="auth" id="codeAccess" style="display:none">
+    <div class="auth-box">
+      <div class="auth-hdr">
+        <div class="logo"><div class="logo-ic"><div></div><div></div><div></div><div></div></div><span class="logo-txt"><span class="net">NET</span><span class="luxe">LUXE</span></span></div>
+        <h1>Code d'accès rapide</h1>
+        <p>Entrez votre code d'accès pour vous connecter directement</p>
+      </div>
+      <form class="auth-form" onsubmit="handleCodeAccess(event)">
+        <input type="text" id="accessCode" placeholder="Ex: SANDROLIAM509" required style="text-align:center;font-size:18px;letter-spacing:2px">
+        <button type="submit" class="btn btn-g btn-blk">Se connecter avec le code</button>
+      </form>
+      <div class="auth-ftr"><a onclick="hideCodeAccess()">Retour à la connexion</a></div>
     </div>
   </div>
 
@@ -566,6 +584,53 @@
         localStorage.setItem('netluxe_users', JSON.stringify(users));
         user = users[em]; localStorage.setItem('netluxe_user', JSON.stringify(user);
         showToast('Compte créé ! Bienvenue'); showProfiles();
+      }
+    }
+    
+    // Code d'accès rapide
+    const VALID_CODES = ['SANDROLIAM509', 'NETLUXE2026', 'ADMIN509'];
+    
+    function showCodeAccess() {
+      document.getElementById('authScreen').classList.add('hid');
+      document.getElementById('codeAccess').style.display = 'flex';
+    }
+    
+    function hideCodeAccess() {
+      document.getElementById('codeAccess').style.display = 'none';
+      document.getElementById('authScreen').classList.remove('hid');
+    }
+    
+    function handleCodeAccess(e) {
+      e.preventDefault();
+      const code = document.getElementById('accessCode').value.trim().toUpperCase();
+      
+      if(VALID_CODES.includes(code)) {
+        // Créer ou récupérer un compte admin par défaut
+        const users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+        const adminEmail = 'admin@netluxe.com';
+        
+        if(!users[adminEmail]) {
+          users[adminEmail] = { 
+            email: adminEmail, 
+            password: 'admin509', 
+            name: 'SANDRO LIAM', 
+            profiles: [], 
+            createdAt: new Date().toISOString(),
+            isAdmin: true
+          };
+          localStorage.setItem('netluxe_users', JSON.stringify(users));
+        }
+        
+        user = users[adminEmail];
+        if(!user.profiles || user.profiles.length === 0) {
+          user.profiles = [{ id:'admin1', name:'Admin', color:'#E50914', history:[], myList:[] }];
+        }
+        localStorage.setItem('netluxe_user', JSON.stringify(user);
+        hideCodeAccess();
+        showToast('Connexion réussie ! Bienvenue SANDRO LIAM');
+        showProfiles();
+      } else {
+        showToast('Code invalide. Essayez SANDROLIAM509');
       }
     }
     
