@@ -778,28 +778,48 @@
     
     function hideAllPages() {
       ['homePage','moodPage','statsPage','settingsPage','filmsPage','seriesPage'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
+        var el = document.getElementById(id);
+        if(el) el.style.display = 'none';
       });
+      // Also hide hero and home sections
+      var hero = document.getElementById('hero');
+      var homeSections = document.getElementById('homeSections');
+      if(hero) hero.style.display = 'none';
+      if(homeSections) homeSections.style.display = 'none';
     }
     
     function goHome() {
       hideAllPages();
-      document.getElementById('homePage').style.display = 'block';
-      document.querySelector('.hdr').style.display = 'flex';
-      document.querySelector('.btm-nav').style.display = '';
-      document.querySelectorAll('.nav a').forEach(a => a.classList.remove('act'));
-      document.querySelectorAll('.nav a')[0]?.classList.add('act');
-      document.querySelectorAll('.ni').forEach(a => a.classList.remove('act'));
-      document.querySelectorAll('.ni')[0]?.classList.add('act');
+      var hero = document.getElementById('hero');
+      var homeSections = document.getElementById('homeSections');
+      var homePage = document.getElementById('homePage');
+      if(hero) hero.style.display = 'flex';
+      if(homeSections) homeSections.style.display = 'block';
+      if(homePage) homePage.style.display = 'block';
       
-      const films = CAT.filter(c => c.type === 'film');
-      setHero(films.find(c => c.org) || films[0]);
+      var hdr = document.querySelector('.hdr');
+      var btmNav = document.querySelector('.btm-nav');
+      if(hdr) hdr.style.display = 'flex';
+      if(btmNav) btmNav.style.display = '';
+      
+      document.querySelectorAll('.nav a').forEach(function(a) { a.classList.remove('act'); });
+      var navLinks = document.querySelectorAll('.nav a');
+      if(navLinks[0]) navLinks[0].classList.add('act');
+      
+      document.querySelectorAll('.ni').forEach(function(a) { a.classList.remove('act'); });
+      var niLinks = document.querySelectorAll('.ni');
+      if(niLinks[0]) niLinks[0].classList.add('act');
+      
+      var films = CAT.filter(function(c) { return c.type === 'film'; });
+      setHero(films.find(function(c) { return c.org; }) || films[0]);
       fillRow('trendingRow', CAT.slice(0,8));
-      fillRow('newRow', CAT.filter(c => c.year >= 2023).slice(0,8));
-      fillRow('caribbeanRow', CAT.filter(c => c.org));
-      fillRow('seriesRow', CAT.filter(c => c.type === 'series').slice(0,8));
-      fillRow('cartoonsRow', CAT.filter(c => c.type === 'cartoon').slice(0,8));
+      fillRow('newRow', CAT.filter(function(c) { return c.year >= 2023; }).slice(0,8));
+      fillRow('caribbeanRow', CAT.filter(function(c) { return c.org; }));
+      fillRow('seriesRow', CAT.filter(function(c) { return c.type === 'series'; }).slice(0,8));
+      fillRow('cartoonsRow', CAT.filter(function(c) { return c.type === 'cartoon'; }).slice(0,8));
       fillRow('recommendRow', getRecs());
+      
+      window.scrollTo(0,0);
     }
     
     function getRecs() {
@@ -836,12 +856,30 @@
     
     function goPage(page) {
       hideAllPages();
-      if(page === 'mood') { document.getElementById('moodPage').style.display = 'block'; renderMoods(); }
-      else if(page === 'stats') { document.getElementById('statsPage').style.display = 'block'; renderStats(); }
-      else if(page === 'settings') { document.getElementById('settingsPage').style.display = 'block'; document.getElementById('setEmail').textContent = user?.email || ''; }
-      else if(page === 'films') { document.getElementById('filmsPage').style.display = 'block'; fillRow('allFilmsRow', CAT.filter(c => c.type === 'film')); }
-      else if(page === 'series') { document.getElementById('seriesPage').style.display = 'block'; fillRow('allSeriesRow', CAT.filter(c => c.type === 'series')); }
+      if(page === 'mood') { 
+        document.getElementById('moodPage').style.display = 'block'; 
+        renderMoods(); 
+      }
+      else if(page === 'stats') { 
+        document.getElementById('statsPage').style.display = 'block'; 
+        renderStats(); 
+      }
+      else if(page === 'settings') { 
+        document.getElementById('settingsPage').style.display = 'block'; 
+        document.getElementById('setEmail').textContent = user?.email || ''; 
+      }
+      else if(page === 'films') { 
+        document.getElementById('filmsPage').style.display = 'block'; 
+        fillRow('allFilmsRow', CAT.filter(function(c) { return c.type === 'film'; })); 
+      }
+      else if(page === 'series') { 
+        document.getElementById('seriesPage').style.display = 'block'; 
+        fillRow('allSeriesRow', CAT.filter(function(c) { return c.type === 'series'; })); 
+      }
+      
       document.querySelector('.hdr').style.display = 'flex';
+      document.querySelector('.btm-nav').style.display = '';
+      window.scrollTo(0,0);
     }
     
     function renderMoods() {
