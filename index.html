@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>NETLUXE — Le Cinéma, Sans Limites</title>
-  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTkVUTFVYRSIsInNob3J0X25hbWUiOiJORVRMVVhFIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMEEwQTBBIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwQTBBMEEifQ==">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.0/dist/hls.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -15,9 +15,8 @@
       background: #0A0A0A;
       color: #F5F5F0;
       overflow-x: hidden;
+      padding-bottom: 80px;
     }
-    
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 0; height: 0; }
     
     /* Header */
@@ -37,6 +36,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      cursor: pointer;
     }
     .logo-icon {
       width: 32px;
@@ -48,23 +48,12 @@
       gap: 3px;
       padding: 6px;
     }
-    .logo-icon div {
-      background: white;
-      border-radius: 3px;
-    }
+    .logo-icon div { background: white; border-radius: 3px; }
     .logo-icon div:last-child { background: rgba(255,255,255,0.3); }
-    .logo-text {
-      font-size: 20px;
-      font-weight: bold;
-      font-family: Georgia, serif;
-    }
+    .logo-text { font-size: 20px; font-weight: bold; font-family: Georgia, serif; }
     .logo-text .net { color: #F5F5F0; }
     .logo-text .luxe { color: #E50914; }
-    
-    .nav-icons {
-      display: flex;
-      gap: 16px;
-    }
+    .nav-icons { display: flex; gap: 16px; }
     .nav-icons button {
       background: none;
       border: none;
@@ -102,10 +91,7 @@
       background: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800') center/cover;
       opacity: 0.3;
     }
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
+    .hero-content { position: relative; z-index: 2; }
     .badge {
       display: inline-block;
       padding: 4px 12px;
@@ -123,10 +109,7 @@
       line-height: 1.1;
       margin-bottom: 8px;
     }
-    .hero-title .highlight {
-      color: #D4AF37;
-      font-style: italic;
-    }
+    .hero-title .highlight { color: #D4AF37; font-style: italic; }
     .hero-subtitle {
       font-size: 14px;
       color: #B0B0B0;
@@ -140,13 +123,8 @@
       font-size: 13px;
       color: #B0B0B0;
     }
-    .hero-meta .rating {
-      color: #D4AF37;
-    }
-    .hero-buttons {
-      display: flex;
-      gap: 12px;
-    }
+    .hero-meta .rating { color: #D4AF37; }
+    .hero-buttons { display: flex; gap: 12px; }
     .btn-primary {
       flex: 1;
       background: #E50914;
@@ -175,9 +153,7 @@
     }
     
     /* Sections */
-    .section {
-      padding: 24px 16px;
-    }
+    .section { padding: 24px 16px; }
     .section-title {
       font-family: Georgia, serif;
       font-size: 22px;
@@ -186,9 +162,7 @@
       align-items: center;
       gap: 8px;
     }
-    .section-title .icon {
-      color: #E50914;
-    }
+    .section-title .icon { color: #E50914; }
     
     /* Content Grid */
     .content-grid {
@@ -213,11 +187,7 @@
       position: relative;
       overflow: hidden;
     }
-    .card-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .card-image img { width: 100%; height: 100%; object-fit: cover; }
     .card-tag {
       position: absolute;
       top: 8px;
@@ -229,20 +199,10 @@
       border-radius: 4px;
       font-weight: 600;
     }
-    .card-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .card-meta {
-      font-size: 12px;
-      color: #999;
-    }
+    .card-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { font-size: 12px; color: #999; }
     
-    /* Featured Cards (wider) */
+    /* Featured Cards */
     .featured-grid {
       display: flex;
       gap: 12px;
@@ -250,10 +210,7 @@
       padding-bottom: 8px;
       scrollbar-width: none;
     }
-    .featured-card {
-      flex: 0 0 260px;
-      cursor: pointer;
-    }
+    .featured-card { flex: 0 0 260px; cursor: pointer; }
     .featured-card:active { transform: scale(0.95); }
     .featured-image {
       width: 260px;
@@ -264,11 +221,7 @@
       position: relative;
       overflow: hidden;
     }
-    .featured-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .featured-image img { width: 100%; height: 100%; object-fit: cover; }
     
     /* Tags */
     .tags {
@@ -321,9 +274,6 @@
     .nav-item.active { color: #E50914; }
     .nav-item svg { width: 22px; height: 22px; }
     
-    /* Bottom padding */
-    .bottom-spacer { height: 80px; }
-    
     /* Search Modal */
     .modal {
       display: none;
@@ -364,133 +314,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.05);
       cursor: pointer;
     }
-    .search-result img {
-      width: 80px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-    
-    /* Login Screen */
-    .login-screen {
-      position: fixed;
-      inset: 0;
-      background: #0A0A0A;
-      z-index: 300;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 24px;
-    }
-    .login-hero {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    .login-title {
-      font-family: Georgia, serif;
-      font-size: 36px;
-      margin-bottom: 12px;
-    }
-    .login-subtitle {
-      color: #999;
-      font-size: 15px;
-      max-width: 280px;
-    }
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding-bottom: 40px;
-    }
-    .login-form input {
-      background: #1A1A1A;
-      border: none;
-      padding: 16px;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
-    }
-    .login-form .checkbox {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: #999;
-      font-size: 14px;
-    }
-    .login-form .checkbox input { width: 20px; height: 20px; }
-    .login-btn {
-      background: #E50914;
-      color: white;
-      border: none;
-      padding: 16px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    
-    /* Profile Select */
-    .profile-select {
-      position: fixed;
-      inset: 0;
-      background: #0A0A0A;
-      z-index: 250;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .profile-select.active { display: flex; }
-    .profiles-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin: 32px 0;
-    }
-    .profile-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-    .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: white;
-    }
-    .profile-name { font-size: 14px; color: #999; }
-    .add-profile {
-      width: 80px;
-      height: 80px;
-      border-radius: 8px;
-      border: 2px dashed #555;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      color: #555;
-      cursor: pointer;
-    }
-    .manage-btn {
-      padding: 12px 32px;
-      background: transparent;
-      border: 1px solid #D4AF37;
-      color: #D4AF37;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
+    .search-result img { width: 80px; height: 50px; object-fit: cover; border-radius: 6px; }
     
     /* Video Player */
     .video-player {
@@ -527,10 +351,8 @@
       justify-content: center;
       background: #000;
     }
-    .player-placeholder {
-      text-align: center;
-      color: white;
-    }
+    .player-content video { width: 100%; height: 100%; }
+    .player-placeholder { text-align: center; color: white; }
     .player-controls {
       padding: 16px;
       background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
@@ -541,46 +363,231 @@
       background: rgba(255,255,255,0.2);
       border-radius: 2px;
       margin-bottom: 12px;
-    }
-    .progress-fill {
-      width: 30%;
-      height: 100%;
-      background: #E50914;
-      border-radius: 2px;
-    }
-    .player-buttons {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-    .player-buttons button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 20px;
       cursor: pointer;
     }
+    .progress-fill { width: 0%; height: 100%; background: #E50914; border-radius: 2px; }
+    .player-buttons { display: flex; justify-content: space-around; align-items: center; }
+    .player-buttons button { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+    
+    /* Detail Modal */
+    .detail-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 300;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .detail-modal.active { display: flex; }
+    .detail-header {
+      position: relative;
+      height: 250px;
+      background: #1A1A1A;
+    }
+    .detail-header img { width: 100%; height: 100%; object-fit: cover; }
+    .detail-header::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, #0A0A0A);
+    }
+    .detail-back {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+    }
+    .detail-content { padding: 0 16px 100px; }
+    .detail-title { font-family: Georgia, serif; font-size: 28px; margin-bottom: 8px; }
+    .detail-meta { display: flex; gap: 12px; color: #999; font-size: 14px; margin-bottom: 16px; }
+    .detail-meta .rating { color: #D4AF37; }
+    .detail-desc { color: #CCC; line-height: 1.6; margin-bottom: 24px; }
+    .detail-buttons { display: flex; gap: 12px; margin-bottom: 24px; }
+    .detail-cast { margin-bottom: 24px; }
+    .detail-cast h4 { font-size: 16px; margin-bottom: 8px; }
+    .detail-cast p { color: #999; font-size: 14px; }
+    
+    /* Login Screen */
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+    }
+    .login-hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .login-title { font-family: Georgia, serif; font-size: 36px; margin-bottom: 12px; }
+    .login-subtitle { color: #999; font-size: 15px; max-width: 280px; }
+    .login-form { display: flex; flex-direction: column; gap: 16px; padding-bottom: 40px; }
+    .login-form input {
+      background: #1A1A1A;
+      border: none;
+      padding: 16px;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+    }
+    .login-form .checkbox { display: flex; align-items: center; gap: 12px; color: #999; font-size: 14px; }
+    .login-btn {
+      background: #E50914;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    /* Profile Select */
+    .profile-select {
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 450;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-select.active { display: flex; }
+    .profiles-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 32px 0; }
+    .profile-card { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+    }
+    .profile-name { font-size: 14px; color: #999; }
+    .add-profile {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      border: 2px dashed #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #555;
+      cursor: pointer;
+    }
+    .manage-btn {
+      padding: 12px 32px;
+      background: transparent;
+      border: 1px solid #D4AF37;
+      color: #D4AF37;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    /* Splash */
+    .splash {
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s;
+    }
+    .splash.hidden { opacity: 0; pointer-events: none; }
+    .splash-logo { margin-bottom: 24px; }
+    .splash-text { color: #D4AF37; font-size: 12px; letter-spacing: 3px; }
   </style>
 </head>
 <body>
 
   <!-- Splash -->
-  <div id="splash" style="position:fixed;inset:0;background:#0A0A0A;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.5s;">
-    <div class="logo" style="margin-bottom:24px;">
+  <div class="splash" id="splash">
+    <div class="splash-logo">
       <div class="logo-icon" style="width:80px;height:80px;">
         <div></div><div></div>
         <div></div><div></div>
       </div>
     </div>
-    <div class="logo-text"><span class="net">NET</span><span class="luxe">LUXE</span></div>
-    <div style="color:#D4AF37;font-size:12px;letter-spacing:3px;margin-top:16px;">LE CINÉMA, SANS LIMITES</div>
+    <div class="logo-text" style="font-size:28px;"><span class="net">NET</span><span class="luxe">LUXE</span></div>
+    <div class="splash-text" style="margin-top:16px;">LE CINÉMA, SANS LIMITES</div>
+  </div>
+
+  <!-- Login -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-hero">
+      <div class="logo" style="margin-bottom:24px;">
+        <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
+        <span class="logo-text"><span class="net">NET</span><span class="luxe">LUXE</span></span>
+      </div>
+      <h1 class="login-title">Bon retour.</h1>
+      <p class="login-subtitle">Connectez-vous pour retrouver votre sélection.</p>
+    </div>
+    <div class="login-form">
+      <input type="email" placeholder="Adresse e-mail" value="peterlydensly@gmail.com">
+      <div class="checkbox">
+        <input type="checkbox" checked>
+        <span>Rester connecté pendant 30 jours</span>
+      </div>
+      <button class="login-btn" onclick="doLogin()">Continuer avec mon e-mail</button>
+    </div>
+  </div>
+
+  <!-- Profile Select -->
+  <div class="profile-select" id="profileSelect">
+    <h2 style="font-family:Georgia,serif;font-size:28px;margin-bottom:8px;">Qui regarde ?</h2>
+    <p style="color:#D4AF37;font-size:12px;letter-spacing:2px;">VOTRE ESPACE</p>
+    <p style="color:#999;font-size:14px;margin:24px 0;">Choisissez un profil pour une expérience qui vous ressemble.</p>
+    <div class="profiles-grid">
+      <div class="profile-card" onclick="selectProfile('Maya')">
+        <div class="profile-avatar" style="background:#E91E63;">M</div>
+        <span class="profile-name">Maya</span>
+      </div>
+      <div class="profile-card" onclick="selectProfile('Junior')">
+        <div class="profile-avatar" style="background:#FFC107;color:#000;">J</div>
+        <span class="profile-name">Junior</span>
+      </div>
+      <div class="profile-card" onclick="selectProfile('Enfants')">
+        <div class="profile-avatar" style="background:#009688;">⭐</div>
+        <span class="profile-name">Enfants</span>
+      </div>
+      <div class="profile-card">
+        <div class="add-profile">+</div>
+        <span class="profile-name">Ajouter</span>
+      </div>
+    </div>
+    <button class="manage-btn">GÉRER LES PROFILS</button>
   </div>
 
   <!-- Main App -->
   <div id="app" style="display:none;">
     <!-- Header -->
     <header class="header">
-      <div class="logo">
+      <div class="logo" onclick="goHome()">
         <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
         <span class="logo-text"><span class="net">NET</span><span class="luxe">LUXE</span></span>
       </div>
@@ -604,7 +611,7 @@
           <span>Thriller</span>
         </div>
         <div class="hero-buttons">
-          <button class="btn-primary" onclick="openPlayer()">▶ Regarder</button>
+          <button class="btn-primary" onclick="playVideo(0)">▶ Regarder</button>
           <button class="btn-secondary" onclick="showDetails(0)">+ Plus d'infos</button>
         </div>
       </div>
@@ -640,8 +647,6 @@
       <div class="content-grid" id="cartoons"></div>
     </section>
 
-    <div class="bottom-spacer"></div>
-
     <!-- Bottom Nav -->
     <nav class="bottom-nav">
       <button class="nav-item active" onclick="goHome()">
@@ -676,32 +681,6 @@
     <div class="modal-content" id="searchResults"></div>
   </div>
 
-  <!-- Profile Select -->
-  <div class="profile-select" id="profileSelect">
-    <h2 style="font-family:Georgia,serif;font-size:28px;margin-bottom:8px;">Qui regarde ?</h2>
-    <p style="color:#D4AF37;font-size:12px;letter-spacing:2px;">VOTRE ESPACE</p>
-    <p style="color:#999;font-size:14px;margin:24px 0;">Choisissez un profil pour une expérience qui vous ressemble.</p>
-    <div class="profiles-grid">
-      <div class="profile-card" onclick="selectProfile('Maya')">
-        <div class="profile-avatar" style="background:#E91E63;">M</div>
-        <span class="profile-name">Maya</span>
-      </div>
-      <div class="profile-card" onclick="selectProfile('Junior')">
-        <div class="profile-avatar" style="background:#FFC107;color:#000;">J</div>
-        <span class="profile-name">Junior</span>
-      </div>
-      <div class="profile-card" onclick="selectProfile('Enfants')">
-        <div class="profile-avatar" style="background:#009688;">⭐</div>
-        <span class="profile-name">Enfants</span>
-      </div>
-      <div class="profile-card">
-        <div class="add-profile">+</div>
-        <span class="profile-name">Ajouter</span>
-      </div>
-    </div>
-    <button class="manage-btn">GÉRER LES PROFILS</button>
-  </div>
-
   <!-- Video Player -->
   <div class="video-player" id="videoPlayer">
     <div class="player-header">
@@ -709,17 +688,13 @@
       <button>⋮</button>
     </div>
     <div class="player-content">
-      <div class="player-placeholder">
-        <div style="font-size:60px;margin-bottom:16px;">▶</div>
-        <div style="font-size:20px;margin-bottom:8px;">Lumière Noire</div>
-        <div style="color:#999;">Cliquez pour lancer la lecture</div>
-      </div>
+      <video id="videoElement" controls></video>
     </div>
     <div class="player-controls">
-      <div class="progress-bar"><div class="progress-fill"></div></div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       <div class="player-buttons">
         <button>⏮</button>
-        <button style="font-size:32px;">▶</button>
+        <button style="font-size:32px;" id="playPauseBtn" onclick="togglePlay()">▶</button>
         <button>⏭</button>
         <button>CC</button>
         <button>⚙️</button>
@@ -729,32 +704,107 @@
   </div>
 
   <!-- Detail Modal -->
-  <div class="modal" id="detailModal">
-    <div class="modal-header">
-      <button onclick="closeDetail()">←</button>
-      <span id="detailTitle" style="font-size:18px;font-weight:bold;"></span>
-      <button>♡</button>
+  <div class="detail-modal" id="detailModal">
+    <div class="detail-header">
+      <img id="detailImage" src="">
+      <button class="detail-back" onclick="closeDetail()">←</button>
     </div>
-    <div class="modal-content" id="detailContent"></div>
+    <div class="detail-content">
+      <h1 class="detail-title" id="detailTitle"></h1>
+      <div class="detail-meta" id="detailMeta"></div>
+      <div class="detail-buttons">
+        <button class="btn-primary" onclick="playCurrent()">▶ Regarder</button>
+        <button class="btn-secondary">+ Ma Liste</button>
+      </div>
+      <p class="detail-desc" id="detailDesc"></p>
+      <div class="detail-cast">
+        <h4>Casting</h4>
+        <p id="detailCast"></p>
+      </div>
+      <div class="detail-cast">
+        <h4>Réalisateur</h4>
+        <p id="detailDirector"></p>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Content data with REAL video URLs
     const content = [
-      {id:1,title:'Lumière Noire',type:'FILM',year:2024,duration:'2h 18m',rating:4.8,genre:'Thriller',img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',desc:'Un détective hanté par son passé traque un tueur en série à travers les ruelles sombres de Port-au-Prince.'},
-      {id:2,title:'Rasin — Racines',type:'FILM',year:2023,duration:'1h 52m',rating:4.7,genre:'Drame',img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400',desc:'L\'histoire d\'une famille haïtienne à travers trois générations.'},
-      {id:3,title:'Caribbean Heat',type:'FILM',year:2024,duration:'2h 05m',rating:4.5,genre:'Action',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',desc:'Un thriller politique dans les caraïbes.'},
-      {id:4,title:'Titad la',type:'FILM',year:2024,duration:'2h 10m',rating:4.9,genre:'Drame',img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',desc:'L\'ascension d\'une jeune femme dans le milieu politique haïtien.'},
-      {id:5,title:'Rue des Jasmins',type:'SÉRIE',year:2024,duration:'3 saisons',rating:4.7,genre:'Policier',img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',desc:'Série policière dans le Port-au-Prince contemporain.'},
-      {id:6,title:'Madan Nou',type:'SÉRIE',year:2023,duration:'2 saisons',rating:4.8,genre:'Comédie',img:'https://images.unsplash.com/photo-1524813686514-a57563d77965?w=400',desc: 'Comédie dramatique suivant une famille haïtienne à Miami.'},
-      {id:7,title:'Ti Zwa',type:'DESSIN ANIMÉ',year:2024,duration:'26 ép.',rating:4.4,genre:'Animation',img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400',desc:'Un petit zèbre courageux explore la forêt tropicale.'},
-      {id:8,title:'Konpè Bètje',type:'DESSIN ANIMÉ',year:2023,duration:'52 ép.',rating:4.5,genre:'Jeunesse',img:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400',desc:'Les aventures drôles d\'un petit haïtien curieux.'},
+      {
+        id:1, title:'Lumière Noire', type:'FILM', year:2024, duration:'2h 18m', rating:4.8, genre:'Thriller',
+        img:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400',
+        backdrop:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1200',
+        desc:'Un détective hanté par son passé traque un tueur en série à travers les ruelles sombres de Port-au-Prince.',
+        cast:['Jean D\'Arc', 'Marie Chadeau', 'Pierre Jean'], director:'Claude L. François',
+        video:'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8'
+      },
+      {
+        id:2, title:'Rasin — Racines', type:'FILM', year:2023, duration:'1h 52m', rating:4.7, genre:'Drame',
+        img:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400',
+        backdrop:'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=1200',
+        desc:'L\'histoire d\'une famille haïtienne à travers trois générations, entre traditions et modernité.',
+        cast:['Sophie Désir', 'François M. Pierre'], director:'Nadia C. Juste',
+        video:'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+      },
+      {
+        id:3, title:'Caribbean Heat', type:'FILM', year:2024, duration:'2h 05m', rating:4.5, genre:'Action',
+        img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
+        backdrop:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200',
+        desc:'Un thriller politique dans les caraïbes, entre corruption et révolution.',
+        cast:['Carlos M. Rodríguez', 'Jean P. Baptiste'], director:'Marco A. Díaz',
+        video:'https://diceyk6a7voy4.cloudfront.net/e78752a1-2e83-43fa-85ae-3d508be29366/hls/fitfest-sample-1_Ott_Hls_Ts_Avc_Aac_16x9_1280x720p_30Hz_6.0Mbps_qvbr.m3u8'
+      },
+      {
+        id:4, title:'Titad la', type:'FILM', year:2024, duration:'2h 10m', rating:4.9, genre:'Drame',
+        img:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400',
+        backdrop:'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1200',
+        desc:'L\'ascension d\'une jeune femme dans le milieu politique haïtien contemporain.',
+        cast:['Manise J. Pierre', 'Ricot J. Dupont'], director:'Roseline M. Augustin',
+        video:'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8'
+      },
+      {
+        id:5, title:'Rue des Jasmins', type:'SÉRIE', year:2024, duration:'3 saisons', rating:4.7, genre:'Policier',
+        img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400',
+        backdrop:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200',
+        desc:'Série policière se déroulant dans le Port-au-Prince contemporain.',
+        cast:['Jean R. Charles', 'Myrtha D. L.'], director:'Fabien L. Célestin',
+        video:'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.mp4/.m3u8'
+      },
+      {
+        id:6, title:'Madan Nou', type:'SÉRIE', year:2023, duration:'2 saisons', rating:4.8, genre:'Comédie',
+        img:'https://images.unsplash.com/photo-1524813686514-a57563d77965?w=400',
+        backdrop:'https://images.unsplash.com/photo-1524813686514-a57563d77965?w=1200',
+        desc:'Comédie dramatique suivant une famille haïtienne installée à Miami.',
+        cast:['Natacha L. Pierre', 'W. L. Aris'], director:'Cassandre L. Joseph',
+        video:'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8'
+      },
+      {
+        id:7, title:'Ti Zwa', type:'DESSIN ANIMÉ', year:2024, duration:'26 ép.', rating:4.4, genre:'Animation',
+        img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400',
+        backdrop:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200',
+        desc:'Un petit zèbre courageux explore la forêt tropicale.',
+        cast:[], director:'Studio Créole Animation',
+        video:'https://res.cloudinary.com/dannykeane/video/upload/sp_full_hd/q_80:qmax_90,ac_none/v1/dk-memoji-dark.m3u8'
+      },
+      {
+        id:8, title:'Konpè Bètje', type:'DESSIN ANIMÉ', year:2023, duration:'52 ép.', rating:4.5, genre:'Jeunesse',
+        img:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=400',
+        backdrop:'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=1200',
+        desc:'Les aventures drôles et éducatives d\'un petit haïtien curieux.',
+        cast:[], director:'Atelier Lakay',
+        video:'https://d1gnaphp93fop2.cloudfront.net/videos/multiresolution/rendition_new10.m3u8'
+      },
     ];
 
-    function renderCards(containerId, items, featured) {
+    let currentContent = null;
+    let hls = null;
+
+    function renderCards(containerId, items) {
       const container = document.getElementById(containerId);
       container.innerHTML = items.map(c => `
-        <div class="${featured ? 'featured-card' : 'content-card'}" onclick="showDetails(${c.id-1})">
-          <div class="${featured ? 'featured-image' : 'card-image'}">
+        <div class="content-card" onclick="showDetails(${c.id-1})">
+          <div class="card-image">
             <img src="${c.img}" alt="${c.title}">
             <span class="card-tag">${c.type}</span>
           </div>
@@ -771,9 +821,24 @@
       
       renderCards('trending', content.slice(0, 5));
       renderCards('newReleases', content.slice(2, 7));
-      renderCards('caribbean', films, true);
+      renderCards('caribbean', films);
       renderCards('series', series);
       renderCards('cartoons', cartoons);
+    }
+
+    function doLogin() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('profileSelect').classList.add('active');
+    }
+
+    function selectProfile(name) {
+      document.getElementById('profileSelect').classList.remove('active');
+      document.getElementById('app').style.display = 'block';
+      localStorage.setItem('profile', name);
+    }
+
+    function showProfileSelect() {
+      document.getElementById('profileSelect').classList.add('active');
     }
 
     function openSearch() {
@@ -789,7 +854,7 @@
 
     function doSearch() {
       const q = document.getElementById('searchInput').value.toLowerCase();
-      const results = content.filter(c => c.title.toLowerCase().includes(q));
+      const results = content.filter(c => c.title.toLowerCase().includes(q) || c.genre.toLowerCase().includes(q));
       document.getElementById('searchResults').innerHTML = results.map(c => `
         <div class="search-result" onclick="showDetails(${c.id-1})">
           <img src="${c.img}">
@@ -801,56 +866,74 @@
       `).join('') || '<div style="color:#999;text-align:center;margin-top:40px;">Aucun résultat</div>';
     }
 
-    function showProfileSelect() {
-      document.getElementById('profileSelect').classList.add('active');
-    }
-
-    function selectProfile(name) {
-      document.getElementById('profileSelect').classList.remove('active');
-      localStorage.setItem('profile', name);
-      alert('Bienvenue ' + name + ' !');
-    }
-
-    function openPlayer() {
-      document.getElementById('videoPlayer').classList.add('active');
-    }
-
-    function closePlayer() {
-      document.getElementById('videoPlayer').classList.remove('active');
-    }
-
     function showDetails(idx) {
-      const c = content[idx];
-      document.getElementById('detailTitle').textContent = c.title;
-      document.getElementById('detailContent').innerHTML = `
-        <img src="${c.img}" style="width:100%;height:200px;object-fit:cover;border-radius:12px;margin-bottom:16px;">
-        <div style="display:flex;gap:12px;margin-bottom:16px;color:#999;font-size:14px;">
-          <span style="color:#D4AF37;">★ ${c.rating}</span>
-          <span>${c.year}</span>
-          <span>${c.duration}</span>
-          <span>${c.genre}</span>
-        </div>
-        <p style="color:#CCC;line-height:1.6;margin-bottom:24px;">${c.desc}</p>
-        <button class="btn-primary" onclick="openPlayer()" style="margin-bottom:12px;">▶ Regarder</button>
-        <button class="btn-secondary" style="background:transparent;border:1px solid #555;">+ Ma Liste</button>
+      currentContent = content[idx];
+      document.getElementById('detailImage').src = currentContent.backdrop;
+      document.getElementById('detailTitle').textContent = currentContent.title;
+      document.getElementById('detailMeta').innerHTML = `
+        <span class="rating">★ ${currentContent.rating}</span>
+        <span>${currentContent.year}</span>
+        <span>${currentContent.duration}</span>
+        <span>${currentContent.genre}</span>
       `;
+      document.getElementById('detailDesc').textContent = currentContent.desc;
+      document.getElementById('detailCast').textContent = currentContent.cast.join(', ') || 'Non spécifié';
+      document.getElementById('detailDirector').textContent = currentContent.director;
       document.getElementById('detailModal').classList.add('active');
+      closeSearch();
     }
 
     function closeDetail() {
       document.getElementById('detailModal').classList.remove('active');
     }
 
+    function playCurrent() {
+      if (currentContent) playVideo(currentContent.id - 1);
+      closeDetail();
+    }
+
+    function playVideo(idx) {
+      currentContent = content[idx];
+      const player = document.getElementById('videoPlayer');
+      const video = document.getElementById('videoElement');
+      player.classList.add('active');
+      
+      if (hls) { hls.destroy(); hls = null; }
+      
+      if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(currentContent.video);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play());
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = currentContent.video;
+        video.addEventListener('loadedmetadata', () => video.play());
+      }
+    }
+
+    function closePlayer() {
+      const video = document.getElementById('videoElement');
+      video.pause();
+      if (hls) { hls.destroy(); hls = null; }
+      document.getElementById('videoPlayer').classList.remove('active');
+    }
+
+    function togglePlay() {
+      const video = document.getElementById('videoElement');
+      if (video.paused) { video.play(); document.getElementById('playPauseBtn').textContent = '⏸'; }
+      else { video.pause(); document.getElementById('playPauseBtn').textContent = '▶'; }
+    }
+
     function goHome() { closeSearch(); closeDetail(); }
-    function goFilms() { document.getElementById('searchInput').value = 'FILM'; doSearch(); openSearch(); }
-    function goSeries() { document.getElementById('searchInput').value = 'SÉRIE'; doSearch(); openSearch(); }
+    function goFilms() { openSearch(); document.getElementById('searchInput').value = 'FILM'; doSearch(); }
+    function goSeries() { openSearch(); document.getElementById('searchInput').value = 'SÉRIE'; doSearch(); }
 
     // Splash
     setTimeout(() => {
-      document.getElementById('splash').style.opacity = '0';
+      document.getElementById('splash').classList.add('hidden');
       setTimeout(() => {
         document.getElementById('splash').style.display = 'none';
-        document.getElementById('app').style.display = 'block';
+        document.getElementById('loginScreen').style.display = 'flex';
       }, 500);
     }, 2500);
 
