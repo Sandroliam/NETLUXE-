@@ -331,6 +331,21 @@
     </div>
   </div>
 
+  <!-- Create Profile Screen -->
+  <div class="profiles" id="createProfileScreen" style="display:none">
+    <h1>Créez votre profil</h1>
+    <p class="sub">PERSONNALISEZ VOTRE EXPÉRIENCE</p>
+    <div style="max-width:400px;width:100%;margin:0 auto">
+      <div class="form-group" style="margin-bottom:24px;text-align:left">
+        <label class="form-label">Nom du profil</label>
+        <input class="form-input" id="newProfileName" placeholder="Ex: Sandro" style="width:100%;padding:16px;background:var(--s2);border:1px solid rgba(255,255,255,.1);border-radius:var(--rs);color:#fff;font-size:16px;outline:none">
+      </div>
+      <p style="color:var(--t2);font-size:13px;margin-bottom:24px;text-align:left">Choisissez une couleur :</p>
+      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:32px;flex-wrap:wrap" id="colorPicker"></div>
+      <button class="btn btn-p btn-blk btn-lg" onclick="createProfile()">Créer mon profil</button>
+    </div>
+  </div>
+
   <!-- Profiles -->
   <div class="profiles" id="profilesScreen">
     <h1>Qui regarde ?</h1>
@@ -586,16 +601,15 @@
       document.getElementById('authSwitch').textContent = isLogin ? 'S\'inscrire' : 'Se connecter';
     }
     
-    // Email-only login (no password required)
+    // Email-only login → go directly to profile creation
     function handleEmailLogin(e) {
       e.preventDefault();
-      const em = document.getElementById('loginEmail').value.trim();
+      var em = document.getElementById('loginEmail').value.trim();
       if(!em) return showToast('Veuillez entrer votre email');
       
-      const users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+      var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
       
       if(!users[em]) {
-        // Auto-create account
         users[em] = { 
           email:em, 
           name:em.split('@')[0], 
@@ -604,17 +618,69 @@
           loginMethod:'email'
         };
         localStorage.setItem('netluxe_users', JSON.stringify(users));
-        showToast('Compte créé ! Bienvenue');
-      } else {
-        showToast('Connexion réussie !');
       }
       
       user = users[em];
-      if(!user.profiles || user.profiles.length === 0) {
-        user.profiles = [{ id:'default', name:user.name, color:'#E50914', history:[], myList:[] }];
+      localStorage.setItem('netluxe_user', JSON.stringify(user));
+      showToast('Bienvenue ! Créez votre profil');
+      showCreateProfile();
+    }
+    
+    // Show create profile screen
+    function showCreateProfile() {
+      document.getElementById('authScreen').classList.add('hid');
+      document.getElementById('profilesScreen').classList.remove('act');
+      document.getElementById('createProfileScreen').style.display = 'flex';
+      
+      var colors = ['#E50914','#E91E63','#9C27B0','#8B5CF6','#3F51B5','#2196F3','#00BCD4','#009688','#4CAF50','#8BC34A','#FFC107','#FF9800','#FF5722','#795548','#9E9E9E'];
+      var picker = document.getElementById('colorPicker');
+      picker.innerHTML = colors.map(function(c, i) {
+        return '<div style="width:40px;height:40px;border-radius:50%;background:' + c + ';cursor:pointer;border:3px solid ' + (i===0?'#fff':'transparent') + '" onclick="selectColor(' + i + ')"></div>';
+      }).join('');
+      selectedColor = colors[0];
+    }
+    
+    var selectedColor = '#E50914';
+    function selectColor(idx) {
+      var colors = ['#E50914','#E91E63','#9C27B0','#8B5CF6','#3F51B5','#2196F3','#00BCD4','#009688','#4CAF50','#8BC34A','#FFC107','#FF9800','#FF5722','#795548','#9E9E9E'];
+      selectedColor = colors[idx];
+      var picker = document.getElementById('colorPicker');
+      var children = picker.children;
+      for(var i=0; i<children.length; i++) {
+        children[i].style.border = (i===idx) ? '3px solid #fff' : '3px solid transparent';
       }
-      localStorage.setItem('netluxe_user', JSON.stringify(user);
-      showProfiles();
+    }
+    
+    function createProfile() {
+      var name = document.getElementById('newProfileName').value.trim();
+      if(!name) return showToast('Entrez un nom pour votre profil');
+      
+      var profile = {
+        id: Date.now().toString(),
+        name: name,
+        color: selectedColor,
+        history: [],
+        myList: []
+      };
+      
+      if(!user.profiles) user.profiles = [];
+      user.profiles.push(profile);
+      
+      var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
+      users[user.email] = user;
+      localStorage.setItem('netluxe_users', JSON.stringify(users));
+      localStorage.setItem('netluxe_user', JSON.stringify(user));
+      
+      prof = profile;
+      localStorage.setItem('netluxe_profile', JSON.stringify(prof));
+      
+      document.getElementById('createProfileScreen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      var btn = document.getElementById('hdrProf');
+      btn.textContent = prof.name[0].toUpperCase();
+      btn.style.background = prof.color;
+      goHome();
+      showToast('Profil créé ! Bienvenue sur NETLUXE');
     }
     
     // OAuth login simulation
