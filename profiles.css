@@ -92,6 +92,17 @@
 .nxcr-ftr{padding:15px 20px;border-top:1px solid rgba(245,245,240,.08);
   display:flex;gap:9px;justify-content:flex-end;flex-shrink:0}
 
+/* ---------- MODE GESTION ---------- */
+.nxsel.manage .nxsel-card .nxsel-av{opacity:.62;border-color:rgba(255,107,53,.45)}
+.nxsel.manage .nxsel-card:hover .nxsel-av{opacity:1;border-color:#FF6B35}
+.nxsel.manage .nxsel-edit{opacity:1;background:#FF6B35;color:#0A1628;border-color:#FF6B35}
+.nxsel.manage .nxsel-card.add{display:none}
+.nxsel.manage .nxsel-card:after{content:'✎ Modifier';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);font-size:12px;font-weight:700;color:#F5F5F0;
+  background:rgba(5,11,20,.78);padding:6px 12px;border-radius:14px;pointer-events:none;
+  opacity:0;transition:opacity .18s}
+.nxsel.manage .nxsel-card:hover:after{opacity:1}
+
 /* ---------- RESPONSIVE ---------- */
 @media(max-width:640px){
   .nxsel-in{padding:32px 16px 46px}

@@ -66,7 +66,7 @@ function switchProfile(pid){ nxPickProfile(pid); }
   else window.addEventListener('load', function(){ setTimeout(boot, 120); });
 })();
 
-/* Migration : donner un type aux profils existants */
+/* Migration : type + avatar pour les profils existants */
 (function(){
   function migrate(){
     try {
@@ -78,6 +78,12 @@ function switchProfile(pid){ nxPickProfile(pid); }
           var ps = users[em].profiles || [];
           for(var i=0;i<ps.length;i++){
             if(!ps[i].ptype){ ps[i].ptype = 'mixed'; changed = true; }
+            if(!ps[i].avatarId){
+              ps[i].avatarId = (typeof nxAvDefault === 'function')
+                ? nxAvDefault(ps[i].ptype) : 'pre1';
+              changed = true;
+            }
+            if(ps[i].isKid === undefined){ ps[i].isKid = (ps[i].ptype === 'kids'); changed = true; }
           }
         }
         if(changed){
@@ -85,18 +91,26 @@ function switchProfile(pid){ nxPickProfile(pid); }
           if(typeof user !== 'undefined' && user && users[user.email]) user = users[user.email];
         }
       }
-      /* profil ACTIF : lui donner aussi un type */
+      /* profil ACTIF */
       var sp = localStorage.getItem('netluxe_profile');
       if(sp){
-        var p = JSON.parse(sp);
-        if(p && !p.ptype){
-          p.ptype = 'mixed';
-          localStorage.setItem('netluxe_profile', JSON.stringify(p));
+        var p = JSON.parse(sp), ch2 = false;
+        if(p && !p.ptype){ p.ptype = 'mixed'; ch2 = true; }
+        if(p && !p.avatarId){
+          p.avatarId = (typeof nxAvDefault === 'function') ? nxAvDefault(p.ptype) : 'pre1';
+          ch2 = true;
         }
-        if(typeof prof !== 'undefined' && prof && !prof.ptype) prof.ptype = 'mixed';
+        if(p && p.isKid === undefined){ p.isKid = (p.ptype === 'kids'); ch2 = true; }
+        if(ch2) localStorage.setItem('netluxe_profile', JSON.stringify(p));
+        if(typeof prof !== 'undefined' && prof){
+          if(!prof.ptype) prof.ptype = 'mixed';
+          if(!prof.avatarId) prof.avatarId = (typeof nxAvDefault === 'function') ? nxAvDefault(prof.ptype) : 'pre1';
+          if(prof.isKid === undefined) prof.isKid = (prof.ptype === 'kids');
+        }
+        if(typeof updateProfileUI === 'function') { try { updateProfileUI(); } catch(e){} }
       }
     } catch(e){}
   }
-  if(document.readyState === 'complete') migrate();
-  else window.addEventListener('load', migrate);
+  if(document.readyState === 'complete') setTimeout(migrate, 60);
+  else window.addEventListener('load', function(){ setTimeout(migrate, 60); });
 })();

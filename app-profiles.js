@@ -178,8 +178,14 @@ function switchProfile(pid){
 function updateProfileUI(){
   var av = document.getElementById('hdrProf') || document.getElementById('navAvatar');
   if(av && prof){
-    if(prof.avatar){ av.style.background='url('+prof.avatar+') center/cover'; av.textContent=''; }
-    else { av.style.background=prof.color||'#E50914'; av.textContent=(prof.name||'?').charAt(0).toUpperCase(); }
+    if(prof.avatarId && typeof nxAvRender === 'function'){
+      av.innerHTML = nxAvRender(prof.avatarId, 40);
+      av.style.background = 'transparent';
+      av.style.overflow = 'hidden';
+      av.style.padding = '0';
+    }
+    else if(prof.avatar){ av.innerHTML=''; av.style.background='url('+prof.avatar+') center/cover'; av.textContent=''; }
+    else { av.innerHTML=''; av.style.background=prof.color||'#E50914'; av.textContent=(prof.name||'?').charAt(0).toUpperCase(); }
   }
   if(typeof renderProfile==='function' && document.getElementById('profilePage') &&
      document.getElementById('profilePage').style.display!=='none') renderProfile();

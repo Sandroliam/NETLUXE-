@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="player.css">
 <link rel="stylesheet" href="player-ui.css">
 <link rel="stylesheet" href="profiles.css">
+<link rel="stylesheet" href="avatars.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -842,7 +843,12 @@ function finishProfile() {
 function showApp() {
   document.getElementById('app').style.display = 'block';
   var btn = document.getElementById('hdrProf');
-  if(prof && prof.avatar) {
+  if(prof && prof.avatarId && typeof nxAvRender === 'function') {
+    btn.innerHTML = nxAvRender(prof.avatarId, 40);
+    btn.style.background = 'transparent';
+    btn.style.overflow = 'hidden';
+    btn.style.padding = '0';
+  } else if(prof && prof.avatar) {
     btn.innerHTML = '<img src="'+prof.avatar+'">';
   } else if(prof) {
     btn.textContent = prof.name[0].toUpperCase();
@@ -940,7 +946,9 @@ function goPage(page) {
 function renderProfile() {
   var content = document.getElementById('profileContent');
   var h = '<div class="profile-hdr">';
-  if(prof && prof.avatar) h += '<div class="profile-avatar"><img src="'+prof.avatar+'"></div>';
+  if(prof && prof.avatarId && typeof nxAvRender === 'function')
+    h += '<div class="profile-avatar" style="overflow:hidden;padding:0">'+nxAvRender(prof.avatarId,110)+'</div>';
+  else if(prof && prof.avatar) h += '<div class="profile-avatar"><img src="'+prof.avatar+'"></div>';
   else if(prof) h += '<div class="profile-avatar" style="background:'+prof.color+'">'+prof.name[0].toUpperCase()+'</div>';
   h += '<h2 style="font-size:28px;margin-top:16px">'+(prof?prof.name:'')+'</h2>';
   h += '<p style="color:var(--t2)">'+(user?user.email:'')+'</p>';
@@ -1301,6 +1309,10 @@ init();
 <script src="catalog-episodes.js"></script>
 <script src="catalog-sources.js"></script>
 <script src="profiles-types.js"></script>
+<script src="avatars-1.js"></script>
+<script src="avatars-2.js"></script>
+<script src="avatars-api.js"></script>
+<script src="avatars-picker.js"></script>
 <script src="profiles-select.js"></script>
 <script src="profiles-create.js"></script>
 <script src="hero-feed.js"></script>
