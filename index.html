@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="profiles.css">
 <link rel="stylesheet" href="avatars.css">
 <link rel="stylesheet" href="continue.css">
+<link rel="stylesheet" href="sections.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -538,14 +539,19 @@ img{display:block;max-width:100%}
   </section>
 
   <div id="homeSections">
+    <section class="sec" id="continueSection" style="display:none"><div class="sec-hdr"><h2 class="sec-title">⏯️ Continuer à regarder</h2></div><div class="row" id="continueRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🔥 Tendances</h2></div><div class="row" id="trendingRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">✨ Nouveautés</h2></div><div class="row" id="newRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🌴 Productions Caribéennes</h2></div><div class="wide-row" id="caribbeanRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">📺 Séries Populaires</h2></div><div class="row" id="seriesRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">⭐ Dessins Animés</h2></div><div class="row" id="cartoonsRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🎯 Recommandé pour vous</h2></div><div class="row" id="recommendRow"></div></section>
-    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🎞️ Classiques du Cinéma</h2><span style="font-size:11px;color:var(--gold)">DOMAINE PUBLIC</span></div><div class="row" id="publicRow"></div></section>
-    <section class="sec" id="continueSection" style="display:none"><div class="sec-hdr"><h2 class="sec-title">⏯️ Continuer à regarder</h2></div><div class="row" id="continueRow"></div></section>
+    <section class="sec" id="top10Section"><div class="sec-hdr"><h2 class="sec-title">👑 Top 10 NETLUXE</h2></div><div class="row" id="top10Row"></div></section>
+    <section class="sec" id="topCaribSection"><div class="sec-hdr"><h2 class="sec-title">🌴 Top 10 Caraïbes</h2></div><div class="row" id="topCaribRow"></div></section>
+    <section class="sec" id="originalsSection"><div class="sec-hdr"><h2 class="sec-title">⭐ NETLUXE Originals</h2><span class="sec-tag">EXCLUSIF</span></div><div class="row" id="originalsRow"></div></section>
+    <section class="sec" id="comingSection" style="display:none"><div class="sec-hdr"><h2 class="sec-title">🔥 NETLUXE Premiere</h2><span class="sec-tag">À VENIR</span></div><div class="row" id="comingRow"></div></section>
+    <section class="sec" id="caribSection"><div class="sec-hdr"><h2 class="sec-title">🌎 Caribbean Discovery</h2></div><div id="caribDiscovery"></div></section>
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🎞️ Classiques du Cinéma</h2><span class="sec-tag">DOMAINE PUBLIC</span></div><div class="row" id="publicRow"></div></section>
   </div>
 
   <!-- Pages -->
@@ -895,6 +901,11 @@ function goHome() {
   else {
     var films = CAT.filter(function(c){return c.type==='film';});
     setHero(films.find(function(c){return c.org;}) || films[0]);
+  }
+
+  /* Sections éditoriales : Top 10, Originals, Caribbean Discovery, Premiere */
+  if(typeof nxRenderEditorial === 'function'){
+    try { nxRenderEditorial(); } catch(e){}
   }
 
   /* Continuer à regarder — rendu intelligent (saison/épisode + temps restant) */
@@ -1314,6 +1325,7 @@ init();
 <script src="catalog-episodes.js"></script>
 <script src="catalog-sources.js"></script>
 <script src="catalog-meta.js"></script>
+<script src="catalog-announced.js"></script>
 <script src="profiles-types.js"></script>
 <script src="avatars-1.js"></script>
 <script src="avatars-2.js"></script>
@@ -1323,6 +1335,8 @@ init();
 <script src="profiles-create.js"></script>
 <script src="hero-feed.js"></script>
 <script src="continue-watching.js"></script>
+<script src="sections-editorial.js"></script>
+<script src="sections-render.js"></script>
 <script src="player-dom.js"></script>
 <script src="player-core.js"></script>
 <script src="player-controls.js"></script>

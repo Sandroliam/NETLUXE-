@@ -26,6 +26,24 @@ function nxpToast(msg){
 
 /* ---------- OUVERTURE ---------- */
 function nxpOpen(item, seriesList, epIndex){
+  if(!item) return;
+
+  /* Titre annoncé : aucun fichier disponible, on n'ouvre pas un lecteur vide */
+  if(item.announced || !item.video){
+    if(typeof showToast === 'function'){
+      var when = '';
+      if(item.releaseDate){
+        var d = new Date(item.releaseDate);
+        if(!isNaN(d.getTime())){
+          when = ' — sortie prévue le ' + d.toLocaleDateString('fr-FR',
+                 { day:'numeric', month:'long', year:'numeric' });
+        }
+      }
+      showToast('« ' + (item.title || 'Ce titre') + ' » n\'est pas encore disponible' + when);
+    }
+    return;
+  }
+
   nxpBuildDOM();
   NXP.el = nx('nxp'); NXP.vid = nx('nxpVid');
   NXP.cur = item;

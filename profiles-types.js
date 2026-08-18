@@ -33,14 +33,17 @@ function nxIsKidSafe(c){
   return c.type === 'cartoon' || /animation|aventure|comédie|comedy|famille/i.test(c.genre||'');
 }
 
-/* Catalogue visible selon le profil actif — utilisé partout */
+/* Catalogue visible selon le profil actif — utilisé partout.
+   Les titres ANNONCÉS (non encore sortis, sans fichier vidéo) sont
+   exclus : ils n'apparaissent que dans « NETLUXE Premiere ». */
 function nxVisibleCatalog(){
   if(typeof CAT === 'undefined' || !Array.isArray(CAT)) return [];
   var t = nxProfileType();
-  if(t === 'kids')    return CAT.filter(nxIsKidSafe);
-  if(t === 'cartoon') return CAT.filter(function(c){ return c.type === 'cartoon'; });
+  var base = CAT.filter(function(c){ return !c.announced; });
+  if(t === 'kids')    return base.filter(nxIsKidSafe);
+  if(t === 'cartoon') return base.filter(function(c){ return c.type === 'cartoon'; });
   /* films / series / mixed : tout reste accessible, seul l'ordre change */
-  return CAT.slice();
+  return base.slice();
 }
 
 function nxKidsContent(){

@@ -1,0 +1,98 @@
+/* ============================================
+   NETLUXE — Sections éditoriales (style)
+   Top 10 · Caribbean Discovery · Coming Soon
+   ============================================ */
+
+/* ---------- TOP 10 : grand chiffre + affiche ---------- */
+.nxt-card{flex:0 0 auto;display:flex;align-items:flex-end;cursor:pointer;
+  width:238px;transition:transform .18s}
+.nxt-card:hover{transform:translateY(-4px)}
+.nxt-card:active{transform:scale(.98)}
+.nxt-num{font-family:Georgia,'Times New Roman',serif;font-size:96px;font-weight:700;
+  line-height:.78;color:transparent;-webkit-text-stroke:2.5px rgba(0,206,209,.62);
+  margin-right:-14px;flex-shrink:0;user-select:none;transition:-webkit-text-stroke-color .2s}
+.nxt-card:hover .nxt-num{-webkit-text-stroke-color:#D4AF37}
+.nxt-img{position:relative;width:118px;height:168px;border-radius:8px;overflow:hidden;
+  flex-shrink:0;background:#0A0A0A;box-shadow:0 5px 18px rgba(0,0,0,.55);
+  border:2px solid transparent;transition:border-color .2s}
+.nxt-card:hover .nxt-img{border-color:rgba(0,206,209,.55)}
+.nxt-img img{width:100%;height:100%;object-fit:cover;display:block}
+.nxt-rt{position:absolute;bottom:5px;left:5px;padding:1px 6px;border-radius:3px;
+  background:rgba(5,11,20,.85);color:#F5F5F0;font-size:9.5px;font-weight:700}
+.nxt-txt{display:none}
+
+/* ---------- CARIBBEAN DISCOVERY ---------- */
+.nxcd-country{margin-bottom:26px}
+.nxcd-hdr{display:flex;align-items:center;gap:9px;margin-bottom:11px;padding:0 2px}
+.nxcd-flag{font-size:21px;line-height:1}
+.nxcd-nm{font-size:15px;font-weight:600;color:#F5F5F0;font-family:Georgia,serif}
+.nxcd-ct{font-size:11px;color:rgba(0,206,209,.72);background:rgba(0,206,209,.1);
+  padding:2px 9px;border-radius:11px;border:1px solid rgba(0,206,209,.2)}
+.nxcd-row{display:flex;gap:13px;overflow-x:auto;padding:3px 2px 9px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.nxcd-row::-webkit-scrollbar{height:0}
+.nxcd-card{flex:0 0 auto;width:132px;cursor:pointer;transition:transform .18s}
+.nxcd-card:hover{transform:translateY(-4px)}
+.nxcd-card:active{transform:scale(.97)}
+.nxcd-img{position:relative;width:132px;height:188px;border-radius:9px;overflow:hidden;
+  background:#0A0A0A;margin-bottom:7px;border:2px solid transparent;
+  transition:border-color .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+.nxcd-card:hover .nxcd-img{border-color:#00CED1;box-shadow:0 7px 22px rgba(0,206,209,.3)}
+.nxcd-img img{width:100%;height:100%;object-fit:cover;display:block}
+.nxcd-org{position:absolute;top:6px;left:6px;padding:2px 7px;border-radius:3px;
+  background:rgba(212,175,55,.92);color:#1a1200;font-size:8.5px;font-weight:800;letter-spacing:.5px}
+.nxcd-ov{position:absolute;inset:0;background:rgba(5,11,20,.42);display:flex;
+  align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.nxcd-card:hover .nxcd-ov{opacity:1}
+.nxcd-play{width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#4DE8EA,#00A5A8);
+  color:#04141a;font-size:16px;display:flex;align-items:center;justify-content:center;
+  padding-left:2px;box-shadow:0 3px 14px rgba(0,206,209,.5)}
+.nxcd-t{font-size:12.5px;font-weight:600;color:#F5F5F0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nxcd-s{font-size:10.5px;color:rgba(245,245,240,.5);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- COMING SOON ---------- */
+.nxcs-card{flex:0 0 auto;width:280px;background:rgba(10,22,40,.68);
+  border:1px solid rgba(212,175,55,.2);border-radius:12px;overflow:hidden;
+  transition:border-color .18s,transform .18s}
+.nxcs-card:hover{border-color:rgba(212,175,55,.55);transform:translateY(-3px)}
+.nxcs-img{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;
+  background:#0A0A0A;cursor:pointer}
+.nxcs-img img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.85) brightness(.88)}
+.nxcs-badge{position:absolute;top:9px;left:9px;padding:3px 9px;border-radius:4px;
+  background:rgba(212,175,55,.94);color:#1a1200;font-size:9.5px;font-weight:800;
+  letter-spacing:1px}
+.nxcs-cd{position:absolute;bottom:0;left:0;right:0;padding:7px 11px;
+  background:linear-gradient(to top,rgba(5,11,20,.94),transparent);
+  color:#D4AF37;font-size:12px;font-weight:700;letter-spacing:.3px}
+.nxcs-txt{padding:11px 13px 13px}
+.nxcs-t{font-size:14.5px;font-weight:600;color:#F5F5F0;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nxcs-d{font-size:11.5px;color:rgba(245,245,240,.5);margin-bottom:10px}
+.nxcs-btn{width:100%;padding:8px 0;border-radius:7px;
+  background:transparent;border:1px solid rgba(212,175,55,.42);
+  color:#D4AF37;font-size:12.5px;font-weight:600;cursor:pointer;
+  transition:.16s;font-family:inherit}
+.nxcs-btn:hover{background:rgba(212,175,55,.14);border-color:#D4AF37}
+.nxcs-btn.on{background:#D4AF37;color:#1a1200;border-color:#D4AF37}
+.nxcs-btn:active{transform:scale(.97)}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:640px){
+  .nxt-card{width:190px}
+  .nxt-num{font-size:74px;margin-right:-11px;-webkit-text-stroke-width:2px}
+  .nxt-img{width:96px;height:138px}
+  .nxcd-card,.nxcd-img{width:112px}
+  .nxcd-img{height:160px}
+  .nxcs-card{width:238px}
+  .nxcd-nm{font-size:14px}
+}
+@media(max-width:400px){
+  .nxt-card{width:168px}
+  .nxt-num{font-size:64px}
+  .nxt-img{width:86px;height:124px}
+  .nxcs-card{width:212px}
+}
