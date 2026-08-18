@@ -10,6 +10,8 @@
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTkVUTFVYRSIsInNob3J0X25hbWUiOiJORVRMVVhFIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMEEwQTBBIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwQTBBMEEifQ==">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.0/dist/hls.min.js"></script>
 <link rel="stylesheet" href="app-extra.css">
+<link rel="stylesheet" href="player.css">
+<link rel="stylesheet" href="player-ui.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -620,7 +622,7 @@ img{display:block;max-width:100%}
     <h4>Paramètres</h4>
     <div class="player-settings-item" onclick="cycleAudio()"><span>Audio</span><span class="val" id="audioVal">Français</span></div>
     <div class="player-settings-item" onclick="cycleSubs()"><span>Sous-titres</span><span class="val" id="subsVal">FR</span></div>
-    <div class="player-settings-item" onclick="cycleSpeed()"><span>Vitesse</span>< <span class="val" id="speedVal">1x</span></div>
+    <div class="player-settings-item" onclick="cycleSpeed()"><span>Vitesse</span><span class="val" id="speedVal">1x</span></div>
   </div>
 </div>
 
@@ -1262,6 +1264,12 @@ init();
 <script src="app-settings.js"></script>
 <script src="app-profiles.js"></script>
 <script src="catalog-public.js"></script>
+<script src="player-dom.js"></script>
+<script src="player-core.js"></script>
+<script src="player-controls.js"></script>
+<script src="player-panels.js"></script>
+<script src="player-gestures.js"></script>
+<script src="player-bridge.js"></script>
 <script>
 /* Post-chargement : appliquer les préférences et rafraîchir l'UI profil */
 (function(){
