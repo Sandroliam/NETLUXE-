@@ -44,11 +44,18 @@ var PUBLIC_DOMAIN_CATALOG = [
   }
   if(added && typeof console !== 'undefined') console.log('NETLUXE: '+added+' contenus domaine public ajoutés — total '+CAT.length);
   /* Re-render si l'app est déjà affichée */
-  try {
-    if(typeof renderHome === 'function') renderHome();
-    else if(typeof init === 'function' && document.getElementById('app') &&
-            getComputedStyle(document.getElementById('app')).display !== 'none') {
-      if(typeof goHome === 'function') goHome();
-    }
-  } catch(e){}
+  function refresh(){
+    try {
+      var app = document.getElementById('app');
+      var visible = app && getComputedStyle(app).display !== 'none';
+      if(!visible) return;
+      if(typeof fillRow === 'function' && document.getElementById('publicRow')){
+        fillRow('publicRow', CAT.filter(function(c){return c.source==='Internet Archive';}).slice(0,14));
+      }
+      var home = document.getElementById('homeSections');
+      if(home && getComputedStyle(home).display !== 'none' && typeof goHome === 'function') goHome();
+    } catch(e){}
+  }
+  if(document.readyState === 'complete') setTimeout(refresh, 30);
+  else window.addEventListener('load', function(){ setTimeout(refresh, 30); });
 })();
