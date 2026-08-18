@@ -1255,6 +1255,7 @@ init();
 /* Post-chargement : appliquer les préférences et rafraîchir l'UI profil */
 (function(){
   function boot(){
+    try { if(typeof ensureProfileModal==='function') ensureProfileModal(); } catch(e){}
     try { if(typeof applySettings==='function' && typeof prof!=='undefined' && prof) applySettings(); } catch(e){}
     try { if(typeof updateProfileUI==='function') updateProfileUI(); } catch(e){}
   }
