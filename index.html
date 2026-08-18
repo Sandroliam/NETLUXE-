@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="player-ui.css">
 <link rel="stylesheet" href="profiles.css">
 <link rel="stylesheet" href="avatars.css">
+<link rel="stylesheet" href="continue.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -896,20 +897,24 @@ function goHome() {
     setHero(films.find(function(c){return c.org;}) || films[0]);
   }
 
-  /* Continuer à regarder */
-  var pool = (typeof nxVisibleCatalog === 'function') ? nxVisibleCatalog() : CAT;
-  var cs = document.getElementById('continueSection');
-  if(prof && prof.history && prof.history.length > 0) {
-    var continueItems = prof.history.slice(0,10).map(function(hh){
-      var hid = (hh && hh.id !== undefined) ? hh.id : hh;
-      for(var k=0;k<pool.length;k++){ if(pool[k].id == hid) return pool[k]; }
-      return null;
-    }).filter(Boolean);
-    if(continueItems.length > 0) {
-      cs.style.display = 'block';
-      fillRow('continueRow', continueItems);
-    } else { cs.style.display = 'none'; }
-  } else if(cs) { cs.style.display = 'none'; }
+  /* Continuer à regarder — rendu intelligent (saison/épisode + temps restant) */
+  if(typeof nxRenderContinue === 'function'){
+    nxRenderContinue();
+  } else {
+    var pool = (typeof nxVisibleCatalog === 'function') ? nxVisibleCatalog() : CAT;
+    var cs = document.getElementById('continueSection');
+    if(prof && prof.history && prof.history.length > 0) {
+      var continueItems = prof.history.slice(0,10).map(function(hh){
+        var hid = (hh && hh.id !== undefined) ? hh.id : hh;
+        for(var k=0;k<pool.length;k++){ if(pool[k].id == hid) return pool[k]; }
+        return null;
+      }).filter(Boolean);
+      if(continueItems.length > 0) {
+        cs.style.display = 'block';
+        fillRow('continueRow', continueItems);
+      } else { cs.style.display = 'none'; }
+    } else if(cs) { cs.style.display = 'none'; }
+  }
 
   if(typeof nxSyncNav === 'function') nxSyncNav('home');
   window.scrollTo(0,0);
@@ -1308,6 +1313,7 @@ init();
 <script src="catalog-public.js"></script>
 <script src="catalog-episodes.js"></script>
 <script src="catalog-sources.js"></script>
+<script src="catalog-meta.js"></script>
 <script src="profiles-types.js"></script>
 <script src="avatars-1.js"></script>
 <script src="avatars-2.js"></script>
@@ -1316,6 +1322,7 @@ init();
 <script src="profiles-select.js"></script>
 <script src="profiles-create.js"></script>
 <script src="hero-feed.js"></script>
+<script src="continue-watching.js"></script>
 <script src="player-dom.js"></script>
 <script src="player-core.js"></script>
 <script src="player-controls.js"></script>

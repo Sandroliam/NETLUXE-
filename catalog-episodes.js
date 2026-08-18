@@ -7,7 +7,7 @@
    depuis l'espace administrateur quand il est livré.
    ============================================ */
 var NX_EPISODES = {
-  100: { /* Rue des Jasmins */
+  100: { title:'Rue des Jasmins',
     seasons: 3,
     list: [
       { t:'Le corps du canal',        d:'48min', s:'Un cadavre remonte dans le canal de Bois-Verna. Inspecteur Célestin ouvre l\'enquête.' },
@@ -17,7 +17,7 @@ var NX_EPISODES = {
       { t:'Jasmins',                  d:'53min', s:'La vérité éclate là où personne ne regardait.' }
     ]
   },
-  101: { /* Madan Nou */
+  101: { title:'Madan Nou',
     seasons: 2,
     list: [
       { t:'Arrivée à Miami',   d:'26min', s:'La famille Delva débarque en Floride avec deux valises et beaucoup d\'espoir.' },
@@ -26,7 +26,7 @@ var NX_EPISODES = {
       { t:'Rezo fanmi',        d:'27min', s:'Un cousin arrive sans prévenir et bouscule l\'équilibre.' }
     ]
   },
-  102: { /* Breaking Bad */
+  102: { title:'Breaking Bad',
     seasons: 5,
     list: [
       { t:'Épisode 1', d:'58min', s:'' },
@@ -34,7 +34,7 @@ var NX_EPISODES = {
       { t:'Épisode 3', d:'48min', s:'' }
     ]
   },
-  103: { /* Dark */
+  103: { title:'Dark',
     seasons: 3,
     list: [
       { t:'Épisode 1', d:'51min', s:'' },
@@ -42,7 +42,7 @@ var NX_EPISODES = {
       { t:'Épisode 3', d:'46min', s:'' }
     ]
   },
-  200: { /* Ti Zwa */
+  200: { title:'Ti Zwa',
     seasons: 2,
     list: [
       { t:'Ti Zwa nan forè a',  d:'11min', s:'Ti Zwa s\'aventure au-delà du grand fromager.' },
@@ -51,7 +51,7 @@ var NX_EPISODES = {
       { t:'Chante zwazo yo',    d:'11min', s:'Ti Zwa apprend le langage des oiseaux.' }
     ]
   },
-  201: { /* Konpè Bètje */
+  201: { title:'Konpè Bètje',
     seasons: 1,
     list: [
       { t:'Konpè Bètje ak Konpè Lapen', d:'9min',  s:'La ruse contre la ruse : personne ne gagne vraiment.' },
@@ -67,9 +67,13 @@ var NX_EPISODES = {
   var n = 0;
   for(var i=0;i<CAT.length;i++){
     var c = CAT[i];
-    if(c.type !== 'series') continue;
+    if(c.type !== 'series' && c.type !== 'cartoon') continue;
     var def = NX_EPISODES[c.id];
     if(!def || c.episodes) continue;
+    /* Sécurité : plusieurs contenus peuvent porter le même id numérique
+       (201 = Konpè Bètje côté originaux, One Piece côté international).
+       On n'attache les épisodes que si le titre correspond. */
+    if(def.title && String(c.title).toLowerCase() !== String(def.title).toLowerCase()) continue;
     c.seasons = def.seasons;
     c.episodes = def.list.map(function(e, k){
       return {
