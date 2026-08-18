@@ -18,9 +18,10 @@ function nxBuildProfileScreen(){
       '<p class="nxsel-d">Chaque profil garde son historique, sa liste et ses préférences</p>'+
       '<div class="nxsel-grid" id="nxselGrid"></div>'+
       '<div class="nxsel-act">'+
-        '<button class="btn btn-o" onclick="nxOpenCreate()">+ Ajouter un profil</button>'+
-        '<button class="btn btn-o" onclick="nxToggleManage()" id="nxManageBtn">⚙ Gérer les profils</button>'+
-        '<button class="btn btn-o" style="color:#FF6B35" onclick="logout()">Déconnexion</button>'+
+        '<button class="nxsel-manage" onclick="nxToggleManage()" id="nxManageBtn">Gérer les profils</button>'+
+        '<div class="nxsel-sub">'+
+          '<button class="btn btn-o" style="color:#FF6B35" onclick="logout()">Déconnexion</button>'+
+        '</div>'+
       '</div>'+
     '</div>';
   document.body.appendChild(d);
@@ -124,7 +125,10 @@ function nxToggleManage(){
   var s = document.getElementById('nxSelect');
   if(s) s.classList.toggle('manage', NX_MANAGE);
   var b = document.getElementById('nxManageBtn');
-  if(b) b.textContent = NX_MANAGE ? '✓ Terminé' : '⚙ Gérer les profils';
+  if(b){
+    b.textContent = NX_MANAGE ? 'Terminé' : 'Gérer les profils';
+    b.classList.toggle('on', NX_MANAGE);
+  }
   var t = document.querySelector('.nxsel-t');
   if(t) t.innerHTML = NX_MANAGE ? 'Gérer les profils' : 'Qui regarde NETLUXE&nbsp;?';
   var d = document.querySelector('.nxsel-d');
