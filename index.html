@@ -760,15 +760,15 @@ function quickAccess() {
   var users = JSON.parse(localStorage.getItem('netluxe_users') || '{}');
   var em = 'viewer@netluxe.com';
   if(!users[em]) {
-    users[em] = { email:em, name:'Spectateur', profiles:[{id:'default',name:'Mon Profil',color:'#E50914',history:[],myList:[]}], createdAt:new Date().toISOString(), lang:'FR' };
+    users[em] = { email:em, name:'Spectateur', profiles:[], createdAt:new Date().toISOString(), lang:'FR' };
     localStorage.setItem('netluxe_users', JSON.stringify(users));
   }
   user = users[em];
-  prof = user.profiles[0];
   localStorage.setItem('netluxe_user', JSON.stringify(user));
-  localStorage.setItem('netluxe_profile', JSON.stringify(prof));
   document.getElementById('authScreen').classList.add('hidden');
-  showApp();
+  /* passer par l'ecran de selection de profils */
+  if(typeof nxAfterLogin === 'function') nxAfterLogin();
+  else { prof = user.profiles[0]; showApp(); }
 }
 
 // ADMIN
@@ -944,6 +944,12 @@ function renderProfile() {
   else if(prof) h += '<div class="profile-avatar" style="background:'+prof.color+'">'+prof.name[0].toUpperCase()+'</div>';
   h += '<h2 style="font-size:28px;margin-top:16px">'+(prof?prof.name:'')+'</h2>';
   h += '<p style="color:var(--t2)">'+(user?user.email:'')+'</p>';
+  if(prof && typeof NX_PROFILE_TYPES !== 'undefined'){
+    var ty = NX_PROFILE_TYPES[prof.ptype||'mixed'] || NX_PROFILE_TYPES.mixed;
+    h += '<div style="display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:5px 13px;'+
+         'border-radius:16px;background:rgba(0,206,209,.12);border:1px solid rgba(0,206,209,.32);'+
+         'font-size:12.5px;color:#00CED1;font-weight:600">'+ty.ic+' Profil '+ty.label+'</div>';
+  }
   h += '<div class="profile-stats">';
   h += '<div class="profile-stat"><div class="val">'+(prof&&prof.history?prof.history.length:0)+'</div><div class="lbl">Vus</div></div>';
   h += '<div class="profile-stat"><div class="val">'+(prof&&prof.myList?prof.myList.length:0)+'</div><div class="lbl">Ma Liste</div></div>';

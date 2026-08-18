@@ -71,18 +71,29 @@ function switchProfile(pid){ nxPickProfile(pid); }
   function migrate(){
     try {
       var raw = localStorage.getItem('netluxe_users');
-      if(!raw) return;
-      var users = JSON.parse(raw), changed = false;
-      for(var em in users){
-        if(!users.hasOwnProperty(em)) continue;
-        var ps = users[em].profiles || [];
-        for(var i=0;i<ps.length;i++){
-          if(!ps[i].ptype){ ps[i].ptype = 'mixed'; changed = true; }
+      if(raw){
+        var users = JSON.parse(raw), changed = false;
+        for(var em in users){
+          if(!users.hasOwnProperty(em)) continue;
+          var ps = users[em].profiles || [];
+          for(var i=0;i<ps.length;i++){
+            if(!ps[i].ptype){ ps[i].ptype = 'mixed'; changed = true; }
+          }
+        }
+        if(changed){
+          localStorage.setItem('netluxe_users', JSON.stringify(users));
+          if(typeof user !== 'undefined' && user && users[user.email]) user = users[user.email];
         }
       }
-      if(changed){
-        localStorage.setItem('netluxe_users', JSON.stringify(users));
-        if(typeof user !== 'undefined' && user && users[user.email]) user = users[user.email];
+      /* profil ACTIF : lui donner aussi un type */
+      var sp = localStorage.getItem('netluxe_profile');
+      if(sp){
+        var p = JSON.parse(sp);
+        if(p && !p.ptype){
+          p.ptype = 'mixed';
+          localStorage.setItem('netluxe_profile', JSON.stringify(p));
+        }
+        if(typeof prof !== 'undefined' && prof && !prof.ptype) prof.ptype = 'mixed';
       }
     } catch(e){}
   }
