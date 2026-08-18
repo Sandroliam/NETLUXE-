@@ -539,6 +539,7 @@ img{display:block;max-width:100%}
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">📺 Séries Populaires</h2></div><div class="row" id="seriesRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">⭐ Dessins Animés</h2></div><div class="row" id="cartoonsRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🎯 Recommandé pour vous</h2></div><div class="row" id="recommendRow"></div></section>
+    <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🎞️ Classiques du Cinéma</h2><span style="font-size:11px;color:var(--gold)">DOMAINE PUBLIC</span></div><div class="row" id="publicRow"></div></section>
     <section class="sec" id="continueSection" style="display:none"><div class="sec-hdr"><h2 class="sec-title">⏯️ Continuer à regarder</h2></div><div class="row" id="continueRow"></div></section>
   </div>
 
@@ -871,6 +872,7 @@ function goHome() {
   fillRow('seriesRow', CAT.filter(function(c){return c.type==='series';}).slice(0,8));
   fillRow('cartoonsRow', CAT.filter(function(c){return c.type==='cartoon';}).slice(0,8));
   fillRow('recommendRow', CAT.filter(function(c){return c.rat>=4.5;}).slice(0,8));
+  fillRow('publicRow', CAT.filter(function(c){return c.source==='Internet Archive';}).slice(0,14));
   
   // Continue watching
   if(prof && prof.history && prof.history.length > 0) {
@@ -1063,15 +1065,23 @@ function playVideo(id, epIdx) {
   player.classList.add('active');
   
   if(hls) { hls.destroy(); hls = null; }
-  
-  if(Hls.isSupported()) {
+
+  var isHls = /\.m3u8(\?|$)/i.test(cur.video || '');
+
+  if(isHls && typeof Hls !== 'undefined' && Hls.isSupported()) {
     hls = new Hls();
     hls.loadSource(cur.video);
     hls.attachMedia(video);
-    hls.on(Hls.Events.MANIFEST_PARSED, function(){ video.play(); });
-  } else if(video.canPlayType('application/vnd.apple.mpegurl')) {
+    hls.on(Hls.Events.MANIFEST_PARSED, function(){ video.play().catch(function(){}); });
+    hls.on(Hls.Events.ERROR, function(e, d){
+      if(d && d.fatal){ showToast('Flux indisponible'); }
+    });
+  } else {
+    // MP4 progressif (Internet Archive) ou HLS natif Safari
     video.src = cur.video;
-    video.addEventListener('loadedmetadata', function(){ video.play(); });
+    video.load();
+    video.play().catch(function(){});
+    video.onerror = function(){ showToast('Vidéo indisponible pour le moment'); };
   }
   
   // Update UI
@@ -1251,6 +1261,7 @@ init();
 </script>
 <script src="app-settings.js"></script>
 <script src="app-profiles.js"></script>
+<script src="catalog-public.js"></script>
 <script>
 /* Post-chargement : appliquer les préférences et rafraîchir l'UI profil */
 (function(){
