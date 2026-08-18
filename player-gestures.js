@@ -26,6 +26,26 @@ function nxpBindOnce(){
   v.addEventListener('playing', function(){ nx('nxpLoad').classList.remove('on'); });
   v.addEventListener('canplay', function(){ nx('nxpLoad').classList.remove('on'); });
   v.addEventListener('loadedmetadata', function(){
+    /* CORRECTIF v18.1 : la nouvelle source est prête.
+       On applique la reprise éventuelle, PUIS on libère le verrou. */
+    NXP.seeking = true;
+    var target = 0;
+    try {
+      if(NXP.cur && typeof prof !== 'undefined' && prof && prof.progress){
+        var pc = parseFloat(prof.progress[NXP.cur.id]);
+        if(isFinite(pc) && pc > 2 && pc < 95 && isFinite(v.duration)){
+          target = v.duration * (pc / 100);
+        }
+      }
+    } catch(e){}
+    if(target > 0){
+      v.currentTime = target;
+      nxpToast('Reprise à ' + Math.round((target / v.duration) * 100) + '%');
+    } else {
+      v.currentTime = 0;
+    }
+    /* libérer après application, pour ne pas écraser la position d'un autre titre */
+    setTimeout(function(){ NXP.seeking = false; }, 220);
     nxpUpdateBar();
     nxpRenderPanel(nx('nxpPanel').classList.contains('on') ? 'root' : null);
   });
@@ -36,8 +56,8 @@ function nxpBindOnce(){
       var left = v.duration - v.currentTime;
       if(left <= 45 && left > 2 && !NXP.nextT && !NXP.ended) nxpOfferNext();
     }
-    /* sauvegarde périodique */
-    if(!v.paused && Math.floor(v.currentTime) % 10 === 0) nxpSaveProgress();
+    /* sauvegarde périodique — jamais pendant un changement de contenu */
+    if(!v.paused && !NXP.seeking && Math.floor(v.currentTime) % 10 === 0) nxpSaveProgress();
   });
   v.addEventListener('progress', nxpUpdateBar);
   v.addEventListener('ended', function(){

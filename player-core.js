@@ -79,6 +79,22 @@ function nxpLoadSource(item){
 
   if(NXP.hls){ try{ NXP.hls.destroy(); }catch(e){} NXP.hls = null; }
 
+  /* CORRECTIF v18.1 — bug de progression partagée
+     Le <video> est réutilisé d'un contenu à l'autre. Si la nouvelle
+     source est identique (ou mise en cache), le navigateur conserve
+     currentTime : le contenu suivant démarrait donc à la position du
+     précédent, et cette position était ensuite sauvegardée sous son
+     propre id. On repart systématiquement de zéro. */
+  try {
+    v.pause();
+    v.removeAttribute('src');
+    while(v.firstChild) v.removeChild(v.firstChild);   /* purge des <track> */
+    v.load();
+    v.currentTime = 0;
+  } catch(e){}
+
+  NXP.seeking = true;   /* bloque la sauvegarde pendant le chargement */
+
   var isHls = /\.m3u8(\?|$)/i.test(src);
   if(isHls && typeof Hls !== 'undefined' && Hls.isSupported()){
     NXP.hls = new Hls({ capLevelToPlayerSize:true });
@@ -102,21 +118,10 @@ function nxpLoadSource(item){
   v.volume = NXP.vol;
   v.muted = NXP.muted;
 
-  /* reprise de lecture */
-  try {
-    if(typeof prof !== 'undefined' && prof && prof.progress && prof.progress[item.id]){
-      var pc = parseFloat(prof.progress[item.id]);
-      if(pc > 2 && pc < 95){
-        v.addEventListener('loadedmetadata', function once(){
-          v.removeEventListener('loadedmetadata', once);
-          if(isFinite(v.duration)){
-            v.currentTime = v.duration * (pc/100);
-            nxpToast('Reprise à ' + Math.round(pc) + '%');
-          }
-        });
-      }
-    }
-  } catch(e){}
+  /* La reprise de lecture est gérée dans player-gestures.js
+     sur l'événement loadedmetadata, sous verrou NXP.seeking.
+     (Ancien bloc retiré : il déclenchait un second seek concurrent
+      qui pouvait appliquer la position d'un autre contenu.) */
 }
 
 function nxpHeader(){
@@ -160,16 +165,30 @@ function nxpSaveProgress(){
     var v = NXP.vid;
     if(!v || !NXP.cur || !isFinite(v.duration) || v.duration < 1) return;
     if(typeof prof === 'undefined' || !prof) return;
+
+    /* CORRECTIF v18.1 : ne rien écrire pendant le chargement d'un
+       nouveau contenu, sinon la position de l'ancien serait attribuée
+       au nouveau (progression qui semblait partagée entre les titres). */
+    if(NXP.seeking) return;
+    if(v.readyState < 1) return;
+
+    /* l'id sauvegardé doit être celui du contenu réellement chargé */
+    var savedId = NXP.cur.id;
+    if(savedId === undefined || savedId === null) return;
+
     var pc = (v.currentTime / v.duration) * 100;
+    if(!isFinite(pc)) return;
+
     if(!prof.progress) prof.progress = {};
     if(!prof.history) prof.history = [];
-    prof.progress[NXP.cur.id] = Math.min(100, Math.max(0, pc));
+    prof.progress[savedId] = Math.min(100, Math.max(0, pc));
+
     var seen = false;
     for(var i=0;i<prof.history.length;i++){
       var hid = prof.history[i] && prof.history[i].id !== undefined ? prof.history[i].id : prof.history[i];
-      if(hid == NXP.cur.id){ seen = true; break; }
+      if(String(hid) === String(savedId)){ seen = true; break; }
     }
-    if(!seen) prof.history.unshift({ id:NXP.cur.id, at:new Date().toISOString() });
+    if(!seen) prof.history.unshift({ id:savedId, at:new Date().toISOString() });
     if(prof.history.length > 60) prof.history = prof.history.slice(0,60);
     if(typeof saveProfile === 'function') saveProfile();
   } catch(e){}
