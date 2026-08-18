@@ -27,6 +27,25 @@
 /* Sous-titres : taille pilotée par les paramètres */
 .subs-box,#subsBox{font-size:var(--subSize,18px)!important}
 
+/* ---------- BANNIÈRE : pastilles + badges ---------- */
+.nxh-dots{position:absolute;bottom:16px;right:20px;z-index:6;display:flex;gap:7px}
+.nxh-dot{width:9px;height:9px;border-radius:50%;border:none;cursor:pointer;padding:0;
+  background:rgba(245,245,240,.34);transition:width .22s,background .22s}
+.nxh-dot:hover{background:rgba(245,245,240,.6)}
+.nxh-dot.on{width:26px;border-radius:5px;
+  background:linear-gradient(90deg,#00CED1,#D4AF37)}
+.nxh-badge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10.5px;
+  font-weight:700;letter-spacing:.8px;background:rgba(0,206,209,.18);
+  border:1px solid rgba(0,206,209,.38);color:#00CED1;margin-right:6px}
+.nxh-badge.gold{background:rgba(212,175,55,.18);border-color:rgba(212,175,55,.42);color:#D4AF37}
+#hero{transition:background .4s}
+#heroBg{transition:opacity .45s,background-image .45s}
+@media(max-width:640px){
+  .nxh-dots{bottom:11px;right:14px}
+  .nxh-dot{width:7px;height:7px}
+  .nxh-dot.on{width:20px}
+}
+
 /* Boutons pleine largeur dans profil/paramètres */
 #profileContent .btn{width:100%;justify-content:center;padding:13px}
 .settings-sec{background:var(--s1,#141414);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:4px 16px 8px;margin-bottom:14px}

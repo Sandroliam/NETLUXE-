@@ -66,14 +66,16 @@ function cycleSubs(){ nxpOpenPanel('subs'); }
 function cycleSpeed(){ nxpOpenPanel('speed'); }
 function seekPlayer(e){ /* géré nativement par la barre du nouveau lecteur */ }
 
-/* playCurrent : depuis la fiche détail */
+/* playCurrent : depuis la fiche détail.
+   index.html stocke le contenu affiché dans la globale `cur`. */
 function playCurrent(){
   try {
-    if(typeof detCur !== 'undefined' && detCur){ playVideo(detCur.id); return; }
-    if(typeof curDetail !== 'undefined' && curDetail){ playVideo(curDetail.id); return; }
+    if(typeof cur !== 'undefined' && cur && cur.id !== undefined){ playVideo(cur.id); return; }
   } catch(e){}
-  /* repli : lire le premier contenu du catalogue */
-  if(typeof CAT !== 'undefined' && CAT.length) playVideo(CAT[0].id);
+  try {
+    if(typeof detCur !== 'undefined' && detCur){ playVideo(detCur.id); return; }
+  } catch(e){}
+  if(typeof showToast === 'function') showToast('Aucun contenu sélectionné');
 }
 
 /* ---------- MASQUER L'ANCIEN LECTEUR ---------- */

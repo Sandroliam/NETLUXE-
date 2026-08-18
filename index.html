@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="app-extra.css">
 <link rel="stylesheet" href="player.css">
 <link rel="stylesheet" href="player-ui.css">
+<link rel="stylesheet" href="profiles.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -527,8 +528,8 @@ img{display:block;max-width:100%}
       <p class="hero-desc" id="heroDesc"></p>
       <div class="hero-meta" id="heroMeta"></div>
       <div class="hero-btns">
-        <button class="btn btn-p btn-lg" onclick="playHero()">▶ Regarder</button>
-        <button class="btn btn-o btn-lg" onclick="showHeroDetails()">+ Plus d'infos</button>
+        <button class="btn btn-p btn-lg" onclick="nxHeroPlay()">▶ Regarder</button>
+        <button class="btn btn-o btn-lg" onclick="nxHeroInfo()">+ Plus d'infos</button>
       </div>
     </div>
     <div class="hero-grad"></div>
@@ -546,9 +547,10 @@ img{display:block;max-width:100%}
   </div>
 
   <!-- Pages -->
-  <div class="page" id="filmsPage" style="display:none"><h1 class="page-title">🎬 Films</h1><div class="page-row" id="filmsRow"></div></div>
-  <div class="page" id="seriesPage" style="display:none"><h1 class="page-title">📺 Séries</h1><div class="page-row" id="seriesRow"></div></div>
-  <div class="page" id="cartoonsPage" style="display:none"><h1 class="page-title">⭐ Dessins Animés</h1><div class="page-row" id="cartoonsRow"></div></div>
+  <div class="page" id="filmsPage" style="display:none"><h1 class="page-title">🎬 Films</h1><div class="page-row" id="pgFilmsRow"></div></div>
+  <div class="page" id="seriesPage" style="display:none"><h1 class="page-title">📺 Séries</h1><div class="page-row" id="pgSeriesRow"></div></div>
+  <div class="page" id="cartoonsPage" style="display:none"><h1 class="page-title">🎨 Animés</h1><div class="page-row" id="pgCartoonsRow"></div></div>
+  <div class="page" id="kidsPage" style="display:none"><h1 class="page-title">👶 Enfants</h1><div class="page-row" id="pgKidsRow"></div></div>
   <div class="page" id="mylistPage" style="display:none"><h1 class="page-title">❤️ Ma Liste</h1><div class="page-row" id="mylistRow"></div></div>
   <div class="page" id="profilePage" style="display:none"><h1 class="page-title">👤 Mon Profil</h1><div id="profileContent"></div></div>
   <div class="page" id="settingsPage" style="display:none"><h1 class="page-title">⚙️ Paramètres</h1><div id="settingsContent"></div></div>
@@ -557,6 +559,7 @@ img{display:block;max-width:100%}
     <button class="ni act" onclick="goHome()"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Accueil</button>
     <button class="ni" onclick="goPage('films')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>Films</button>
     <button class="ni" onclick="goPage('series')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>Séries</button>
+    <button class="ni" onclick="goPage('cartoons')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>Animés</button>
     <button class="ni" onclick="openSearch()"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Recherche</button>
     <button class="ni" onclick="goPage('profile')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>Profil</button>
   </nav>
@@ -852,7 +855,7 @@ function showApp() {
 function hideAll() {
   document.getElementById('hero').style.display = 'none';
   document.getElementById('homeSections').style.display = 'none';
-  var pages = ['filmsPage','seriesPage','cartoonsPage','mylistPage','profilePage','settingsPage'];
+  var pages = ['filmsPage','seriesPage','cartoonsPage','kidsPage','mylistPage','profilePage','settingsPage'];
   pages.forEach(function(p){ 
     var el = document.getElementById(p);
     if(el) el.style.display = 'none'; 
@@ -865,27 +868,44 @@ function goHome() {
   document.getElementById('homeSections').style.display = 'block';
   document.getElementById('header').style.display = 'flex';
   document.querySelector('.btm-nav').style.display = '';
-  
-  var films = CAT.filter(function(c){return c.type==='film';});
-  setHero(films.find(function(c){return c.org;}) || films[0]);
-  fillRow('trendingRow', CAT.slice(0,8));
-  fillRow('newRow', CAT.filter(function(c){return c.year>=2023;}).slice(0,8));
-  fillRow('caribbeanRow', CAT.filter(function(c){return c.org;}));
-  fillRow('seriesRow', CAT.filter(function(c){return c.type==='series';}).slice(0,8));
-  fillRow('cartoonsRow', CAT.filter(function(c){return c.type==='cartoon';}).slice(0,8));
-  fillRow('recommendRow', CAT.filter(function(c){return c.rat>=4.5;}).slice(0,8));
-  fillRow('publicRow', CAT.filter(function(c){return c.source==='Internet Archive';}).slice(0,14));
-  
-  // Continue watching
+
+  /* Sections adaptées au type de profil actif */
+  if(typeof nxHomeSections === 'function'){
+    var secs = nxHomeSections();
+    for(var i=0;i<secs.length;i++) fillRow(secs[i].row, secs[i].items);
+  } else {
+    fillRow('trendingRow', CAT.slice(0,8));
+    fillRow('newRow', CAT.filter(function(c){return c.year>=2023;}).slice(0,8));
+    fillRow('caribbeanRow', CAT.filter(function(c){return c.org;}));
+    fillRow('seriesRow', CAT.filter(function(c){return c.type==='series';}).slice(0,8));
+    fillRow('cartoonsRow', CAT.filter(function(c){return c.type==='cartoon';}).slice(0,8));
+    fillRow('recommendRow', CAT.filter(function(c){return c.rat>=4.5;}).slice(0,8));
+    fillRow('publicRow', CAT.filter(function(c){return c.source==='Internet Archive';}).slice(0,14));
+  }
+
+  /* Bannière : carrousel synchronisé au catalogue réel */
+  if(typeof nxHeroInit === 'function') nxHeroInit();
+  else {
+    var films = CAT.filter(function(c){return c.type==='film';});
+    setHero(films.find(function(c){return c.org;}) || films[0]);
+  }
+
+  /* Continuer à regarder */
+  var pool = (typeof nxVisibleCatalog === 'function') ? nxVisibleCatalog() : CAT;
+  var cs = document.getElementById('continueSection');
   if(prof && prof.history && prof.history.length > 0) {
-    var continueItems = prof.history.slice(0,8).map(function(h){ 
-      return CAT.find(function(c){return c.id===h.id;}); 
+    var continueItems = prof.history.slice(0,10).map(function(hh){
+      var hid = (hh && hh.id !== undefined) ? hh.id : hh;
+      for(var k=0;k<pool.length;k++){ if(pool[k].id == hid) return pool[k]; }
+      return null;
     }).filter(Boolean);
     if(continueItems.length > 0) {
-      document.getElementById('continueSection').style.display = 'block';
+      cs.style.display = 'block';
       fillRow('continueRow', continueItems);
-    }
-  }
+    } else { cs.style.display = 'none'; }
+  } else if(cs) { cs.style.display = 'none'; }
+
+  if(typeof nxSyncNav === 'function') nxSyncNav('home');
   window.scrollTo(0,0);
 }
 
@@ -896,17 +916,25 @@ function goPage(page) {
   document.getElementById('header').style.display = 'flex';
   document.querySelector('.btm-nav').style.display = '';
   window.scrollTo(0,0);
-  
-  if(page==='films') fillRow('filmsRow', CAT.filter(function(c){return c.type==='film';}));
-  else if(page==='series') fillRow('seriesRow2', CAT.filter(function(c){return c.type==='series';}));
-  else if(page==='cartoons') fillRow('cartoonsRow2', CAT.filter(function(c){return c.type==='cartoon';}));
+
+  var pool = (typeof nxVisibleCatalog === 'function') ? nxVisibleCatalog() : CAT;
+
+  if(page==='films') fillRow('pgFilmsRow', pool.filter(function(c){return c.type==='film';}));
+  else if(page==='series') fillRow('pgSeriesRow', pool.filter(function(c){return c.type==='series';}));
+  else if(page==='cartoons') fillRow('pgCartoonsRow', pool.filter(function(c){return c.type==='cartoon';}));
+  else if(page==='kids') {
+    var kids = (typeof nxKidsContent === 'function') ? nxKidsContent() : pool.filter(function(c){return c.type==='cartoon';});
+    fillRow('pgKidsRow', kids);
+    if(!kids.length) document.getElementById('pgKidsRow').innerHTML = '<div class="empty-state"><div class="icon">👶</div><p>Aucun contenu enfant disponible</p></div>';
+  }
   else if(page==='mylist') {
-    var items = CAT.filter(function(c){ return prof && prof.myList && prof.myList.includes(c.id); });
+    var items = pool.filter(function(c){ return prof && prof.myList && prof.myList.indexOf(c.id)>=0; });
     fillRow('mylistRow', items);
     if(!items.length) document.getElementById('mylistRow').innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Votre liste est vide</p></div>';
   }
   else if(page==='profile') renderProfile();
   else if(page==='settings') renderSettings();
+  if(typeof nxSyncNav === 'function') nxSyncNav(page);
 }
 
 function renderProfile() {
@@ -921,9 +949,9 @@ function renderProfile() {
   h += '<div class="profile-stat"><div class="val">'+(prof&&prof.myList?prof.myList.length:0)+'</div><div class="lbl">Ma Liste</div></div>';
   h += '<div class="profile-stat"><div class="val">'+(user&&user.profiles?user.profiles.length:1)+'</div><div class="lbl">Profils</div></div>';
   h += '</div></div>';
-  h += '<button class="btn btn-p" onclick="openEditProfile()" style="margin-bottom:10px">✏️ Modifier mon profil</button>';
-  h += '<button class="btn btn-o" onclick="openProfileSwitch()" style="margin-bottom:10px">🔄 Changer de profil</button>';
-  h += '<button class="btn btn-o" onclick="openAddProfile()" style="margin-bottom:10px">+ Ajouter un profil</button>';
+  h += '<button class="btn btn-p" onclick="nxOpenEdit(prof.id)" style="margin-bottom:10px">✏️ Modifier mon profil</button>';
+  h += '<button class="btn btn-o" onclick="nxShowProfileSelect()" style="margin-bottom:10px">🔄 Changer de profil</button>';
+  h += '<button class="btn btn-o" onclick="nxShowProfileSelect();nxOpenCreate()" style="margin-bottom:10px">+ Ajouter un profil</button>';
   h += '<button class="btn btn-o" onclick="goPage(\'mylist\')" style="margin-bottom:10px">❤️ Ma Liste</button>';
   h += '<button class="btn btn-o" onclick="goPage(\'settings\')" style="margin-bottom:10px">⚙️ Paramètres</button>';
   h += '<button class="btn btn-o" style="color:var(--red)" onclick="logout()">Déconnexion</button>';
@@ -1265,12 +1293,17 @@ init();
 <script src="app-profiles.js"></script>
 <script src="catalog-public.js"></script>
 <script src="catalog-episodes.js"></script>
+<script src="profiles-types.js"></script>
+<script src="profiles-select.js"></script>
+<script src="profiles-create.js"></script>
+<script src="hero-feed.js"></script>
 <script src="player-dom.js"></script>
 <script src="player-core.js"></script>
 <script src="player-controls.js"></script>
 <script src="player-panels.js"></script>
 <script src="player-gestures.js"></script>
 <script src="player-bridge.js"></script>
+<script src="profiles-route.js"></script>
 <script>
 /* Post-chargement : appliquer les préférences et rafraîchir l'UI profil */
 (function(){
