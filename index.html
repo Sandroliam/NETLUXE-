@@ -9,6 +9,7 @@
 <title>NETLUXE</title>
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTkVUTFVYRSIsInNob3J0X25hbWUiOiJORVRMVVhFIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMEEwQTBBIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwQTBBMEEifQ==">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.0/dist/hls.min.js"></script>
+<link rel="stylesheet" href="app-extra.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -912,15 +913,20 @@ function renderProfile() {
   h += '<h2 style="font-size:28px;margin-top:16px">'+(prof?prof.name:'')+'</h2>';
   h += '<p style="color:var(--t2)">'+(user?user.email:'')+'</p>';
   h += '<div class="profile-stats">';
-  h += '<div class="profile-stat"><div class="val">'+(prof&&prof.history?prof.history.length:0)+'</div><div class="lbl">Films vus</div></div>';
+  h += '<div class="profile-stat"><div class="val">'+(prof&&prof.history?prof.history.length:0)+'</div><div class="lbl">Vus</div></div>';
   h += '<div class="profile-stat"><div class="val">'+(prof&&prof.myList?prof.myList.length:0)+'</div><div class="lbl">Ma Liste</div></div>';
+  h += '<div class="profile-stat"><div class="val">'+(user&&user.profiles?user.profiles.length:1)+'</div><div class="lbl">Profils</div></div>';
   h += '</div></div>';
-  h += '<button class="btn btn-o" onclick="goPage(\'settings\')" style="margin-bottom:16px">⚙️ Paramètres</button>';
+  h += '<button class="btn btn-p" onclick="openEditProfile()" style="margin-bottom:10px">✏️ Modifier mon profil</button>';
+  h += '<button class="btn btn-o" onclick="openProfileSwitch()" style="margin-bottom:10px">🔄 Changer de profil</button>';
+  h += '<button class="btn btn-o" onclick="openAddProfile()" style="margin-bottom:10px">+ Ajouter un profil</button>';
+  h += '<button class="btn btn-o" onclick="goPage(\'mylist\')" style="margin-bottom:10px">❤️ Ma Liste</button>';
+  h += '<button class="btn btn-o" onclick="goPage(\'settings\')" style="margin-bottom:10px">⚙️ Paramètres</button>';
   h += '<button class="btn btn-o" style="color:var(--red)" onclick="logout()">Déconnexion</button>';
   content.innerHTML = h;
 }
 
-function renderSettings() {
+function renderSettings_OLD_UNUSED() {
   var content = document.getElementById('settingsContent');
   var lang = (prof&&prof.prefs)?prof.prefs.lang:'FR';
   var audio = (prof&&prof.prefs)?prof.prefs.audio:'FR';
@@ -1242,6 +1248,19 @@ window.addEventListener('scroll', function(){ var h=document.getElementById('hea
 
 // INIT
 init();
+</script>
+<script src="app-settings.js"></script>
+<script src="app-profiles.js"></script>
+<script>
+/* Post-chargement : appliquer les préférences et rafraîchir l'UI profil */
+(function(){
+  function boot(){
+    try { if(typeof applySettings==='function' && typeof prof!=='undefined' && prof) applySettings(); } catch(e){}
+    try { if(typeof updateProfileUI==='function') updateProfileUI(); } catch(e){}
+  }
+  if(document.readyState==='complete') setTimeout(boot,60);
+  else window.addEventListener('load', function(){ setTimeout(boot,60); });
+})();
 </script>
 </body>
 </html>
