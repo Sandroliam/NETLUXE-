@@ -1,88 +1,15 @@
-# NETLUXE — Abonnement (v21)
+# NETLUXE — Architecture d'abonnement (v22)
 
-## Flux utilisateur
-
-```
-Connexion (email)
-   ↓
-Abonnement  ← NOUVEAU
-   ↓
-Sélection du profil
-   ↓
-Application
-```
-
-L'écran d'abonnement n'apparaît que si aucune formule n'est active.
-Une fois souscrit, la connexion mène directement aux profils.
+> Système conçu pour la production. Le paiement est **en attente d'activation** :
+> aucune transaction n'est simulée, aucun faux succès n'est possible.
 
 ---
 
-## Les 3 formules
+## Principe directeur
 
-| | Découverte | Essentiel | Premium |
-|---|---|---|---|
-| Prix | Gratuit | 4,99 USD/mois | 9,99 USD/mois |
-| Qualité | 480p | 1080p | 4K HDR |
-| Écrans | 1 | 2 | 4 |
-| Profils | 2 | 4 | 5 |
-| Téléchargements | 0 | 10 | Illimités |
-| Publicité | Oui | Non | Non |
-| NETLUXE Originals | Non | Oui | Oui + avant-première |
+**Un seul chemin mène à un abonnement actif : la confirmation signée du prestataire de paiement, reçue par webhook.**
 
----
-
-## Limites réellement appliquées
-
-Ce ne sont pas des mentions décoratives — le code les fait respecter :
-
-| Fonction | Effet vérifié |
-|---|---|
-| `nxMaxProfiles()` | Bloque la création au-delà du quota, message nommant la formule |
-| `nxCanWatchOriginals()` | `false` sur Découverte |
-| `nxHasAds()` | `true` sur Découverte uniquement |
-| `nxMaxQuality()` | 480p / 1080p / 4K HDR |
-
-La tuile « Ajouter un profil » disparaît de la grille quand le quota est atteint.
-
----
-
-## Cycle de vie
-
-- **Souscription** : échéance à +1 mois (payant) ou +10 ans (gratuit)
-- **Changement de plan** : échéance **recalculée** — un passage gratuit → payant ne conserve pas la date lointaine
-- **Résiliation** : statut `cancelling`, `autoRenew = false`, mais **l'accès reste valide jusqu'à l'échéance** (période déjà payée)
-- **Réactivation** : possible tant que l'échéance n'est pas passée
-- **Expiration** : `nxHasSub()` renvoie `false` dès que la date est dépassée
-
-Chaque opération est horodatée dans `sub.history`.
-
----
-
-## Gestion depuis les Paramètres
-
-Section **💳 Abonnement** : formule, statut, prix, qualité, écrans, profils, téléchargements, publicité, date de renouvellement, date de souscription.
-
-Actions : changer de formule, résilier (avec confirmation nommant la date de fin), réactiver.
-
----
-
-## ⚠️ Limite de sécurité — à lire avant toute mise en production
-
-**L'état d'abonnement est stocké dans `localStorage`, donc côté client.**
-
-Conséquence concrète : n'importe qui peut ouvrir la console du navigateur et se déclarer abonné Premium. C'est acceptable pour une démonstration, **pas pour encaisser de l'argent**.
-
-Aucune donnée bancaire n'est demandée, transmise ni stockée. `paymentMethod` vaut `"simulation"`. Un avertissement le dit explicitement sur l'écran d'abonnement.
-
-### Ce qu'il faudra pour encaisser réellement
-
-1. **Firebase Auth** — comptes réels, mots de passe hashés côté serveur
-2. **Firestore + règles de sécurité** — l'abonnement devient inaccessible en écriture depuis le client
-3. **Stripe** (international) ou **MonCash** (Haïti) — traitement du paiement
-4. **Cloud Function webhook** — seul le serveur de paiement peut activer un abonnement
-5. **Vérification côté lecture** — le flux vidéo n'est servi qu'après validation serveur
-
-Tant que ces cinq points ne sont pas en place, considérer l'abonnement comme une maquette fonctionnelle.
+Aucun bouton de l'interface, aucune fonction appelable depuis le client ne peut activer un forfait payant. C'est vérifié par test automatisé.
 
 ---
 
@@ -90,10 +17,158 @@ Tant que ces cinq points ne sont pas en place, considérer l'abonnement comme un
 
 | Fichier | Rôle |
 |---|---|
-| `subscription.js` | Plans, cycle de vie, limites |
-| `subscription-ui.js` | Écran de sélection, confirmation, actions |
-| `subscription.css` | Style des cartes de formule |
-| `profiles-route.js` | Insertion de l'étape dans le flux |
-| `app-settings.js` | Section Abonnement des Paramètres |
+| `subscription-config.js` | Forfaits stockés en **données** (`netluxe_plans`), modifiables sans toucher au code |
+| `payment-gateway.js` | Abstraction prestataire : Stripe, MonCash, PayPal — tous `enabled:false` |
+| `subscription-state.js` | Machine à états, calcul du statut effectif, vérification d'accès |
+| `subscription-actions.js` | Transitions : demande, webhooks, résiliation, changement |
+| `subscription-ui.js` | Écran en 3 vues : forfaits → confirmation → état réel |
+| `subscription-mysub.js` | « Mon abonnement » + historique des transactions |
+| `premium-gate.js` | Barrière expliquant le blocage avec sa raison exacte |
 
-Clé de stockage : `netluxe_sub`, indexée par email — les comptes sont isolés (vérifié).
+---
+
+## Les 6 statuts
+
+| Statut | Accès premium | Signification |
+|---|---|---|
+| `INACTIVE` | ❌ | Aucun abonnement |
+| `PENDING_PAYMENT` | ❌ | Paiement engagé, **non confirmé** |
+| `ACTIVE` | ✅ | Confirmé par le prestataire |
+| `PAYMENT_FAILED` | ✅ | Échec — accès pendant la grâce (7 j) |
+| `CANCELED` | ✅ | Résilié — accès jusqu'à l'expiration |
+| `EXPIRED` | ❌ | Échéance dépassée |
+
+Le statut stocké peut être périmé : `nxSubStatus()` recalcule le statut **réel** à chaque appel en comparant les dates. Un `CANCELED` dont l'échéance est passée devient `EXPIRED` automatiquement.
+
+---
+
+## Forfaits configurables
+
+Trois forfaits d'amorçage, puis tout est modifiable :
+
+| | Découverte | Essentiel | Premium |
+|---|---|---|---|
+| Mensuel | Gratuit | 4,99 USD | 9,99 USD |
+| Annuel | — | 49,90 USD (−17 %) | 99,90 USD (−17 %) |
+| Qualité | 480p | 1080p | 4K HDR |
+| Écrans | 1 | 2 | 4 |
+| Profils | 2 | 4 | 5 |
+| Originals | ❌ | ✅ | ✅ |
+
+**API d'administration :**
+
+```js
+nxAllPlans()                          // tous, y compris inactifs
+nxPublicPlans()                       // uniquement actifs
+nxUpsertPlan({id:'essentiel', priceMonthly:5.99})
+nxSetPlanActive('premium', false)     // retire de la vente
+nxDeletePlan('id')
+nxResetPlans()                        // retour à l'amorçage
+```
+
+Vérifié : désactiver Premium le retire immédiatement de l'écran public.
+
+---
+
+## Vérification d'accès
+
+```js
+nxSubStatus()          // statut réel, recalculé
+nxHasPremiumAccess()   // le statut autorise-t-il l'accès ?
+nxPlanGivesPremium()   // le forfait comprend-il le premium ?
+nxCanWatchPremium()    // les deux à la fois
+nxCanWatch(item)       // décision pour un contenu donné
+```
+
+Le lecteur appelle `nxCanWatch()` **avant** d'ouvrir. Un Original sans forfait valide déclenche la barrière premium — pas un lecteur vide.
+
+Le **domaine public reste toujours accessible**, sans abonnement.
+
+---
+
+## Activation du paiement
+
+### État actuel
+
+```
+activeProvider : aucun
+publishableKey : absente
+backendUrl     : absente
+webhook        : non configuré
+```
+
+`nxPayEnabled()` renvoie `false`. Toute demande payante retourne `GATEWAY_DISABLED` et l'utilisateur voit : *« Les abonnements seront bientôt disponibles. Le système de paiement est actuellement en cours d'activation. »*
+
+### Les 5 étapes pour activer
+
+**1. Compte marchand**
+Stripe (international) ou MonCash (Haïti). MonCash ne gère pas le prélèvement récurrent — prévoir un renouvellement manuel ou Stripe en complément.
+
+**2. Serveur backend** — obligatoire
+Le montant ne doit **jamais** être décidé côté client, sinon un utilisateur paierait 0,01 $.
+
+```
+POST /create-intent   { planId, billing, userId }
+  → le serveur lit le prix depuis SA base
+  → crée l'intention chez le prestataire
+  → renvoie { clientSecret, intentId }
+```
+
+**3. Webhook signé**
+
+```
+POST /netluxe/webhook/:provider
+```
+
+Vérification de signature **obligatoire** (`Stripe-Signature` / HMAC MonCash). Sans elle, n'importe qui pourrait activer un abonnement par simple requête HTTP.
+
+| Événement | Effet |
+|---|---|
+| `payment_intent.succeeded` | → `ACTIVE` |
+| `payment_intent.payment_failed` | → `PAYMENT_FAILED`, grâce ouverte |
+| `invoice.paid` | prolonge, ajoute une facture |
+| `customer.subscription.deleted` | → `CANCELED` |
+| `charge.refunded` | → `INACTIVE`, accès révoqué |
+
+Stocker l'identifiant d'événement pour l'idempotence. Se fier à l'horodatage du prestataire, pas à l'ordre de réception.
+
+**4. Configuration**
+
+```js
+nxSavePayConfig({
+  activeProvider:'stripe',
+  publishableKey:'pk_live_...',   // clé PUBLIABLE uniquement
+  backendUrl:'https://api.netluxe.ht',
+  mode:'live',
+  webhookConfigured:true
+});
+NX_PROVIDERS.stripe.enabled = true;
+```
+
+**5. Migration du stockage**
+Remplacer `localStorage` par Firestore avec règles serveur :
+
+```
+match /subscriptions/{uid} {
+  allow read: if request.auth.uid == uid;
+  allow write: if false;   // seul le webhook écrit
+}
+```
+
+---
+
+## Sécurité des données de paiement
+
+**Aucune donnée bancaire ne transite par NETLUXE.** La saisie se fera dans un champ hébergé par le prestataire (Stripe Elements / SDK MonCash).
+
+Ce qui est stocké : identifiant de forfait, montant, devise, statut, référence prestataire, **type** de moyen de paiement. Jamais de numéro, CVV, IBAN ni date d'expiration.
+
+Vérifié par test : 0 champ sensible dans le stockage.
+
+---
+
+## ⚠️ Limite actuelle
+
+Le stockage reste `localStorage`, donc modifiable depuis la console du navigateur. Les statuts et la logique sont corrects, mais **la persistance n'est pas encore sécurisée**.
+
+C'est acceptable tant que le paiement est inactif — il n'y a rien à frauder. Dès l'activation, l'étape 5 (Firestore + règles) devient obligatoire.
