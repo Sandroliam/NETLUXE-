@@ -26,6 +26,11 @@ function nxcrRenderAges(){
 
 function nxcrPickAge(k){
   NXCR.ageGroup = k;
+  /* proposer le portrait correspondant, sauf si l'utilisateur a deja choisi */
+  if(!NXCR.avatarPicked && !NXCR.photo && typeof nxAvDefault === 'function'){
+    NXCR.avatarId = nxAvDefault(NXCR.ptype, k);
+    if(typeof nxcrPreview === 'function') nxcrPreview();
+  }
   /* cohérence : Mode Kids implique le type de profil enfant */
   if(k === 'kids' && NXCR.ptype !== 'kids'){
     NXCR.ptype = 'kids';
@@ -59,7 +64,7 @@ function nxcrPickType(k){
   if(k === 'kids' && !wasKid){
     var a = nxAvGet(NXCR.avatarId);
     if(!a || (a.cat !== 'kids' && a.cat !== 'caribbean')){
-      NXCR.avatarId = 'kid1';
+      NXCR.avatarId = 'por4';
     }
   }
   nxcrRenderTypes();
@@ -71,6 +76,8 @@ function nxcrOpenAvatars(){
   var kidsOnly = (NXCR.ptype === 'kids');
   nxAvpOpen(NXCR.avatarId, kidsOnly, function(id){
     NXCR.avatarId = id;
+    NXCR.avatarPicked = true;   /* choix explicite : ne plus jamais l'ecraser */
+    NXCR.photo = null;          /* l'avatar remplace la photo */
     nxcrPreview();
     if(typeof showToast === 'function'){
       var a = nxAvGet(id);
@@ -108,7 +115,8 @@ function nxcrPreview(){
 /* ---------- OUVERTURE ---------- */
 function nxOpenCreate(){
   nxBuildProfileScreen();
-  NXCR = { mode:'add', id:null, avatarId:'pre1', photo:null, ptype:'mixed', color:'#D4AF37', ageGroup:'adult' };
+  NXCR = { mode:'add', id:null, avatarId:'por1', photo:null, avatarPicked:false,
+           ptype:'mixed', color:'#D4AF37', ageGroup:'adult' };
   document.getElementById('nxcrT').textContent = 'Créer un nouveau profil';
   var sb1 = document.getElementById('nxcrSub');
   if(sb1) sb1.textContent = 'Personnalisez l\'expérience pour chaque utilisateur.';
@@ -134,6 +142,7 @@ function nxOpenEdit(pid){
     ptype: p.ptype || 'mixed',
     color: p.color || '#D4AF37',
     photo: p.photo || null,
+    avatarPicked: !!p.avatarPicked,
     ageGroup: p.ageGroup || ((p.ptype === 'kids') ? 'kids' : 'adult')
   };
   document.getElementById('nxcrT').textContent = 'Modifier le profil';
@@ -187,6 +196,7 @@ function nxcrSave(){
       id:'p_' + Date.now(),
       name:nm,
       avatarId:NXCR.avatarId,
+      avatarPicked:!!NXCR.avatarPicked,
       color:NXCR.color,
       ptype:NXCR.ptype,
       photo:NXCR.photo || null,
@@ -213,6 +223,7 @@ function nxcrSave(){
       if(u.profiles[i].id === NXCR.id){
         u.profiles[i].name = nm;
         u.profiles[i].avatarId = NXCR.avatarId;
+        u.profiles[i].avatarPicked = !!NXCR.avatarPicked;
         u.profiles[i].color = NXCR.color;
         u.profiles[i].ptype = NXCR.ptype;
         u.profiles[i].photo = NXCR.photo || null;
@@ -220,6 +231,7 @@ function nxcrSave(){
         u.profiles[i].isKid = (NXCR.ptype === 'kids');
         if(prof && prof.id === NXCR.id){
           prof.name = nm; prof.avatarId = NXCR.avatarId;
+          prof.avatarPicked = !!NXCR.avatarPicked;
           prof.color = NXCR.color; prof.ptype = NXCR.ptype;
           prof.photo = NXCR.photo || null;
           prof.ageGroup = NXCR.ageGroup || 'adult';

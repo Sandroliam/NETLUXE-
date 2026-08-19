@@ -4,7 +4,8 @@
    ============================================ */
 
 var NX_AV_CATS = [
-  { key:'cinema',     ic:'🎬', label:'Cinéma' },
+  { key:'portrait',  ic:'🧑', label:'Portraits' },
+  { key:'cinema',    ic:'🎬', label:'Cinéma' },
   { key:'caribbean',  ic:'🌴', label:'Caraïbes' },
   { key:'futuristic', ic:'🚀', label:'Futuriste' },
   { key:'classic',    ic:'👤', label:'Classique' },
@@ -54,12 +55,20 @@ function nxAvRender(id, size){
 }
 
 /* Avatar par défaut selon le type de profil */
-function nxAvDefault(ptype){
+/* Avatar par défaut. On privilégie les portraits, plus proches
+   de la référence visuelle, plutôt que des pictogrammes. */
+function nxAvDefault(ptype, ageGroup){
+  /* selon la tranche d'âge quand elle est connue */
+  if(ageGroup === 'kids')  return 'por4';   /* panda */
+  if(ageGroup === 'child') return 'por3';   /* Junior */
+  if(ageGroup === 'teen' || ageGroup === 'teenF') return 'por2';  /* Maya */
+  if(ageGroup === 'adult') return 'por1';   /* Sandro */
+
   var map = {
-    kids:'kid1', cartoon:'kid2', films:'cin1',
-    series:'cin3', mixed:'pre1'
+    kids:'por4', cartoon:'por4', films:'por1',
+    series:'por2', mixed:'por1'
   };
-  return map[ptype] || 'cla1';
+  return map[ptype] || 'por1';
 }
 
 /* Statistiques (pour vérification) */

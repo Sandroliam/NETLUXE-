@@ -9,22 +9,22 @@
 <title>NETLUXE</title>
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiTkVUTFVYRSIsInNob3J0X25hbWUiOiJORVRMVVhFIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMEEwQTBBIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwQTBBMEEifQ==">
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.7.0/dist/hls.min.js"></script>
-<link rel="stylesheet" href="app-extra.css?v25b">
-<link rel="stylesheet" href="player.css?v25b">
-<link rel="stylesheet" href="player-ui.css?v25b">
-<link rel="stylesheet" href="profiles.css?v25b">
-<link rel="stylesheet" href="avatars.css?v25b">
-<link rel="stylesheet" href="continue.css?v25b">
-<link rel="stylesheet" href="sections.css?v25b">
-<link rel="stylesheet" href="search.css?v25b">
-<link rel="stylesheet" href="subscription.css?v25b">
-<link rel="stylesheet" href="subscription-v2.css?v25b">
-<link rel="stylesheet" href="profiles-manage.css?v25b">
-<link rel="stylesheet" href="shell.css?v25b">
-<link rel="stylesheet" href="profiles-shell.css?v25b">
-<link rel="stylesheet" href="photo.css?v25b">
-<link rel="stylesheet" href="create-form.css?v25b">
-<link rel="stylesheet" href="design-ref.css?v25b">
+<link rel="stylesheet" href="app-extra.css?v26">
+<link rel="stylesheet" href="player.css?v26">
+<link rel="stylesheet" href="player-ui.css?v26">
+<link rel="stylesheet" href="profiles.css?v26">
+<link rel="stylesheet" href="avatars.css?v26">
+<link rel="stylesheet" href="continue.css?v26">
+<link rel="stylesheet" href="sections.css?v26">
+<link rel="stylesheet" href="search.css?v26">
+<link rel="stylesheet" href="subscription.css?v26">
+<link rel="stylesheet" href="subscription-v2.css?v26">
+<link rel="stylesheet" href="profiles-manage.css?v26">
+<link rel="stylesheet" href="shell.css?v26">
+<link rel="stylesheet" href="profiles-shell.css?v26">
+<link rel="stylesheet" href="photo.css?v26">
+<link rel="stylesheet" href="create-form.css?v26">
+<link rel="stylesheet" href="design-ref.css?v26">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -1042,11 +1042,43 @@ function saveProfile() {
 }
 
 function logout() {
+  /* purger la session */
   localStorage.removeItem('netluxe_user');
   localStorage.removeItem('netluxe_profile');
   user = null; prof = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('authScreen').classList.remove('hidden');
+
+  /* fermer TOUS les écrans, sinon la déconnexion semble sans effet.
+     C'était le bug : seul #app était masqué, l'écran de profils
+     et la coque desktop restaient visibles par-dessus. */
+  ['app','nxSelect','nxCreate','nxSub','nxMg','nxPh','nxGate','nxAvPicker',
+   'detailModal','srchOverlay','nxp','player'].forEach(function(id){
+    var e = document.getElementById(id);
+    if(!e) return;
+    e.style.display = 'none';
+    e.classList.remove('on');
+    e.classList.remove('active');
+  });
+
+  /* retirer la coque desktop (sidebar + barre du haut) */
+  if(typeof nxShellHide === 'function') { try { nxShellHide(); } catch(e){} }
+  document.body.classList.remove('nxdesk');
+
+  /* réinitialiser l'état des écrans d'abonnement/profils */
+  if(typeof NXSUB !== 'undefined'){ NXSUB.step = 'plans'; NXSUB.from = 'login'; }
+  if(typeof NX_MANAGE !== 'undefined') NX_MANAGE = false;
+
+  /* rétablir l'écran de connexion */
+  var auth = document.getElementById('authScreen');
+  if(auth){
+    auth.classList.remove('hidden');
+    auth.style.display = '';
+  }
+  var em = document.getElementById('loginEmail');
+  if(em) em.value = '';
+
+  document.body.style.overflow = '';
+  window.scrollTo(0,0);
+  if(typeof showToast === 'function') showToast('Vous êtes déconnecté');
 }
 
 // CONTENT
@@ -1353,45 +1385,46 @@ window.addEventListener('scroll', function(){ var h=document.getElementById('hea
 // INIT
 init();
 </script>
-<script src="app-settings.js?v25b"></script>
-<script src="app-profiles.js?v25b"></script>
-<script src="catalog-public.js?v25b"></script>
-<script src="catalog-episodes.js?v25b"></script>
-<script src="catalog-sources.js?v25b"></script>
-<script src="catalog-meta.js?v25b"></script>
-<script src="catalog-announced.js?v25b"></script>
-<script src="profiles-types.js?v25b"></script>
-<script src="profiles-age.js?v25b"></script>
-<script src="profiles-manage.js?v25b"></script>
-<script src="avatars-1.js?v25b"></script>
-<script src="avatars-2.js?v25b"></script>
-<script src="avatars-api.js?v25b"></script>
-<script src="avatars-picker.js?v25b"></script>
-<script src="profiles-select.js?v25b"></script>
-<script src="profiles-create.js?v25b"></script>
-<script src="hero-feed.js?v25b"></script>
-<script src="continue-watching.js?v25b"></script>
-<script src="sections-editorial.js?v25b"></script>
-<script src="sections-render.js?v25b"></script>
-<script src="search-engine.js?v25b"></script>
-<script src="recommend.js?v25b"></script>
-<script src="search-ui.js?v25b"></script>
-<script src="subscription-config.js?v25b"></script>
-<script src="payment-gateway.js?v25b"></script>
-<script src="subscription-state.js?v25b"></script>
-<script src="subscription-actions.js?v25b"></script>
-<script src="subscription-ui.js?v25b"></script>
-<script src="subscription-mysub.js?v25b"></script>
-<script src="premium-gate.js?v25b"></script>
-<script src="photo-upload.js?v25b"></script>
-<script src="shell.js?v25b"></script>
-<script src="player-dom.js?v25b"></script>
-<script src="player-core.js?v25b"></script>
-<script src="player-controls.js?v25b"></script>
-<script src="player-panels.js?v25b"></script>
-<script src="player-gestures.js?v25b"></script>
-<script src="player-bridge.js?v25b"></script>
-<script src="profiles-route.js?v25b"></script>
+<script src="app-settings.js?v26"></script>
+<script src="app-profiles.js?v26"></script>
+<script src="catalog-public.js?v26"></script>
+<script src="catalog-episodes.js?v26"></script>
+<script src="catalog-sources.js?v26"></script>
+<script src="catalog-meta.js?v26"></script>
+<script src="catalog-announced.js?v26"></script>
+<script src="profiles-types.js?v26"></script>
+<script src="profiles-age.js?v26"></script>
+<script src="profiles-manage.js?v26"></script>
+<script src="avatars-1.js?v26"></script>
+<script src="avatars-2.js?v26"></script>
+<script src="avatars-3.js?v26"></script>
+<script src="avatars-api.js?v26"></script>
+<script src="avatars-picker.js?v26"></script>
+<script src="profiles-select.js?v26"></script>
+<script src="profiles-create.js?v26"></script>
+<script src="hero-feed.js?v26"></script>
+<script src="continue-watching.js?v26"></script>
+<script src="sections-editorial.js?v26"></script>
+<script src="sections-render.js?v26"></script>
+<script src="search-engine.js?v26"></script>
+<script src="recommend.js?v26"></script>
+<script src="search-ui.js?v26"></script>
+<script src="subscription-config.js?v26"></script>
+<script src="payment-gateway.js?v26"></script>
+<script src="subscription-state.js?v26"></script>
+<script src="subscription-actions.js?v26"></script>
+<script src="subscription-ui.js?v26"></script>
+<script src="subscription-mysub.js?v26"></script>
+<script src="premium-gate.js?v26"></script>
+<script src="photo-upload.js?v26"></script>
+<script src="shell.js?v26"></script>
+<script src="player-dom.js?v26"></script>
+<script src="player-core.js?v26"></script>
+<script src="player-controls.js?v26"></script>
+<script src="player-panels.js?v26"></script>
+<script src="player-gestures.js?v26"></script>
+<script src="player-bridge.js?v26"></script>
+<script src="profiles-route.js?v26"></script>
 <script>
 /* Post-chargement : appliquer les préférences et rafraîchir l'UI profil */
 (function(){
