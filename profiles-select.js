@@ -104,7 +104,7 @@ function nxRenderProfileGrid(){
       'title="Modifier" aria-label="Modifier '+nxEsc(p.name)+'">✎</button>'+
     '</div>';
   }
-  if(list.length < 5){
+  if(list.length < ((typeof nxMaxProfiles === 'function') ? nxMaxProfiles() : 5)){
     h += '<div class="nxsel-card add" onclick="nxOpenCreate()" role="button" tabindex="0">'+
          '<div class="nxsel-av plus">+</div><div class="nxsel-nm">Ajouter</div>'+
          '<div class="nxsel-ty">Nouveau profil</div></div>';

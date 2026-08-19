@@ -1,0 +1,81 @@
+/* ============================================
+   NETLUXE — Écran d'abonnement (style)
+   ============================================ */
+.nxsub{position:fixed;inset:0;z-index:790;display:none;overflow-y:auto;
+  background:radial-gradient(ellipse at 50% 0%,#14283d 0%,#050B14 62%);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.nxsub.on{display:block}
+.nxsub-in{max-width:1060px;margin:0 auto;padding:40px 20px 56px;text-align:center}
+.nxsub-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:30px}
+.nxsub-t{font-family:Georgia,'Times New Roman',serif;font-size:31px;font-weight:700;
+  color:#F5F5F0;margin-bottom:8px;letter-spacing:.3px}
+.nxsub-d{font-size:13.5px;color:rgba(245,245,240,.55);margin-bottom:32px}
+
+/* ---------- CARTES DE FORMULE ---------- */
+.nxsub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;margin-bottom:22px;text-align:left}
+.nxsub-card{position:relative;padding:24px 20px 20px;border-radius:14px;cursor:pointer;
+  background:rgba(10,22,40,.7);border:2px solid rgba(245,245,240,.09);
+  transition:border-color .2s,transform .18s,box-shadow .2s;
+  display:flex;flex-direction:column}
+.nxsub-card:hover{transform:translateY(-4px);border-color:rgba(0,206,209,.4)}
+.nxsub-card.sel{border-color:var(--pc,#00CED1);
+  box-shadow:0 10px 34px rgba(0,0,0,.5),0 0 0 3px color-mix(in srgb,var(--pc,#00CED1) 22%,transparent)}
+.nxsub-card.reco{background:rgba(18,38,60,.82)}
+.nxsub-badge{position:absolute;top:-10px;left:20px;padding:3px 11px;border-radius:11px;
+  background:var(--pc,#00CED1);color:#04141a;font-size:9.5px;font-weight:800;letter-spacing:1px}
+.nxsub-cur{position:absolute;top:-10px;right:20px;padding:3px 10px;border-radius:11px;
+  background:rgba(34,197,94,.92);color:#04141a;font-size:9px;font-weight:800;letter-spacing:.6px}
+.nxsub-name{font-family:Georgia,serif;font-size:22px;font-weight:700;
+  color:var(--pc,#00CED1);margin-bottom:4px}
+.nxsub-tag{font-size:12px;color:rgba(245,245,240,.5);margin-bottom:16px;min-height:32px}
+.nxsub-price{margin-bottom:6px;color:#F5F5F0}
+.nxsub-price .amt{font-size:34px;font-weight:700;letter-spacing:-.5px}
+.nxsub-price .cur{font-size:15px;font-weight:600}
+.nxsub-price .per{font-size:13px;color:rgba(245,245,240,.45)}
+.nxsub-q{font-size:11.5px;color:var(--pc,#00CED1);font-weight:600;
+  padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid rgba(245,245,240,.08)}
+.nxsub-feat{list-style:none;padding:0;margin:0 0 18px;flex:1}
+.nxsub-feat li{font-size:12.5px;color:rgba(245,245,240,.78);padding:5px 0 5px 20px;
+  position:relative;line-height:1.45}
+.nxsub-feat li:before{content:'✓';position:absolute;left:0;color:var(--pc,#00CED1);font-weight:700}
+.nxsub-feat li.no{color:rgba(245,245,240,.38)}
+.nxsub-feat li.no:before{content:'✕';color:rgba(255,107,53,.6)}
+.nxsub-ck{text-align:center;padding:10px 0;border-radius:8px;font-size:13px;font-weight:600;
+  background:rgba(245,245,240,.06);color:rgba(245,245,240,.6);transition:.2s}
+.nxsub-card.sel .nxsub-ck{background:var(--pc,#00CED1);color:#04141a}
+
+/* ---------- NOTE ET ACTIONS ---------- */
+.nxsub-note{font-size:12px;color:rgba(245,245,240,.55);margin-bottom:22px;line-height:1.6}
+.nxsub-demo{display:inline-block;margin-top:6px;font-size:11px;
+  color:rgba(255,107,53,.72);font-style:italic}
+.nxsub-link{background:none;border:none;color:#00CED1;font-size:12px;
+  cursor:pointer;text-decoration:underline;font-family:inherit;padding:0}
+.nxsub-act{display:flex;flex-direction:column;align-items:center;gap:13px}
+.nxsub-act .btn-lg{padding:14px 34px;font-size:14.5px;min-width:250px}
+.nxsub-later{background:none;border:none;color:rgba(245,245,240,.5);
+  font-size:12.5px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:6px}
+.nxsub-later:hover{color:#F5F5F0}
+
+/* ---------- BLOC ABONNEMENT DANS LES PARAMÈTRES ---------- */
+.nxsub-box{background:rgba(10,22,40,.6);border:1px solid rgba(212,175,55,.22);
+  border-radius:11px;padding:15px;margin-bottom:12px}
+.nxsub-box-h{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid rgba(245,245,240,.08)}
+.nxsub-box-n{font-family:Georgia,serif;font-size:17px;font-weight:700;color:#D4AF37}
+.nxsub-box-p{font-size:13px;color:#F5F5F0;font-weight:600}
+.nxsub-box-r{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0}
+.nxsub-box-r span:first-child{color:rgba(245,245,240,.55)}
+.nxsub-box-r span:last-child{color:#F5F5F0;font-weight:500}
+.nxsub-st{padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.4px}
+.nxsub-st.active{background:rgba(34,197,94,.18);color:#22C55E;border:1px solid rgba(34,197,94,.35)}
+.nxsub-st.cancelling{background:rgba(255,107,53,.16);color:#FF6B35;border:1px solid rgba(255,107,53,.35)}
+
+@media(max-width:640px){
+  .nxsub-in{padding:30px 14px 44px}
+  .nxsub-t{font-size:25px}
+  .nxsub-grid{grid-template-columns:1fr;gap:22px;margin-bottom:20px}
+  .nxsub-card{padding:22px 18px 18px}
+  .nxsub-price .amt{font-size:30px}
+  .nxsub-act .btn-lg{width:100%;min-width:0}
+}

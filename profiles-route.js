@@ -3,22 +3,32 @@
    Redirige le flux existant vers le nouvel écran de profils.
    ============================================ */
 
-/* Après saisie de l'email : si des profils existent, on va à la sélection.
-   Sinon, on ouvre la création de profil typé. */
+/* FLUX : Connexion → Abonnement → Profils → App
+
+   Après saisie de l'email : si aucun abonnement actif, on passe par
+   l'écran des formules. Sinon on va directement aux profils. */
 function nxAfterLogin(){
-  nxBuildProfileScreen();
-  var list = (typeof user !== 'undefined' && user && user.profiles) ? user.profiles : [];
-  if(list.length > 0){
-    nxShowProfileSelect();
-  } else {
-    /* masquer les écrans d'auth puis ouvrir la création */
-    ['authScreen','createProfile','codeAccess','splash'].forEach(function(id){
-      var e = document.getElementById(id);
-      if(e){ e.style.display = 'none'; e.classList.add('hidden'); }
-    });
-    nxShowProfileSelect();
-    nxOpenCreate();
+  /* masquer les écrans d'auth */
+  ['authScreen','createProfile','codeAccess','splash'].forEach(function(id){
+    var e = document.getElementById(id);
+    if(e){ e.style.display = 'none'; e.classList.add('hidden'); }
+  });
+
+  /* Étape abonnement : uniquement si aucune formule active */
+  if(typeof nxHasSub === 'function' && !nxHasSub()){
+    if(typeof NXSUB_FROM !== 'undefined') NXSUB_FROM = 'login';
+    if(typeof nxShowSubscribe === 'function'){ nxShowSubscribe(); return; }
   }
+  nxGoProfiles();
+}
+
+/* Étape profils — appelée après l'abonnement */
+function nxGoProfiles(){
+  nxBuildProfileScreen();
+  if(typeof nxHideSubscribe === 'function') nxHideSubscribe();
+  var list = (typeof user !== 'undefined' && user && user.profiles) ? user.profiles : [];
+  nxShowProfileSelect();
+  if(!list.length) nxOpenCreate();
 }
 
 /* Remplace showCreateProfile de index.html : on route vers le nouvel écran */
@@ -43,6 +53,13 @@ function switchProfile(pid){ nxPickProfile(pid); }
       var su = localStorage.getItem('netluxe_user');
       var sp = localStorage.getItem('netluxe_profile');
       if(!su) return;                      /* pas connecté : écran d'auth normal */
+
+      /* connecté mais sans abonnement actif → écran des formules */
+      if(typeof nxHasSub === 'function' && !nxHasSub()){
+        if(typeof NXSUB_FROM !== 'undefined') NXSUB_FROM = 'login';
+        if(typeof nxShowSubscribe === 'function'){ nxShowSubscribe(); return; }
+      }
+
       if(sp){
         /* profil déjà choisi : s'assurer que ptype existe */
         try {
@@ -55,15 +72,15 @@ function switchProfile(pid){ nxPickProfile(pid); }
         } catch(e){}
         return;                            /* index.html a déjà ouvert l'app */
       }
-      /* connecté mais aucun profil actif → sélection */
+      /* connecté, abonné, mais aucun profil actif → sélection */
       var u = JSON.parse(su);
       if(u && u.profiles && u.profiles.length){
         nxShowProfileSelect();
       }
     } catch(e){}
   }
-  if(document.readyState === 'complete') setTimeout(boot, 120);
-  else window.addEventListener('load', function(){ setTimeout(boot, 120); });
+  if(document.readyState === 'complete') setTimeout(boot, 140);
+  else window.addEventListener('load', function(){ setTimeout(boot, 140); });
 })();
 
 /* Migration : type + avatar pour les profils existants */

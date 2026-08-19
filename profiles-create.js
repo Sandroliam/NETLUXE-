@@ -124,8 +124,14 @@ function nxcrSave(){
   }
 
   if(NXCR.mode === 'add'){
-    if(u.profiles.length >= 5){
-      if(typeof showToast === 'function') showToast('Maximum 5 profils par compte');
+    /* La limite dépend du plan souscrit : elle est réellement appliquée. */
+    var cap = (typeof nxMaxProfiles === 'function') ? nxMaxProfiles() : 5;
+    if(u.profiles.length >= cap){
+      var pn = (typeof nxCurrentPlan === 'function' && nxCurrentPlan())
+               ? nxCurrentPlan().name : 'actuelle';
+      if(typeof showToast === 'function'){
+        showToast('Formule ' + pn + ' : ' + cap + ' profils maximum. Changez de formule pour en ajouter.');
+      }
       return;
     }
     var np = {
