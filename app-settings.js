@@ -106,6 +106,11 @@ function renderSettings(){
   h += '<div class="setting-row"><span class="setting-lbl">Se déconnecter</span><button class="btn btn-o" style="padding:7px 14px;font-size:12.5px;color:var(--red)" onclick="logout()">Déconnexion</button></div>';
   h += '</div>';
 
+  /* VERSION ET CACHE — permet de forcer le rechargement */
+  if(typeof nxVersionBlock === 'function'){
+    try { h += nxVersionBlock(); } catch(e){}
+  }
+
   /* MON ABONNEMENT — statut réel, historique, actions */
   if(typeof nxMySubBlock === 'function'){
     try { h += nxMySubBlock(); } catch(e){}
