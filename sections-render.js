@@ -121,10 +121,25 @@ function nxRenderEditorial(){
   var n4 = nxRenderComing();
   var n5 = nxRenderOriginals('originalsRow');
 
+  /* « Parce que vous avez regardé X » */
+  var n6 = 0;
+  if(typeof nxBecauseYouWatched === 'function'){
+    try {
+      var b = nxBecauseYouWatched();
+      if(b && b.items && b.items.length){
+        var ttl = document.getElementById('becauseTitle');
+        if(ttl) ttl.textContent = 'Parce que vous avez regardé « ' + b.source.title + ' »';
+        if(typeof fillRow === 'function') fillRow('becauseRow', b.items);
+        n6 = b.items.length;
+      }
+    } catch(e){}
+  }
+
   /* masquer les sections vides — pas de rail fantôme */
   var pairs = [
     ['top10Section', n1], ['topCaribSection', n2],
-    ['caribSection', n3], ['comingSection', n4], ['originalsSection', n5]
+    ['caribSection', n3], ['comingSection', n4],
+    ['originalsSection', n5], ['becauseSection', n6]
   ];
   for(var i=0;i<pairs.length;i++){
     var el = document.getElementById(pairs[i][0]);

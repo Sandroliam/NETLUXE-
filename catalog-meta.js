@@ -125,7 +125,9 @@ function nxGuessCountry(c){
       if(m.rating)          c.rating = m.rating;
       if(m.country)         c.country = m.country;
       if(m.tags)            c.tags = m.tags;
-      if(m.cast && (!c.cast || !c.cast.length)) c.cast = m.cast;
+      /* le casting de NX_META fait autorité : il est plus complet que
+         celui du catalogue de départ (qui n'a souvent qu'un nom). */
+      if(m.cast && m.cast.length) c.cast = m.cast;
       if(m.crew)            c.crew = m.crew;
       if(m.releaseDate)     c.releaseDate = m.releaseDate;
       if(m.topRank)         c.topRank = m.topRank;

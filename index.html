@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="avatars.css">
 <link rel="stylesheet" href="continue.css">
 <link rel="stylesheet" href="sections.css">
+<link rel="stylesheet" href="search.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -546,6 +547,7 @@ img{display:block;max-width:100%}
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">📺 Séries Populaires</h2></div><div class="row" id="seriesRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">⭐ Dessins Animés</h2></div><div class="row" id="cartoonsRow"></div></section>
     <section class="sec"><div class="sec-hdr"><h2 class="sec-title">🎯 Recommandé pour vous</h2></div><div class="row" id="recommendRow"></div></section>
+    <section class="sec" id="becauseSection" style="display:none"><div class="sec-hdr"><h2 class="sec-title" id="becauseTitle">Parce que vous avez regardé</h2></div><div class="row" id="becauseRow"></div></section>
     <section class="sec" id="top10Section"><div class="sec-hdr"><h2 class="sec-title">👑 Top 10 NETLUXE</h2></div><div class="row" id="top10Row"></div></section>
     <section class="sec" id="topCaribSection"><div class="sec-hdr"><h2 class="sec-title">🌴 Top 10 Caraïbes</h2></div><div class="row" id="topCaribRow"></div></section>
     <section class="sec" id="originalsSection"><div class="sec-hdr"><h2 class="sec-title">⭐ NETLUXE Originals</h2><span class="sec-tag">EXCLUSIF</span></div><div class="row" id="originalsRow"></div></section>
@@ -581,6 +583,8 @@ img{display:block;max-width:100%}
       <input type="text" placeholder="Rechercher films, séries, acteurs..." id="srchInput" oninput="doSearch()">
       <button class="srch-cls" onclick="closeSearch()">✕</button>
     </div>
+    <div id="srchFilters"></div>
+    <div id="srchCount"></div>
     <div class="srch-res" id="srchRes"></div>
   </div>
 </div>
@@ -1081,6 +1085,24 @@ function showDetail(id) {
   h += '<div style="display:flex;gap:12px">';
   h += '<button class="btn btn-p" style="flex:1" onclick="playCurrent()">▶ Regarder</button>';
   h += '<button class="btn btn-o" onclick="toggleMyList('+cur.id+')">'+(prof&&prof.myList&&prof.myList.includes(cur.id)?'✓ Ma Liste':'+ Liste')+'</button></div>';
+
+  /* Contenus similaires — recommandations liées à cette fiche */
+  if(typeof nxSimilar === 'function'){
+    try {
+      var sim = nxSimilar(cur.id, 10);
+      if(sim && sim.length){
+        h += '<div class="nxsim"><div class="nxsim-h">Contenus similaires</div><div class="nxsim-row">';
+        for(var si=0; si<sim.length; si++){
+          var sc = sim[si];
+          h += '<div class="nxsim-card" onclick="showDetail('+sc.id+')" role="button" tabindex="0">'+
+               '<div class="nxsim-img"><img src="'+sc.img+'" loading="lazy" alt=""></div>'+
+               '<div class="nxsim-t">'+(sc.flag||'')+' '+sc.title+'</div></div>';
+        }
+        h += '</div></div>';
+      }
+    } catch(e){}
+  }
+
   document.getElementById('detBody').innerHTML = h;
   document.getElementById('detailModal').classList.add('active');
 }
@@ -1100,9 +1122,13 @@ function toggleMyList(id) {
 }
 
 // SEARCH
-function openSearch() { document.getElementById('srchOverlay').classList.add('active'); document.getElementById('srchInput').focus(); }
+function openSearch() {
+  document.getElementById('srchOverlay').classList.add('active');
+  document.getElementById('srchInput').focus();
+  if(typeof nxsRefresh === 'function') nxsRefresh();
+}
 function closeSearch() { document.getElementById('srchOverlay').classList.remove('active'); }
-function doSearch() {
+function doSearch_OLD_UNUSED() {
   var q = document.getElementById('srchInput').value.toLowerCase().trim();
   var res = q ? CAT.filter(function(c){
     return c.title.toLowerCase().includes(q)||c.genre.toLowerCase().includes(q)||(c.cast&&c.cast.some(function(a){return a.toLowerCase().includes(q);}))||c.year.toString().includes(q);
@@ -1337,6 +1363,9 @@ init();
 <script src="continue-watching.js"></script>
 <script src="sections-editorial.js"></script>
 <script src="sections-render.js"></script>
+<script src="search-engine.js"></script>
+<script src="recommend.js"></script>
+<script src="search-ui.js"></script>
 <script src="player-dom.js"></script>
 <script src="player-core.js"></script>
 <script src="player-controls.js"></script>

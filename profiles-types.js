@@ -81,6 +81,11 @@ function nxHomeSections(){
   var pub     = pool.filter(function(c){ return c.source === 'Internet Archive'; });
   var top     = pool.slice().sort(function(a,b){ return (b.views||0)-(a.views||0); });
 
+  /* Recommandations réelles, basées sur le comportement du profil */
+  var reco = (typeof nxRecommend === 'function')
+             ? nxRecommend(10)
+             : pool.filter(function(c){ return (c.rat||0) >= 4.4; }).slice(0,10);
+
   if(t === 'kids'){
     return [
       { row:'trendingRow',  items:cartoon.slice(0,10) },
@@ -88,7 +93,7 @@ function nxHomeSections(){
       { row:'caribbeanRow', items:carib },
       { row:'seriesRow',    items:series.slice(0,10) },
       { row:'cartoonsRow',  items:cartoon.slice(0,12) },
-      { row:'recommendRow', items:pool.slice(0,10) },
+      { row:'recommendRow', items:reco },
       { row:'publicRow',    items:pub.slice(0,12) }
     ];
   }
@@ -99,7 +104,7 @@ function nxHomeSections(){
       { row:'caribbeanRow', items:carib },
       { row:'seriesRow',    items:series.slice(0,10) },
       { row:'cartoonsRow',  items:cartoon.slice(0,12) },
-      { row:'recommendRow', items:cartoon.slice(0,10) },
+      { row:'recommendRow', items:reco },
       { row:'publicRow',    items:pub.slice(0,12) }
     ];
   }
@@ -110,7 +115,7 @@ function nxHomeSections(){
       { row:'caribbeanRow', items:carib },
       { row:'seriesRow',    items:series.slice(0,8) },
       { row:'cartoonsRow',  items:cartoon.slice(0,8) },
-      { row:'recommendRow', items:films.filter(function(c){return (c.rat||0)>=4.3;}).slice(0,10) },
+      { row:'recommendRow', items:reco },
       { row:'publicRow',    items:pub.filter(function(c){return c.type==='film';}).slice(0,12) }
     ];
   }
@@ -121,7 +126,7 @@ function nxHomeSections(){
       { row:'caribbeanRow', items:carib },
       { row:'seriesRow',    items:series },
       { row:'cartoonsRow',  items:cartoon.slice(0,8) },
-      { row:'recommendRow', items:series.slice(0,10) },
+      { row:'recommendRow', items:reco },
       { row:'publicRow',    items:pub.slice(0,12) }
     ];
   }
@@ -132,7 +137,7 @@ function nxHomeSections(){
     { row:'caribbeanRow', items:carib },
     { row:'seriesRow',    items:series.slice(0,10) },
     { row:'cartoonsRow',  items:cartoon.slice(0,10) },
-    { row:'recommendRow', items:pool.filter(function(c){return (c.rat||0)>=4.4;}).slice(0,10) },
+    { row:'recommendRow', items:reco },
     { row:'publicRow',    items:pub.slice(0,12) }
   ];
 }
