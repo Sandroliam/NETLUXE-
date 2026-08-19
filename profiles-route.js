@@ -15,7 +15,7 @@ function nxAfterLogin(){
   });
 
   /* Étape abonnement : uniquement si aucune formule active */
-  if(typeof nxHasSub === 'function' && !nxHasSub()){
+  if(typeof nxSubStatus === 'function' && nxSubStatus() === 'INACTIVE'){
     if(typeof NXSUB_FROM !== 'undefined') NXSUB_FROM = 'login';
     if(typeof nxShowSubscribe === 'function'){ nxShowSubscribe(); return; }
   }
@@ -55,7 +55,7 @@ function switchProfile(pid){ nxPickProfile(pid); }
       if(!su) return;                      /* pas connecté : écran d'auth normal */
 
       /* connecté mais sans abonnement actif → écran des formules */
-      if(typeof nxHasSub === 'function' && !nxHasSub()){
+      if(typeof nxSubStatus === 'function' && nxSubStatus() === 'INACTIVE'){
         if(typeof NXSUB_FROM !== 'undefined') NXSUB_FROM = 'login';
         if(typeof nxShowSubscribe === 'function'){ nxShowSubscribe(); return; }
       }

@@ -44,6 +44,16 @@ function nxpOpen(item, seriesList, epIndex){
     return;
   }
 
+  /* VÉRIFICATION D'ACCÈS : les Originals exigent un forfait premium actif.
+     Le blocage dépend du statut réel de l'abonnement, pas d'un affichage. */
+  if(typeof nxCanWatch === 'function' && !nxCanWatch(item)){
+    if(typeof nxShowPremiumGate === 'function') nxShowPremiumGate(item);
+    else if(typeof showToast === 'function'){
+      showToast('« ' + item.title + ' » nécessite un forfait NETLUXE premium');
+    }
+    return;
+  }
+
   nxpBuildDOM();
   NXP.el = nx('nxp'); NXP.vid = nx('nxpVid');
   NXP.cur = item;

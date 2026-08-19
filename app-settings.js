@@ -106,44 +106,10 @@ function renderSettings(){
   h += '<div class="setting-row"><span class="setting-lbl">Se déconnecter</span><button class="btn btn-o" style="padding:7px 14px;font-size:12.5px;color:var(--red)" onclick="logout()">Déconnexion</button></div>';
   h += '</div>';
 
-  /* ABONNEMENT — état réel du plan souscrit */
-  h += '<div class="settings-sec"><h3>💳 Abonnement</h3>';
-  if(typeof nxSub === 'function'){
-    var sb = nxSub();
-    var pl = (typeof nxCurrentPlan === 'function') ? nxCurrentPlan() : null;
-    if(sb && pl){
-      var stCls = (sb.status === 'cancelling') ? 'cancelling' : 'active';
-      var stTxt = (sb.status === 'cancelling') ? 'RÉSILIATION' : 'ACTIF';
-      h += '<div class="nxsub-box">';
-      h += '<div class="nxsub-box-h"><span class="nxsub-box-n">'+pl.name+'</span>'+
-           '<span class="nxsub-st '+stCls+'">'+stTxt+'</span></div>';
-      h += '<div class="nxsub-box-r"><span>Prix</span><span>'+nxFmtPrice(pl)+'</span></div>';
-      h += '<div class="nxsub-box-r"><span>Qualité max</span><span>'+pl.quality+'</span></div>';
-      h += '<div class="nxsub-box-r"><span>Écrans simultanés</span><span>'+pl.screens+'</span></div>';
-      h += '<div class="nxsub-box-r"><span>Profils autorisés</span><span>'+pl.profiles+'</span></div>';
-      h += '<div class="nxsub-box-r"><span>Téléchargements</span><span>'+(pl.downloads < 0 ? 'Illimités' : pl.downloads)+'</span></div>';
-      h += '<div class="nxsub-box-r"><span>Publicité</span><span>'+(pl.ads ? 'Oui' : 'Non')+'</span></div>';
-      if(sb.price > 0){
-        h += '<div class="nxsub-box-r"><span>'+(sb.autoRenew ? 'Renouvellement' : 'Fin d\'accès')+
-             '</span><span>'+nxFmtDate(sb.renewsAt)+'</span></div>';
-      }
-      h += '<div class="nxsub-box-r"><span>Depuis le</span><span>'+nxFmtDate(sb.startedAt)+'</span></div>';
-      h += '</div>';
-      h += '<div class="setting-row"><span class="setting-lbl">Changer de formule</span>'+
-           '<button class="btn btn-p" style="padding:7px 14px;font-size:12.5px" onclick="nxOpenSubSettings()">Voir les formules</button></div>';
-      if(sb.status === 'cancelling'){
-        h += '<div class="setting-row"><span class="setting-lbl">Reprendre l\'abonnement</span>'+
-             '<button class="btn btn-o" style="padding:7px 14px;font-size:12.5px;color:#22C55E" onclick="nxSettingsResume()">Réactiver</button></div>';
-      } else if(sb.price > 0){
-        h += '<div class="setting-row"><span class="setting-lbl">Résilier</span>'+
-             '<button class="btn btn-o" style="padding:7px 14px;font-size:12.5px;color:var(--red)" onclick="nxSettingsCancel()">Résilier</button></div>';
-      }
-    } else {
-      h += '<div class="setting-row"><span class="setting-lbl">Aucune formule active</span>'+
-           '<button class="btn btn-p" style="padding:7px 14px;font-size:12.5px" onclick="nxOpenSubSettings()">Choisir une formule</button></div>';
-    }
+  /* MON ABONNEMENT — statut réel, historique, actions */
+  if(typeof nxMySubBlock === 'function'){
+    try { h += nxMySubBlock(); } catch(e){}
   }
-  h += '</div>';
 
   /* APPARENCE */
   h += '<div class="settings-sec"><h3>🎨 Apparence</h3>';
