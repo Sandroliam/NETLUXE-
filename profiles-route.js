@@ -101,6 +101,7 @@ function switchProfile(pid){ nxPickProfile(pid); }
               changed = true;
             }
             if(ps[i].isKid === undefined){ ps[i].isKid = (ps[i].ptype === 'kids'); changed = true; }
+            if(!ps[i].ageGroup){ ps[i].ageGroup = (ps[i].ptype === 'kids') ? 'kids' : 'adult'; changed = true; }
           }
         }
         if(changed){
@@ -118,11 +119,13 @@ function switchProfile(pid){ nxPickProfile(pid); }
           ch2 = true;
         }
         if(p && p.isKid === undefined){ p.isKid = (p.ptype === 'kids'); ch2 = true; }
+        if(p && !p.ageGroup){ p.ageGroup = (p.ptype === 'kids') ? 'kids' : 'adult'; ch2 = true; }
         if(ch2) localStorage.setItem('netluxe_profile', JSON.stringify(p));
         if(typeof prof !== 'undefined' && prof){
           if(!prof.ptype) prof.ptype = 'mixed';
           if(!prof.avatarId) prof.avatarId = (typeof nxAvDefault === 'function') ? nxAvDefault(prof.ptype) : 'pre1';
           if(prof.isKid === undefined) prof.isKid = (prof.ptype === 'kids');
+          if(!prof.ageGroup) prof.ageGroup = (prof.ptype === 'kids') ? 'kids' : 'adult';
         }
         if(typeof updateProfileUI === 'function') { try { updateProfileUI(); } catch(e){} }
       }

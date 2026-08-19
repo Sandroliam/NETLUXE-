@@ -18,7 +18,7 @@ function nxBuildProfileScreen(){
       '<p class="nxsel-d">Chaque profil garde son historique, sa liste et ses préférences</p>'+
       '<div class="nxsel-grid" id="nxselGrid"></div>'+
       '<div class="nxsel-act">'+
-        '<button class="nxsel-manage" onclick="nxToggleManage()" id="nxManageBtn">Gérer les profils</button>'+
+        '<button class="nxsel-manage" onclick="nxOpenManage()" id="nxManageBtn">Gérer les profils</button>'+
         '<div class="nxsel-sub">'+
           '<button class="btn btn-o" style="color:#FF6B35" onclick="logout()">Déconnexion</button>'+
         '</div>'+
@@ -43,6 +43,8 @@ function nxBuildProfileScreen(){
         '</div>'+
         '<label class="nxcr-lb">Nom du profil</label>'+
         '<input class="nxcr-inp" id="nxcrName" maxlength="20" placeholder="Ex : Sandro" oninput="nxcrPreview()">'+
+        '<label class="nxcr-lb">Tranche d\'âge</label>'+
+        '<div class="nxcr-ages" id="nxcrAges"></div>'+
         '<label class="nxcr-lb">Type de profil</label>'+
         '<div class="nxcr-types" id="nxcrTypes"></div>'+
         '<div id="nxcrDanger" class="nxcr-danger" style="display:none">'+
@@ -97,8 +99,10 @@ function nxRenderProfileGrid(){
     h += '<div class="nxsel-card" onclick="nxPickProfile(\''+p.id+'\')" role="button" tabindex="0" '+
       'onkeydown="if(event.key===\'Enter\')nxPickProfile(\''+p.id+'\')">'+
       av+
+      (p.pinHash ? '<span class="nxsel-lock">🔒</span>' : '')+
       (isKid ? '<span class="nxsel-kid">Enfant</span>' : '')+
       '<div class="nxsel-nm">'+nxEsc(p.name)+'</div>'+
+      '<div class="nxsel-ag">'+(typeof nxAgeLabel === 'function' ? nxAgeLabel(p) : ty.label)+'</div>'+
       '<div class="nxsel-ty"><span>'+ty.ic+'</span>'+ty.label+'</div>'+
       '<button class="nxsel-edit" onclick="event.stopPropagation();nxOpenEdit(\''+p.id+'\')" '+
       'title="Modifier" aria-label="Modifier '+nxEsc(p.name)+'">✎</button>'+
@@ -147,6 +151,11 @@ function nxPickProfile(pid){
     if(user.profiles[i].id === pid) found = user.profiles[i];
   }
   if(!found) return;
+
+  /* profil protégé : exiger le code avant d'entrer */
+  if(found.pinHash && typeof nxCheckPin === 'function'){
+    if(!nxCheckPin(found)) return;
+  }
 
   prof = found;
   prof.lastActive = new Date().toISOString();

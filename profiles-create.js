@@ -3,9 +3,37 @@
    Avatars SVG + type + enfant/adulte
    ============================================ */
 
-var NXCR = { mode:'add', id:null, avatarId:'pre1', ptype:'mixed', color:'#D4AF37' };
+var NXCR = { mode:'add', id:null, avatarId:'pre1', ptype:'mixed', color:'#D4AF37', ageGroup:'adult' };
 
 /* ---------- TYPES ---------- */
+/* ---------- TRANCHES D'ÂGE ---------- */
+function nxcrRenderAges(){
+  var box = document.getElementById('nxcrAges');
+  if(!box || typeof nxAgeOptions !== 'function') return;
+  var opts = nxAgeOptions();
+  var h = '';
+  for(var i=0;i<opts.length;i++){
+    var g = opts[i];
+    var on = (NXCR.ageGroup === g.key);
+    h += '<button class="nxcr-age'+(on?' on':'')+'" onclick="nxcrPickAge(\''+g.key+'\')">'+
+         '<span class="ic">'+nxAgeIcon(g.key)+'</span>'+
+         '<span class="lb">'+g.label+'</span>'+
+         '<span class="mx">'+g.maxRating+'</span></button>';
+  }
+  box.innerHTML = h;
+}
+
+function nxcrPickAge(k){
+  NXCR.ageGroup = k;
+  /* cohérence : Mode Kids implique le type de profil enfant */
+  if(k === 'kids' && NXCR.ptype !== 'kids'){
+    NXCR.ptype = 'kids';
+    nxcrRenderTypes();
+    if(typeof nxcrPreview === 'function') nxcrPreview();
+  }
+  nxcrRenderAges();
+}
+
 function nxcrRenderTypes(){
   var box = document.getElementById('nxcrTypes');
   if(!box) return;
@@ -67,10 +95,11 @@ function nxcrPreview(){
 /* ---------- OUVERTURE ---------- */
 function nxOpenCreate(){
   nxBuildProfileScreen();
-  NXCR = { mode:'add', id:null, avatarId:'pre1', ptype:'mixed', color:'#D4AF37' };
+  NXCR = { mode:'add', id:null, avatarId:'pre1', ptype:'mixed', color:'#D4AF37', ageGroup:'adult' };
   document.getElementById('nxcrT').textContent = 'Nouveau profil';
   document.getElementById('nxcrName').value = '';
   document.getElementById('nxcrDanger').style.display = 'none';
+  nxcrRenderAges();
   nxcrRenderTypes();
   nxcrPreview();
   document.getElementById('nxCreate').classList.add('on');
@@ -88,12 +117,14 @@ function nxOpenEdit(pid){
     mode:'edit', id:pid,
     avatarId: p.avatarId || nxAvDefault(p.ptype || 'mixed'),
     ptype: p.ptype || 'mixed',
-    color: p.color || '#D4AF37'
+    color: p.color || '#D4AF37',
+    ageGroup: p.ageGroup || ((p.ptype === 'kids') ? 'kids' : 'adult')
   };
   document.getElementById('nxcrT').textContent = 'Modifier le profil';
   document.getElementById('nxcrName').value = p.name || '';
   document.getElementById('nxcrDanger').style.display =
     (user.profiles.length > 1) ? 'block' : 'none';
+  nxcrRenderAges();
   nxcrRenderTypes();
   nxcrPreview();
   document.getElementById('nxCreate').classList.add('on');
@@ -140,6 +171,7 @@ function nxcrSave(){
       avatarId:NXCR.avatarId,
       color:NXCR.color,
       ptype:NXCR.ptype,
+      ageGroup:NXCR.ageGroup || 'adult',
       isKid:(NXCR.ptype === 'kids'),
       createdAt:new Date().toISOString(),
       lastActive:new Date().toISOString(),
@@ -164,10 +196,12 @@ function nxcrSave(){
         u.profiles[i].avatarId = NXCR.avatarId;
         u.profiles[i].color = NXCR.color;
         u.profiles[i].ptype = NXCR.ptype;
+        u.profiles[i].ageGroup = NXCR.ageGroup || 'adult';
         u.profiles[i].isKid = (NXCR.ptype === 'kids');
         if(prof && prof.id === NXCR.id){
           prof.name = nm; prof.avatarId = NXCR.avatarId;
           prof.color = NXCR.color; prof.ptype = NXCR.ptype;
+          prof.ageGroup = NXCR.ageGroup || 'adult';
           prof.isKid = (NXCR.ptype === 'kids');
           localStorage.setItem('netluxe_profile', JSON.stringify(prof));
         }

@@ -35,15 +35,22 @@ function nxIsKidSafe(c){
 
 /* Catalogue visible selon le profil actif — utilisé partout.
    Les titres ANNONCÉS (non encore sortis, sans fichier vidéo) sont
-   exclus : ils n'apparaissent que dans « NETLUXE Premiere ». */
+   exclus : ils n'apparaissent que dans « NETLUXE Premiere ».
+   La TRANCHE D'ÂGE du profil est appliquée en dernier : elle est
+   contraignante, jamais décorative. */
 function nxVisibleCatalog(){
   if(typeof CAT === 'undefined' || !Array.isArray(CAT)) return [];
   var t = nxProfileType();
   var base = CAT.filter(function(c){ return !c.announced; });
-  if(t === 'kids')    return base.filter(nxIsKidSafe);
-  if(t === 'cartoon') return base.filter(function(c){ return c.type === 'cartoon'; });
-  /* films / series / mixed : tout reste accessible, seul l'ordre change */
-  return base.slice();
+
+  if(t === 'kids')         base = base.filter(nxIsKidSafe);
+  else if(t === 'cartoon') base = base.filter(function(c){ return c.type === 'cartoon'; });
+
+  /* plafond de classification issu de la tranche d'âge */
+  if(typeof nxAgeAllows === 'function'){
+    base = base.filter(function(c){ return nxAgeAllows(c); });
+  }
+  return base;
 }
 
 function nxKidsContent(){
