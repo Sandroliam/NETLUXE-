@@ -97,8 +97,8 @@ function switchProfile(pid){ nxPickProfile(pid); }
             if(!ps[i].ptype){ ps[i].ptype = 'mixed'; changed = true; }
             /* portrait par défaut, et bascule des anciens pictogrammes */
             var oldAv = ps[i].avatarId;
-            if(!oldAv || (typeof NX_AV !== 'undefined' && NX_AV[oldAv] &&
-                NX_AV[oldAv].cat !== 'portrait' && !ps[i].avatarPicked)){
+            var oldDef = (oldAv && typeof nxAvGet === 'function') ? nxAvGet(oldAv) : null;
+            if(!oldAv || (oldDef && oldDef.cat !== 'portrait' && !ps[i].avatarPicked)){
               ps[i].avatarId = (typeof nxAvDefault === 'function')
                 ? nxAvDefault(ps[i].ptype, ps[i].ageGroup) : 'por1';
               changed = true;
@@ -117,8 +117,8 @@ function switchProfile(pid){ nxPickProfile(pid); }
       if(sp){
         var p = JSON.parse(sp), ch2 = false;
         if(p && !p.ptype){ p.ptype = 'mixed'; ch2 = true; }
-        if(p && (!p.avatarId || (typeof NX_AV !== 'undefined' && NX_AV[p.avatarId] &&
-            NX_AV[p.avatarId].cat !== 'portrait' && !p.avatarPicked))){
+        var pDef = (p && p.avatarId && typeof nxAvGet === 'function') ? nxAvGet(p.avatarId) : null;
+        if(p && (!p.avatarId || (pDef && pDef.cat !== 'portrait' && !p.avatarPicked))){
           p.avatarId = (typeof nxAvDefault === 'function')
             ? nxAvDefault(p.ptype, p.ageGroup) : 'por1';
           ch2 = true;
@@ -128,8 +128,8 @@ function switchProfile(pid){ nxPickProfile(pid); }
         if(ch2) localStorage.setItem('netluxe_profile', JSON.stringify(p));
         if(typeof prof !== 'undefined' && prof){
           if(!prof.ptype) prof.ptype = 'mixed';
-          if(!prof.avatarId || (typeof NX_AV !== 'undefined' && NX_AV[prof.avatarId] &&
-              NX_AV[prof.avatarId].cat !== 'portrait' && !prof.avatarPicked)){
+          var prDef = (prof.avatarId && typeof nxAvGet === 'function') ? nxAvGet(prof.avatarId) : null;
+          if(!prof.avatarId || (prDef && prDef.cat !== 'portrait' && !prof.avatarPicked)){
             prof.avatarId = (typeof nxAvDefault === 'function')
               ? nxAvDefault(prof.ptype, prof.ageGroup) : 'por1';
           }
