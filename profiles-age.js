@@ -60,6 +60,18 @@ function nxAgeIcon(key){
   return map[key] || '👤';
 }
 
+/* Description courte affichée sous le libellé */
+function nxAgeDesc(key){
+  var map = {
+    adult:'Tous les contenus',
+    teen:'Contenus 16+ maximum',
+    teenF:'Contenus 16+ maximum',
+    child:'Contenus 10+ maximum',
+    kids:'Contenus jeunesse'
+  };
+  return map[key] || '';
+}
+
 /* Tranches proposées à la création d'un profil */
 function nxAgeOptions(){
   var out = [];

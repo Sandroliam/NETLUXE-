@@ -17,8 +17,9 @@ function nxcrRenderAges(){
     var on = (NXCR.ageGroup === g.key);
     h += '<button class="nxcr-age'+(on?' on':'')+'" onclick="nxcrPickAge(\''+g.key+'\')">'+
          '<span class="ic">'+nxAgeIcon(g.key)+'</span>'+
-         '<span class="lb">'+g.label+'</span>'+
-         '<span class="mx">'+g.maxRating+'</span></button>';
+         '<span class="tx"><b>'+g.label+'</b><small>'+nxAgeDesc(g.key)+'</small></span>'+
+         '<span class="mx">'+g.maxRating+'</span>'+
+         '<span class="rd"></span></button>';
   }
   box.innerHTML = h;
 }
@@ -46,7 +47,7 @@ function nxcrRenderTypes(){
       'role="button" tabindex="0">'+
       '<span class="ic">'+t.ic+'</span>'+
       '<span class="tx"><b>'+t.label+'</b><small>'+t.desc+'</small></span>'+
-      '<span class="ck">'+(on?'✓':'')+'</span></div>';
+      '<span class="rd"></span></div>';
   }
   box.innerHTML = h;
 }
@@ -108,7 +109,9 @@ function nxcrPreview(){
 function nxOpenCreate(){
   nxBuildProfileScreen();
   NXCR = { mode:'add', id:null, avatarId:'pre1', photo:null, ptype:'mixed', color:'#D4AF37', ageGroup:'adult' };
-  document.getElementById('nxcrT').textContent = 'Nouveau profil';
+  document.getElementById('nxcrT').textContent = 'Créer un nouveau profil';
+  var sb1 = document.getElementById('nxcrSub');
+  if(sb1) sb1.textContent = 'Personnalisez l\'expérience pour chaque utilisateur.';
   document.getElementById('nxcrName').value = '';
   document.getElementById('nxcrDanger').style.display = 'none';
   nxcrRenderAges();
@@ -134,6 +137,8 @@ function nxOpenEdit(pid){
     ageGroup: p.ageGroup || ((p.ptype === 'kids') ? 'kids' : 'adult')
   };
   document.getElementById('nxcrT').textContent = 'Modifier le profil';
+  var sb2 = document.getElementById('nxcrSub');
+  if(sb2) sb2.textContent = 'Ajustez l\'avatar, le nom et les préférences de ce profil.';
   document.getElementById('nxcrName').value = p.name || '';
   document.getElementById('nxcrDanger').style.display =
     (user.profiles.length > 1) ? 'block' : 'none';

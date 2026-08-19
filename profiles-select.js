@@ -47,8 +47,9 @@ function nxBuildProfileScreen(){
   m.className = 'nxcr';
   m.innerHTML =
     '<div class="nxcr-box">'+
-      '<div class="nxcr-hdr"><h3 id="nxcrT">Nouveau profil</h3>'+
-        '<button class="nxcr-x" onclick="nxCloseCreate()">✕</button></div>'+
+      '<div class="nxcr-hdr"><h3 id="nxcrT">Créer un nouveau profil</h3>'+
+        '<p id="nxcrSub">Personnalisez l\'expérience pour chaque utilisateur.</p>'+
+        '<button class="nxcr-x" onclick="nxCloseCreate()" aria-label="Fermer">✕</button></div>'+
       '<div class="nxcr-body">'+
         '<div class="nxcr-prev">'+
           '<div class="nxcr-av" id="nxcrAv" onclick="nxcrOpenAvatars()" title="Changer d\'avatar"></div>'+
