@@ -1,0 +1,150 @@
+/* ============================================
+   NETLUXE — Coque desktop (référence visuelle)
+   Couleurs relevées sur l'image de référence :
+     sidebar   #141414
+     principal #181818
+     doré      #E6B800
+     cartes    #1F1F1F
+     recherche #2D2D2D
+     badge     #EF4444
+   Sidebar 250px · barre du haut 80px
+   ============================================ */
+:root{
+  --nx-side:#141414;
+  --nx-main:#181818;
+  --nx-gold:#E6B800;
+  --nx-card:#1F1F1F;
+  --nx-srch:#2D2D2D;
+  --nx-badge:#EF4444;
+  --nx-white:#FFFFFF;
+  --nx-dim:#8C8C8C;
+  --nx-line:rgba(255,255,255,.08);
+  --nx-sw:250px;
+  --nx-th:80px;
+}
+
+/* ---------- SIDEBAR ---------- */
+.nxsh{position:fixed;top:0;left:0;bottom:0;width:var(--nx-sw);z-index:600;
+  background:var(--nx-side);border-right:1px solid var(--nx-line);
+  display:none;flex-direction:column;overflow-y:auto;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+.nxsh.on{display:flex}
+.nxsh::-webkit-scrollbar{width:0}
+
+/* logo */
+.nxsh-logo{display:flex;align-items:center;gap:11px;padding:24px 22px 28px;flex-shrink:0}
+.nxsh-n{width:36px;height:36px;border-radius:8px;flex-shrink:0;
+  background:var(--nx-gold);color:#141414;
+  display:flex;align-items:center;justify-content:center;
+  font-family:Georgia,'Times New Roman',serif;font-size:23px;font-weight:700;line-height:1}
+.nxsh-wm{font-size:19px;font-weight:700;letter-spacing:2.4px;color:var(--nx-white)}
+
+/* groupes de navigation */
+.nxsh-grp{display:flex;flex-direction:column;padding:0 0 8px}
+.nxsh-sep{height:1px;background:var(--nx-line);margin:12px 22px 16px}
+.nxsh-sp{flex:1}
+
+.nxsh-i{position:relative;display:flex;align-items:center;gap:14px;
+  padding:12px 22px;cursor:pointer;background:none;border:none;
+  color:var(--nx-dim);font-size:14.5px;font-weight:500;font-family:inherit;
+  text-align:left;width:100%;transition:color .16s,background .16s}
+.nxsh-i:hover{color:var(--nx-white);background:rgba(255,255,255,.04)}
+.nxsh-i .ic{width:21px;height:21px;flex-shrink:0;display:flex;
+  align-items:center;justify-content:center;font-size:17px;line-height:1}
+.nxsh-i.on{color:var(--nx-gold);background:rgba(230,184,0,.07)}
+/* indicateur vertical doré du menu actif */
+.nxsh-i.on:before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:26px;background:var(--nx-gold);border-radius:0 2px 2px 0}
+.nxsh-i.out{color:#7A7A7A}
+.nxsh-i.out:hover{color:var(--nx-badge)}
+
+/* ---------- BARRE DU HAUT ---------- */
+.nxtb{position:fixed;top:0;left:var(--nx-sw);right:0;height:var(--nx-th);z-index:590;
+  background:var(--nx-main);border-bottom:1px solid var(--nx-line);
+  display:none;align-items:center;gap:20px;padding:0 30px;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+.nxtb.on{display:flex}
+
+/* recherche à gauche */
+.nxtb-srch{display:flex;align-items:center;gap:11px;width:392px;max-width:44vw;
+  height:42px;padding:0 16px;border-radius:6px;background:var(--nx-srch)}
+.nxtb-srch svg{width:17px;height:17px;flex-shrink:0;color:#A0A0A0}
+.nxtb-srch input{flex:1;background:none;border:none;outline:none;
+  color:var(--nx-white);font-size:13.5px;font-family:inherit}
+.nxtb-srch input::placeholder{color:#8C8C8C}
+
+.nxtb-sp{flex:1}
+
+/* notifications */
+.nxtb-bell{position:relative;width:40px;height:40px;border-radius:50%;cursor:pointer;
+  background:none;border:none;color:#C4C4C4;display:flex;align-items:center;
+  justify-content:center;font-size:19px;transition:.16s}
+.nxtb-bell:hover{background:rgba(255,255,255,.07);color:var(--nx-white)}
+.nxtb-badge{position:absolute;top:5px;right:5px;min-width:17px;height:17px;
+  padding:0 4px;border-radius:9px;background:var(--nx-badge);color:#fff;
+  font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--nx-main)}
+
+/* avatar + menu déroulant */
+.nxtb-usr{display:flex;align-items:center;gap:8px;cursor:pointer;
+  background:none;border:none;padding:4px 6px 4px 4px;border-radius:6px;transition:.16s}
+.nxtb-usr:hover{background:rgba(255,255,255,.06)}
+.nxtb-av{width:34px;height:34px;border-radius:5px;overflow:hidden;flex-shrink:0;
+  background:var(--nx-card);display:flex;align-items:center;justify-content:center}
+.nxtb-av img,.nxtb-av svg{width:100%;height:100%;object-fit:cover;display:block}
+.nxtb-av .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;color:#141414}
+.nxtb-car{color:#C4C4C4;font-size:10px;transition:transform .18s}
+.nxtb-usr.open .nxtb-car{transform:rotate(180deg)}
+
+/* panneau déroulant */
+.nxtb-menu{position:absolute;top:calc(var(--nx-th) - 8px);right:30px;width:238px;
+  background:#1F1F1F;border:1px solid var(--nx-line);border-radius:6px;
+  box-shadow:0 12px 38px rgba(0,0,0,.72);overflow:hidden;display:none;z-index:595}
+.nxtb-menu.on{display:block}
+.nxtb-mh{padding:14px 16px;border-bottom:1px solid var(--nx-line)}
+.nxtb-mh b{display:block;font-size:13.5px;color:var(--nx-white);margin-bottom:2px}
+.nxtb-mh span{font-size:11.5px;color:var(--nx-dim)}
+.nxtb-mi{display:flex;align-items:center;gap:11px;width:100%;padding:11px 16px;
+  background:none;border:none;cursor:pointer;color:#C4C4C4;font-size:13px;
+  font-family:inherit;text-align:left;transition:.15s}
+.nxtb-mi:hover{background:rgba(255,255,255,.06);color:var(--nx-white)}
+.nxtb-mi .ic{width:17px;text-align:center;font-size:14px}
+.nxtb-mi.out{color:#9A9A9A;border-top:1px solid var(--nx-line)}
+.nxtb-mi.out:hover{color:var(--nx-badge)}
+
+/* panneau notifications */
+.nxtb-notif{position:absolute;top:calc(var(--nx-th) - 8px);right:86px;width:306px;
+  background:#1F1F1F;border:1px solid var(--nx-line);border-radius:6px;
+  box-shadow:0 12px 38px rgba(0,0,0,.72);overflow:hidden;display:none;z-index:595}
+.nxtb-notif.on{display:block}
+.nxtb-nh{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;border-bottom:1px solid var(--nx-line)}
+.nxtb-nh b{font-size:13.5px;color:var(--nx-white)}
+.nxtb-nh button{background:none;border:none;color:var(--nx-gold);font-size:11.5px;
+  cursor:pointer;font-family:inherit}
+.nxtb-nr{display:flex;gap:11px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.05);
+  cursor:pointer;transition:.15s}
+.nxtb-nr:hover{background:rgba(255,255,255,.05)}
+.nxtb-nr .ic{font-size:17px;flex-shrink:0}
+.nxtb-nr .tx{flex:1;min-width:0}
+.nxtb-nr .tx b{display:block;font-size:12.5px;color:var(--nx-white);
+  font-weight:600;margin-bottom:2px}
+.nxtb-nr .tx span{font-size:11.5px;color:var(--nx-dim);line-height:1.4}
+.nxtb-nr.unread{background:rgba(230,184,0,.05)}
+.nxtb-ne{padding:26px 16px;text-align:center;font-size:12.5px;color:var(--nx-dim)}
+
+/* ---------- DÉCALAGE DU CONTENU ---------- */
+body.nxdesk #app{margin-left:var(--nx-sw);padding-top:var(--nx-th)}
+body.nxdesk #nxSelect .nxsel-in{padding-left:calc(var(--nx-sw) + 46px);padding-top:calc(var(--nx-th) + 34px)}
+body.nxdesk .nav{display:none!important}
+body.nxdesk #header{display:none!important}
+
+/* la coque n'apparaît qu'au-delà de 1024px */
+@media(max-width:1024px){
+  .nxsh,.nxtb,.nxtb-menu,.nxtb-notif{display:none!important}
+  body.nxdesk #app{margin-left:0;padding-top:0}
+  body.nxdesk #nxSelect .nxsel-in{padding-left:20px;padding-top:34px}
+  body.nxdesk .nav{display:flex!important}
+  body.nxdesk #header{display:flex!important}
+}

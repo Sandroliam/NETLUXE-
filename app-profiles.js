@@ -178,7 +178,10 @@ function switchProfile(pid){
 function updateProfileUI(){
   var av = document.getElementById('hdrProf') || document.getElementById('navAvatar');
   if(av && prof){
-    if(prof.avatarId && typeof nxAvRender === 'function'){
+    if(prof.photo){
+      av.innerHTML = '<img src="'+prof.photo+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">';
+      av.textContent = '';
+    } else if(prof.avatarId && typeof nxAvRender === 'function'){
       av.innerHTML = nxAvRender(prof.avatarId, 40);
       av.style.background = 'transparent';
       av.style.overflow = 'hidden';

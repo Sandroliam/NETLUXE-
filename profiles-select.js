@@ -23,6 +23,21 @@ function nxBuildProfileScreen(){
           '<button class="btn btn-o" style="color:#FF6B35" onclick="logout()">Déconnexion</button>'+
         '</div>'+
       '</div>'+
+      '<div class="nxgp">'+
+        '<div class="nxgp-t">Gérer les profils</div>'+
+        '<div class="nxgp-grid">'+
+          '<button class="nxgp-b" onclick="nxOpenManage();nxMgGo(\'order\')">'+
+            '<span class="ic">✎</span><span class="tx"><b>Modifier l\'ordre</b>'+
+            '<small>Réorganiser les profils</small></span></button>'+
+          '<button class="nxgp-b" onclick="nxOpenManage();nxMgGo(\'lock\')">'+
+            '<span class="ic">🔒</span><span class="tx"><b>Verrouillage des profils</b>'+
+            '<small>Protéger vos profils par un code</small></span></button>'+
+          '<button class="nxgp-b danger" onclick="nxOpenManage();nxMgGo(\'delete\')">'+
+            '<span class="ic">🗑</span><span class="tx"><b>Supprimer un profil</b>'+
+            '<small>Supprimer définitivement</small></span></button>'+
+        '</div>'+
+        '<div class="nxgp-note">Les profils sont personnels et leurs recommandations ne sont pas partagées.</div>'+
+      '</div>'+
     '</div>';
   document.body.appendChild(d);
 
@@ -39,6 +54,8 @@ function nxBuildProfileScreen(){
           '<div class="nxcr-av" id="nxcrAv" onclick="nxcrOpenAvatars()" title="Changer d\'avatar"></div>'+
           '<div class="nxcr-photo-act">'+
             '<button class="btn btn-p" onclick="nxcrOpenAvatars()">🎨 Choisir un avatar</button>'+
+            '<button class="btn btn-o" onclick="nxPhPick()">📷 Ajouter une photo</button>'+
+            '<button class="btn btn-o" id="nxcrRmPh" onclick="nxPhRemove()" style="display:none;color:#EF4444">Retirer la photo</button>'+
           '</div>'+
         '</div>'+
         '<label class="nxcr-lb">Nom du profil</label>'+
@@ -88,21 +105,25 @@ function nxRenderProfileGrid(){
     var ty = NX_PROFILE_TYPES[p.ptype || 'mixed'] || NX_PROFILE_TYPES.mixed;
     var isKid = (p.ptype === 'kids') || p.isKid;
     var av;
-    if(p.avatarId && typeof nxAvRender === 'function'){
-      av = '<div class="nxsel-av">' + nxAvRender(p.avatarId, 126) + '</div>';
+    if(p.photo){
+      av = '<div class="nxsel-av"><img src="'+p.photo+'" alt=""></div>';
+    } else if(p.avatarId && typeof nxAvRender === 'function'){
+      av = '<div class="nxsel-av">' + nxAvRender(p.avatarId, 182) + '</div>';
     } else if(p.avatar){
       av = '<div class="nxsel-av" style="background-image:url('+p.avatar+')"></div>';
     } else {
       av = '<div class="nxsel-av" style="background:'+(p.color||ty.color)+'">'+
            (p.name||'?').charAt(0).toUpperCase()+'</div>';
     }
-    h += '<div class="nxsel-card" onclick="nxPickProfile(\''+p.id+'\')" role="button" tabindex="0" '+
+    var isActive = (typeof prof !== 'undefined' && prof && prof.id === p.id);
+    var agKey = (typeof nxAgeGroup === 'function') ? nxAgeGroup(p).key : 'adult';
+    h += '<div class="nxsel-card'+(isActive?' active':'')+'" onclick="nxPickProfile(\''+p.id+'\')" role="button" tabindex="0" '+
       'onkeydown="if(event.key===\'Enter\')nxPickProfile(\''+p.id+'\')">'+
       av+
       (p.pinHash ? '<span class="nxsel-lock">🔒</span>' : '')+
       (isKid ? '<span class="nxsel-kid">Enfant</span>' : '')+
       '<div class="nxsel-nm">'+nxEsc(p.name)+'</div>'+
-      '<div class="nxsel-ag">'+(typeof nxAgeLabel === 'function' ? nxAgeLabel(p) : ty.label)+'</div>'+
+      '<div class="nxsel-ag" data-ag="'+agKey+'">'+(typeof nxAgeLabel === 'function' ? nxAgeLabel(p) : ty.label)+'</div>'+
       '<div class="nxsel-ty"><span>'+ty.ic+'</span>'+ty.label+'</div>'+
       '<button class="nxsel-edit" onclick="event.stopPropagation();nxOpenEdit(\''+p.id+'\')" '+
       'title="Modifier" aria-label="Modifier '+nxEsc(p.name)+'">✎</button>'+
@@ -111,7 +132,7 @@ function nxRenderProfileGrid(){
   if(list.length < ((typeof nxMaxProfiles === 'function') ? nxMaxProfiles() : 5)){
     h += '<div class="nxsel-card add" onclick="nxOpenCreate()" role="button" tabindex="0">'+
          '<div class="nxsel-av plus">+</div><div class="nxsel-nm">Ajouter</div>'+
-         '<div class="nxsel-ty">Nouveau profil</div></div>';
+         '<div class="nxsel-ag">un profil</div></div>';
   }
   g.innerHTML = h;
 }
@@ -171,6 +192,10 @@ function nxPickProfile(pid){
     if(a){ a.style.display = 'block'; a.classList.remove('hidden'); }
   }
   if(typeof updateProfileUI === 'function') updateProfileUI();
+  /* coque desktop : rafraîchir l'avatar et l'entrée active */
+  if(typeof nxShAvatar === 'function') { try { nxShAvatar(); } catch(e){} }
+  if(typeof nxShMark === 'function') { try { nxShMark('home'); } catch(e){} }
+  if(typeof nxShBadge === 'function') { try { nxShBadge(); } catch(e){} }
   if(typeof goHome === 'function') goHome();
 
   var ty = NX_PROFILE_TYPES[prof.ptype] || NX_PROFILE_TYPES.mixed;

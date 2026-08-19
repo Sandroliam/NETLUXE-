@@ -1,0 +1,109 @@
+/* ============================================
+   NETLUXE — Cartes de profil (référence visuelle)
+   Rectangulaires (ratio ~3:4), fond #1F1F1F,
+   bordure dorée #E6B800 sur le profil actif,
+   crayon en haut à droite, cadenas en bas.
+   ============================================ */
+
+/* écran de sélection, alignement à gauche comme la référence */
+body.nxdesk #nxSelect{background:var(--nx-main)}
+body.nxdesk #nxSelect .nxsel-in{max-width:none;text-align:left}
+body.nxdesk #nxSelect .nxsel-logo{display:none}
+body.nxdesk #nxSelect .nxsel-t{font-size:38px;font-weight:700;
+  color:var(--nx-white);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  letter-spacing:-.4px;margin-bottom:9px}
+body.nxdesk #nxSelect .nxsel-d{font-size:15px;color:#A0A0A0;margin-bottom:38px}
+
+/* grille alignée à gauche */
+body.nxdesk .nxsel-grid{justify-content:flex-start;gap:22px;margin-bottom:52px}
+
+/* carte rectangulaire */
+body.nxdesk .nxsel-card{width:182px;background:var(--nx-card);
+  border:2px solid transparent;border-radius:10px;padding:0 0 15px;
+  overflow:hidden;transition:border-color .18s,transform .18s}
+body.nxdesk .nxsel-card:hover{transform:translateY(-4px);border-color:rgba(230,184,0,.42)}
+/* profil actif : bordure dorée */
+body.nxdesk .nxsel-card.active{border-color:var(--nx-gold)}
+
+/* image en haut, occupe toute la largeur */
+body.nxdesk .nxsel-av{width:182px;height:182px;border-radius:0;margin:0 0 13px;
+  border:none;background:#2A2A2A;overflow:hidden}
+body.nxdesk .nxsel-card:hover .nxsel-av{border:none;box-shadow:none}
+body.nxdesk .nxsel-av img{width:100%;height:100%;object-fit:cover;display:block}
+body.nxdesk .nxsel-av svg{width:100%;height:100%;display:block}
+
+/* nom + type */
+body.nxdesk .nxsel-nm{font-size:16px;font-weight:600;color:var(--nx-white);
+  padding:0 14px;margin-bottom:3px;text-align:left}
+body.nxdesk .nxsel-card:hover .nxsel-nm{color:var(--nx-white)}
+body.nxdesk .nxsel-ag{font-size:13px;padding:0 14px;text-align:left;font-weight:500}
+/* la couleur du type varie par tranche, comme sur la référence */
+body.nxdesk .nxsel-ag[data-ag="adult"]{color:#E6B800}
+body.nxdesk .nxsel-ag[data-ag="teen"],
+body.nxdesk .nxsel-ag[data-ag="teenF"]{color:#FB7185}
+body.nxdesk .nxsel-ag[data-ag="child"]{color:#22D3EE}
+body.nxdesk .nxsel-ag[data-ag="kids"]{color:#A78BFA}
+body.nxdesk .nxsel-ty{display:none}
+
+/* crayon en haut à droite */
+body.nxdesk .nxsel-edit{position:absolute;top:9px;right:9px;width:29px;height:29px;
+  border-radius:5px;background:rgba(20,20,20,.82);border:1px solid rgba(255,255,255,.16);
+  color:#E0E0E0;font-size:13px;opacity:0;transition:.16s;z-index:4}
+body.nxdesk .nxsel-card:hover .nxsel-edit{opacity:1}
+body.nxdesk .nxsel-edit:hover{background:var(--nx-gold);color:#141414;border-color:var(--nx-gold)}
+
+/* cadenas en bas de carte */
+body.nxdesk .nxsel-lock{position:absolute;bottom:13px;right:13px;top:auto;left:auto;
+  width:22px;height:22px;border-radius:4px;background:rgba(20,20,20,.75);
+  border:1px solid rgba(230,184,0,.4);font-size:10px;color:var(--nx-gold)}
+
+/* badge enfant */
+body.nxdesk .nxsel-kid{top:9px;left:9px;background:rgba(167,139,250,.92);
+  color:#141414;font-size:9px;padding:3px 8px;border-radius:4px;font-weight:800}
+
+/* carte Ajouter un profil */
+body.nxdesk .nxsel-card.add{background:transparent;
+  border:2px dashed rgba(255,255,255,.18);padding:0 0 15px}
+body.nxdesk .nxsel-card.add:hover{border-color:var(--nx-gold);background:rgba(230,184,0,.05)}
+body.nxdesk .nxsel-card.add .nxsel-av{background:transparent}
+body.nxdesk .nxsel-av.plus{display:flex;align-items:center;justify-content:center;
+  font-size:52px;font-weight:200;color:rgba(255,255,255,.3);line-height:1}
+body.nxdesk .nxsel-card.add:hover .nxsel-av.plus{color:var(--nx-gold)}
+body.nxdesk .nxsel-card.add .nxsel-nm{color:#C4C4C4}
+body.nxdesk .nxsel-card.add .nxsel-ag{color:#7A7A7A}
+
+/* ---------- GÉRER LES PROFILS : SECTION INTÉGRÉE ---------- */
+.nxgp{margin-top:8px;max-width:1000px}
+.nxgp-t{font-size:12px;font-weight:700;letter-spacing:1.8px;color:#A0A0A0;
+  text-transform:uppercase;margin-bottom:16px}
+.nxgp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:14px}
+.nxgp-b{display:flex;align-items:center;gap:14px;padding:17px 16px;cursor:pointer;
+  background:var(--nx-card);border:1px solid rgba(255,255,255,.07);border-radius:9px;
+  text-align:left;font-family:inherit;transition:.16s}
+.nxgp-b:hover{border-color:rgba(230,184,0,.4);background:#252525}
+.nxgp-b.danger:hover{border-color:rgba(239,68,68,.45)}
+.nxgp-b .ic{width:41px;height:41px;border-radius:8px;flex-shrink:0;
+  background:rgba(230,184,0,.11);color:var(--nx-gold);
+  display:flex;align-items:center;justify-content:center;font-size:17px}
+.nxgp-b.danger .ic{background:rgba(239,68,68,.11);color:var(--nx-badge)}
+.nxgp-b .tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.nxgp-b .tx b{font-size:14px;font-weight:600;color:var(--nx-white)}
+.nxgp-b .tx small{font-size:12px;color:#8C8C8C}
+.nxgp-note{margin-top:18px;font-size:12.5px;color:#7A7A7A}
+
+/* masquer l'ancien bouton Gérer sur desktop : la section le remplace */
+body.nxdesk .nxsel-manage{display:none}
+body.nxdesk .nxsel-act{align-items:flex-start;margin-bottom:34px}
+body.nxdesk .nxsel-sub{justify-content:flex-start}
+
+/* ---------- RESPONSIVE : même identité, pas de seconde direction ---------- */
+@media(max-width:1024px){
+  .nxgp{max-width:none;margin-top:4px}
+  .nxgp-grid{grid-template-columns:1fr;gap:10px}
+  .nxgp-t{text-align:center}
+  .nxgp-note{text-align:center}
+}
+@media(max-width:640px){
+  .nxgp-b{padding:14px}
+  .nxgp-b .ic{width:37px;height:37px;font-size:15px}
+}
